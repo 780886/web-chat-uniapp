@@ -1,0 +1,127 @@
+
+*[data-v-0a633310] {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.chat-page[data-v-0a633310] {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+/* 顶部导航 */
+.chat-header[data-v-0a633310] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 15px;
+  background-color: #fff;
+  border-bottom: 1px solid #f0f0f0;
+}
+.chat-title[data-v-0a633310] {
+  font-size: 18px;
+  font-weight: bold;
+}
+.back-btn img[data-v-0a633310],
+.menu-btn img[data-v-0a633310] {
+  width: 20px;
+  height: 20px;
+}
+
+/* 聊天内容 */
+.chat-content[data-v-0a633310] {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  background-color: #f7f7f7;
+}
+.date-separator[data-v-0a633310] {
+  text-align: center;
+  font-size: 12px;
+  color: #999;
+  margin: 10px 0;
+}
+.message-item[data-v-0a633310] {
+  display: flex;
+  margin: 10px 0;
+}
+.message-item.left[data-v-0a633310] {
+  flex-direction: row;
+}
+.message-item.right[data-v-0a633310] {
+  flex-direction: row;
+  /* 保持正常排列方向 */
+  justify-content: flex-end;
+  /* 保证消息内容靠右 */
+}
+.avatar img[data-v-0a633310] {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+}
+.message-bubble[data-v-0a633310] {
+  max-width: 40%;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.5;
+  word-wrap: break-word; /* 允许长单词换行 */
+  overflow: hidden; /* 隐藏超出部分 */
+  text-overflow: ellipsis; /* 超出部分显示省略号 */
+}
+.message-item.left .message-bubble[data-v-0a633310] {
+  background-color: #f0f0f0;
+  margin-left: 10px;
+}
+.message-item.right .message-bubble[data-v-0a633310] {
+  background-color: #bde4ff;
+  margin-left: 10px;
+  /* 调整文本与头像的间距 */
+  margin-right: 10px;
+  /* 移除原来的右间距 */
+}
+
+/* 底部输入框 */
+.chat-input-bar[data-v-0a633310] {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+/* .input-box {
+  flex: 1;
+  padding: 0px 12px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  font-size: 14px;
+  margin: 0 10px;
+  height: 28px;
+} */
+.input-box[data-v-0a633310] {
+  z-index: 2;
+  /* 确保输入框在顶层 */
+  position: relative;
+  flex: 1;
+  padding: 0px 12px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  font-size: 14px;
+  margin: 0 10px;
+  height: 28px;
+  background-color: #fff;
+  /* 明确设置背景，防止透明 */
+}
+.input-actions img[data-v-0a633310] {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}

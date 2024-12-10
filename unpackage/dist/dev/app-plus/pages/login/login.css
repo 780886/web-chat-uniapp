@@ -1,0 +1,110 @@
+
+.container {
+  padding: 20px;
+}
+.title {
+  color: royalblue;
+  font-size: 30px;
+  font-weight: bold;
+  margin-top: 70px;
+  margin-bottom: 50px;
+  text-align: center;
+}
+.subtitle {
+  font-size: 14px;
+  color: #999;
+  margin-bottom: 30px;
+}
+.input-group {
+  display: flex; /* 使用flex布局 */
+  align-items: center; /* 垂直居中图标和输入框 */
+  width: 100%; /* 保持与父容器宽度92% */
+  border: 1px solid #ddd; /* 输入框的边框 */
+  border-radius: 5px; /* 圆角 */
+  padding: 0; /* 去除内边距，外部统一控制 */
+  /* 设置两个input之间的间距 */
+  margin: 20px auto;
+  //margin-bottom: 20px;
+}
+.label {
+  font-size: 16px;
+  margin-bottom: 5px;
+  display: block;
+}
+.icon {
+  font-size: 20px; /* 图标的大小 */
+  margin-right: 10px; /* 图标与输入框之间的间距 */
+  padding-left: 10px; /* 图标的左侧内边距 */
+  margin-bottom: 6px;
+}
+.input {
+  //width: 92%;
+  //padding: 0px;
+  //border: 1px solid #ddd;
+  //border-radius: 5px;
+  //margin: 0 auto;
+  flex: 1; /* 输入框占据剩余空间 */
+  padding: 10px; /* 输入框的内边距 */
+  border: none; /* 去除边框，交给外层的 .input-group 来控制 */
+  font-size: 16px; /* 输入框字体大小 */
+  outline: none; /* 去除焦点时的轮廓 */
+}
+.eye-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+.error {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+}
+.icon-eye, .icon-eye-off {
+  font-size: 20px;
+}
+.error {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+}
+.code-container {
+  display: flex;
+  align-items: center;
+}
+.code-input {
+  flex: 1;
+  margin-right: 10px;
+}
+.get-code {
+  padding: 2px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+.get-code:disabled {
+  background-color: #ccc;
+}
+.login-btn {
+  width: 100%;
+  padding: 5px;
+  background-color: #007bff;
+  color: white;
+  font-size: 16px;
+  text-align: center;
+  border: none;
+  border-radius: 50px;
+  margin-top: 2.5rem;
+}
+.register-link {
+  position: fixed;
+  width: 100%;
+  bottom: 3.125rem;
+  color: royalblue;
+  text-align: center;
+  left: 0;
+  right: 0;
+  font-size: 1rem;
+}
