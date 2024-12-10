@@ -17,13 +17,13 @@
     <!-- 底部输入框 -->
     <div class="chat-input-bar">
       <div class="input-actions">
-        <img src="/static/microphone-icon.png" alt="语音"/>
+        <image src="/static/microphone-icon.png" alt="语音"/>
       </div>
 <!--      @keydown.enter-->
       <input type="text" v-model="content" class="input-box" placeholder="发送消息..." @confirm="sendMessage"/>
       <div class="input-actions">
-        <img src="/static/biaoqing.png" alt="表情"/>
-        <img src="/static/send-more.png" alt="更多"/>
+        <image src="/static/biaoqing.png" alt="表情"/>
+        <image src="/static/send-more.png" alt="更多"/>
       </div>
     </div>
   </div>
@@ -33,6 +33,7 @@
 import request from "@/utils/request";
 import {onMounted, ref, onUnmounted,nextTick, watch} from 'vue';
 import userChatStore from "../../store/chatStore";
+import { setNavigationBarTitle } from '../../utils/navigationBar';
 
 export default {
   props: {
@@ -49,6 +50,7 @@ export default {
   },
   setup(props) {
     const chatStore = userChatStore();
+	const name = props.name;
     const content = ref('');
     const messages = ref([]);
     const roomId = Number(props.roomId);
@@ -69,10 +71,11 @@ export default {
         },
         {immediate: true}
     );
-
+	
     // 在组件挂载时获取初始消息列表并初始化WebSocket连接
     onMounted(async () => {
       await chatStore.getMessageList(); // 获取初始消息列表
+	  await setNavigationBarTitle(name);
     });
 
     // 在组件卸载时关闭WebSocket连接（可选）

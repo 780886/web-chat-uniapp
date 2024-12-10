@@ -16,7 +16,7 @@
 		<div class="action-list">
 			<div class="action-item">
 				<div class="action-icon">
-					<img src="/static/shezhi.png" alt="Settings" />
+					<image src="/static/shezhi.png" alt="Settings" class="icon"/>
 					<div class="action-text">设置</div>
 				</div>
 				<div class="arrow" @click="navigateTo('settings')">></div>
@@ -31,20 +31,20 @@
 		</div>
 
 		<!-- 底部导航栏 -->
-		<div class="tab-bar">
-			<div class="tab-item" :class="{ active: activeTab === 'conversation' }" @click="navigateTo('conversation')">
-				<img src="/static/conversation-selected.png" alt="消息" class="tab-icon" />
-				<div class="tab-text">消息</div>
-			</div>
-			<div class="tab-item" :class="{ active: activeTab === 'contact' }" @click="navigateTo('contact')">
-				<img src="/static/contact-selected.png" alt="通讯录" class="tab-icon" />
-				<div class="tab-text">通讯录</div>
-			</div>
-			<div class="tab-item" :class="{ active: activeTab === 'my' }" @click="navigateTo('my')">
-				<img src="/static/me-selected.png" alt="我的" class="tab-icon" />
-				<div class="tab-text">我</div>
-			</div>
-		</div>
+<!--		<div class="tab-bar">-->
+<!--			<div class="tab-item" :class="{ active: activeTab === 'conversation' }" @click="navigateTo('conversation')">-->
+<!--				<img src="/static/conversation-selected.png" alt="消息" class="tab-icon" />-->
+<!--				<div class="tab-text">消息</div>-->
+<!--			</div>-->
+<!--			<div class="tab-item" :class="{ active: activeTab === 'contact' }" @click="navigateTo('contact')">-->
+<!--				<img src="/static/contact-selected.png" alt="通讯录" class="tab-icon" />-->
+<!--				<div class="tab-text">通讯录</div>-->
+<!--			</div>-->
+<!--			<div class="tab-item" :class="{ active: activeTab === 'my' }" @click="navigateTo('my')">-->
+<!--				<img src="/static/me-selected.png" alt="我的" class="tab-icon" />-->
+<!--				<div class="tab-text">我</div>-->
+<!--			</div>-->
+<!--		</div>-->
 	</div>
 </template>
 
@@ -109,13 +109,15 @@
 	.profile-header {
 		display: flex;
 		align-items: center;
+		padding-left: 20px;
+		padding-top: 20px;
 		margin-bottom: 20px;
 	}
 
 	.profile-img img {
 		width: 60px;
 		height: 60px;
-		border-radius: 50%;
+		border-radius: 10%;
 		object-fit: cover;
 	}
 
@@ -151,13 +153,14 @@
 
 	.action-icon {
 		display: flex;
+		align-items: center;
 	}
-
-	.action-icon img {
+	
+	.icon{
 		width: 24px;
 		height: 24px;
 	}
-
+	
 	.action-text {
 		margin-left: 10px;
 		font-size: 16px;

@@ -156,7 +156,7 @@ export default {
           });
           // 重定向到目标地址
           setTimeout(() => {
-            uni.navigateTo({
+            uni.switchTab({
               url: "/pages/conversation/conversation", // 登录成功后的页面
             });
           }, 3);

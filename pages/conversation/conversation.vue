@@ -27,20 +27,20 @@
     </div>
 
     <!-- 底部导航栏 -->
-    <div class="tab-bar">
-      <div class="tab-item" :class="{ active: activeTab === 'conversation' }" @click="navigateTo('conversation')">
-        <img src="/static/conversation-selected.png" alt="消息" class="tab-icon"/>
-        <div class="tab-text">消息</div>
-      </div>
-      <div class="tab-item" :class="{ active: activeTab === 'contact' }" @click="navigateTo('contact')">
-        <img src="/static/contact-selected.png" alt="通讯录" class="tab-icon"/>
-        <div class="tab-text">通讯录</div>
-      </div>
-      <div class="tab-item" :class="{ active: activeTab === 'my' }" @click="navigateTo('my')">
-        <img src="/static/me-selected.png" alt="我的" class="tab-icon"/>
-        <div class="tab-text">我</div>
-      </div>
-    </div>
+<!--    <div class="tab-bar">-->
+<!--      <div class="tab-item" :class="{ active: activeTab === 'conversation' }" @click="navigateTo('conversation')">-->
+<!--        <img src="/static/conversation-selected.png" alt="消息" class="tab-icon"/>-->
+<!--        <div class="tab-text">消息</div>-->
+<!--      </div>-->
+<!--      <div class="tab-item" :class="{ active: activeTab === 'contact' }" @click="navigateTo('contact')">-->
+<!--        <img src="/static/contact-selected.png" alt="通讯录" class="tab-icon"/>-->
+<!--        <div class="tab-text">通讯录</div>-->
+<!--      </div>-->
+<!--      <div class="tab-item" :class="{ active: activeTab === 'my' }" @click="navigateTo('my')">-->
+<!--        <img src="/static/me-selected.png" alt="我的" class="tab-icon"/>-->
+<!--        <div class="tab-text">我</div>-->
+<!--      </div>-->
+<!--    </div>-->
   </div>
 </template>
 
@@ -48,6 +48,7 @@
 import request from "@/utils/request";
 import * as wsApi from '../../common/websocket';
 import UNI_APP from "../../.env";
+import {toTimeText, isYestday, isYear, formatDateTime} from "../../utils/date";
 
 export default {
   data() {
@@ -70,10 +71,11 @@ export default {
   methods: {
     // 格式化时间显示
     formatTime(time) {
-      const date = new Date(time);
-      const hours = String(date.getHours()).padStart(2, '0');
-      const minutes = String(date.getMinutes()).padStart(2, '0');
-      return `${hours}:${minutes}`; // 格式化为时:分
+      return toTimeText(time,false);
+      // const date = new Date(time);
+      // const hours = String(date.getHours()).padStart(2, '0');
+      // const minutes = String(date.getMinutes()).padStart(2, '0');
+      // return `${hours}:${minutes}`; // 格式化为时:分
     },
     navigateTo(tab) {
       this.activeTab = tab; // 更新当前选中的 tab
@@ -95,7 +97,7 @@ export default {
     //获取会话列表
     async getConversationList() {
       const loginToken = uni.getStorageSync("login-token");
-      console.log("loginToken:" ,loginToken)
+      console.log("loginToken:", loginToken)
       try {
         // 调用封装的请求
         const res = await request({
@@ -147,7 +149,6 @@ export default {
 .chat-page {
   display: flex;
   flex-direction: column;
-  //height: 100%;
   background-color: #f5f5f5;
 }
 
@@ -225,8 +226,8 @@ export default {
   font-size: 14px;
   color: #999;
   max-width: 80%;
-  white-space: nowrap;   /* 防止文本换行 */
-  overflow: hidden;      /* 隐藏超出部分 */
+  white-space: nowrap; /* 防止文本换行 */
+  overflow: hidden; /* 隐藏超出部分 */
   text-overflow: ellipsis; /* 超出部分显示省略号 */
 }
 

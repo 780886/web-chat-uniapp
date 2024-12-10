@@ -133,7 +133,7 @@ export default {
         // 初始化
         this.init();
         // 跳转到聊天页面
-        uni.navigateTo({
+        uni.switchTab({
           url: "/pages/conversation/conversation"
         })
       } else {

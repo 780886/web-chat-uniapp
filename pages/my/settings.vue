@@ -77,10 +77,10 @@ import * as wsApi from '../../common/websocket';
 					success: (res) => {
 						if (res.confirm) {
 							console.log("用户确认退出登录");
-							// 清除登录状态并跳转到登录页面
-							uni.clearStorageSync();
               //关闭连接
               wsApi.close();
+              // 清除登录状态并跳转到登录页面
+              uni.clearStorageSync();
 							uni.reLaunch({
 								url: "/pages/login/login"
 							});
@@ -140,7 +140,7 @@ import * as wsApi from '../../common/websocket';
 	}
 
 	.logout-btn {
-		//width: 100%;s
+		//width: 100%;
 		background-color: #fff;
 		/* 背景颜色设置为白色 */
 		color: #ff4d4f;

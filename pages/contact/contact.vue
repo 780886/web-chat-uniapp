@@ -12,7 +12,7 @@
     <div class="contact-list">
       <div class="contact-item">
         <div class="contact-icon">
-          <img src="/static/yanzheng.png" alt="Verify" class="icon"/>
+          <image src="/static/yanzheng.png" alt="Verify" class="icon"/>
         </div>
         <div class="contact-info">
           <div class="contact-name" @click="verifyMessage">验证消息</div>
@@ -21,7 +21,7 @@
       </div>
       <div class="contact-item">
         <div class="contact-icon">
-          <img src="/static/black.png" alt="Blacklist" class="icon"/>
+          <image src="/static/black.png" alt="Blacklist" class="icon"/>
         </div>
         <div class="contact-info">
           <div class="contact-name" @click="blackList">黑名单</div>
@@ -30,7 +30,7 @@
       </div>
       <div class="contact-item">
         <div class="contact-icon">
-          <img src="/static/group.png" alt="Group Chat" class="icon"/>
+          <image src="/static/group.png" alt="Group Chat" class="icon"/>
         </div>
         <div class="contact-info">
           <div class="contact-name" @click="myQunList">我的群聊</div>
@@ -81,20 +81,20 @@
     <!-- </div> -->
 
     <!-- 底部导航栏 -->
-    <div class="tab-bar">
-      <div class="tab-item" :class="{ active: activeTab === 'conversation' }" @click="navigateTo('conversation')">
-        <img src="/static/conversation-selected.png" alt="消息" class="tab-icon"/>
-        <div class="tab-text">消息</div>
-      </div>
-      <div class="tab-item" :class="{ active: activeTab === 'contact' }" @click="navigateTo('contact')">
-        <img src="/static/contact-selected.png" alt="通讯录" class="tab-icon"/>
-        <div class="tab-text">通讯录</div>
-      </div>
-      <div class="tab-item" :class="{ active: activeTab === 'my' }" @click="navigateTo('my')">
-        <img src="/static/me-selected.png" alt="我的" class="tab-icon"/>
-        <div class="tab-text">我</div>
-      </div>
-    </div>
+<!--    <div class="tab-bar">-->
+<!--      <div class="tab-item" :class="{ active: activeTab === 'conversation' }" @click="navigateTo('conversation')">-->
+<!--        <img src="/static/conversation-selected.png" alt="消息" class="tab-icon"/>-->
+<!--        <div class="tab-text">消息</div>-->
+<!--      </div>-->
+<!--      <div class="tab-item" :class="{ active: activeTab === 'contact' }" @click="navigateTo('contact')">-->
+<!--        <img src="/static/contact-selected.png" alt="通讯录" class="tab-icon"/>-->
+<!--        <div class="tab-text">通讯录</div>-->
+<!--      </div>-->
+<!--      <div class="tab-item" :class="{ active: activeTab === 'my' }" @click="navigateTo('my')">-->
+<!--        <img src="/static/me-selected.png" alt="我的" class="tab-icon"/>-->
+<!--        <div class="tab-text">我</div>-->
+<!--      </div>-->
+<!--    </div>-->
   </div>
 </template>
 
@@ -329,9 +329,14 @@ export default {
   border-radius: 10%;
 }
 
+.icon{
+ width: 40px;
+  height: 40px;
+}
+
 .contact-icon {
-  width: 10px;
-  height: 25px;
+/*  width: 10px;
+  height: 10px; */
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -344,8 +349,9 @@ export default {
 }
 
 .contact-info {
-  flex-grow: 1;
-  margin-left: 10px;
+  /* flex-grow: 1; */
+  margin-left: 6px;
+  width: 88%;
 }
 
 .contact-name {

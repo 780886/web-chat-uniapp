@@ -30,11 +30,11 @@ let init = () => {
 
     uni.onSocketMessage((res) => {
         let sendInfo = JSON.parse(res.data)
-        if (sendInfo.type == 1) {
+        if (sendInfo.type === 1) {
             heartCheck.start()
             connectCallBack && connectCallBack();
             console.log('WebSocket授权成功')
-        } else if (sendInfo.type == 3) {
+        } else if (sendInfo.type === 3) {
             // 重新开启心跳定时
             heartCheck.reset();
         } else {
