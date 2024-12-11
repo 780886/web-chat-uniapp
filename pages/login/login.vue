@@ -7,20 +7,20 @@
     <!-- 输入邮箱 -->
     <div class="input-group">
       <div class="icon">
-<!--        <i class="iconfont">&#xe656;</i> &lt;!&ndash; 这里使用iconfont图标 &ndash;&gt;-->
-        <svg class="icon" aria-hidden="true">
-          <use xlink:href="#icon-person"></use>
-        </svg>
+        <i class="iconfont">&#xe656;</i> <!-- 这里使用iconfont图标 -->
+<!--        <svg class="icon" aria-hidden="true">-->
+<!--          <use xlink:href="#icon-person"></use>-->
+<!--        </svg>-->
       </div>
       <input class="input" type="email" placeholder="用户名/邮箱" v-model="userName"  @blur="validateEmail"/>
       <div v-if="emailError" class="error">邮箱地址格式不正确</div>
     </div>
     <div class="input-group">
       <div class="icon">
-<!--        <i class="iconfont">&#xe6de;</i> &lt;!&ndash; 这里使用iconfont图标 &ndash;&gt;-->
-        <svg class="icon" aria-hidden="true">
-          <use xlink:href="#icon-locked"></use>
-        </svg>
+        <i class="iconfont">&#xe6de;</i> <!-- 这里使用iconfont图标 -->
+<!--        <svg class="icon" aria-hidden="true">-->
+<!--          <use xlink:href="#icon-locked"></use>-->
+<!--        </svg>-->
       </div>
       <input class="input" type="password" placeholder="密码" v-model="password"  @blur="validatePassword"/>
       <div v-if="passwordError" class="error">密码格式不正确</div>
@@ -224,12 +224,10 @@ export default {
 }
 
 .icon {
-  width: 16px;
-  height: 16px;
-  //font-size: 10px; /* 图标的大小 */
-  margin-right: 5px; /* 图标与输入框之间的间距 */
-  padding-left: 5px; /* 图标的左侧内边距 */
-  margin-bottom: 2px;
+  font-size: 20px; /* 图标的大小 */
+  margin-right: 10px; /* 图标与输入框之间的间距 */
+  padding-left: 10px; /* 图标的左侧内边距 */
+  margin-bottom: 6px;
 }
 
 .input {

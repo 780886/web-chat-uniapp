@@ -17,22 +17,22 @@
     <!-- 底部输入框 -->
     <div class="chat-input-bar">
       <div class="input-actions">
-<!--        <span class="iconfont">&#xe888;</span>-->
-        <svg class="icon" aria-hidden="true">
-          <use xlink:href="#icon-yuyin"></use>
-        </svg>
+        <span class="iconfont">&#xe888;</span>
+        <!--        <svg class="icon" aria-hidden="true">-->
+        <!--          <use xlink:href="#icon-yuyin"></use>-->
+        <!--        </svg>-->
       </div>
       <!--      @keydown.enter-->
       <input type="text" v-model="content" class="input-box" placeholder="发送消息..." @confirm="sendMessage"/>
       <div class="input-actions">
-        <svg class="icon" aria-hidden="true">
-          <use xlink:href="#icon-biaoqing"></use>
-        </svg>
-        <svg class="icon" aria-hidden="true">
-          <use xlink:href="#icon-jia1"></use>
-        </svg>
-        <!--        <span class="iconfont">&#xe600;</span>-->
-        <!--        <span class="iconfont">&#xe7a6;</span>-->
+        <!--        <svg class="icon" aria-hidden="true">-->
+        <!--          <use xlink:href="#icon-biaoqing"></use>-->
+        <!--        </svg>-->
+        <!--        <svg class="icon" aria-hidden="true">-->
+        <!--          <use xlink:href="#icon-jia1"></use>-->
+        <!--        </svg>-->
+        <span class="iconfont">&#xe600;</span>
+        <span class="iconfont">&#xe7a6;</span>
       </div>
     </div>
   </div>
@@ -183,9 +183,9 @@ export default {
 }
 
 .icon {
-  width: 36px;
-  height: 36px;
-  margin-top: 4px;
+  //width: 36px;
+  //height: 36px;
+  //margin-top: 1px;
   //vertical-align: -0.15em;
   //fill: currentColor;
   //overflow: hidden;
