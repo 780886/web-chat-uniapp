@@ -6,7 +6,10 @@
     <!-- 输入用户名 -->
     <div class="input-group">
       <div class="icon">
-        <i class="iconfont">&#xe656;</i>
+<!--        <i class="iconfont">&#xe656;</i>-->
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-person"></use>
+        </svg>
       </div>
       <input class="input" type="text" placeholder="用户名" v-model="userName" />
     </div>
@@ -14,7 +17,10 @@
     <!-- 输入邮箱 -->
     <div class="input-group">
       <div class="icon">
-        <i class="iconfont">&#xe908;</i>
+<!--        <i class="iconfont">&#xe908;</i>-->
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-youxiang"></use>
+        </svg>
       </div>
       <input class="input" type="email" placeholder="邮箱" v-model="email" @blur="validateEmail" />
       <div v-if="emailError" class="error">邮箱地址格式不正确</div>
@@ -23,7 +29,10 @@
     <!-- 输入密码 -->
     <div class="input-group">
       <div class="icon">
-        <i class="iconfont">&#xe6de;</i>
+<!--        <i class="iconfont">&#xe6de;</i>-->
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-locked"></use>
+        </svg>
       </div>
       <input class="input" type="password" placeholder="密码" v-model="password" />
     </div>
@@ -31,7 +40,10 @@
     <!-- 确认密码 -->
     <div class="input-group">
       <div class="icon">
-        <i class="iconfont">&#xe6de;</i>
+<!--        <i class="iconfont">&#xe6de;</i>-->
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-locked"></use>
+        </svg>
       </div>
       <input class="input" type="password" placeholder="确认密码" v-model="confirmPassword" />
       <div v-if="passwordMismatch" class="error">两次输入的密码不一致</div>
@@ -187,9 +199,12 @@ export default {
 }
 
 .icon {
+  width: 16px;
+  height: 16px;
   font-size: 20px;
-  margin-right: 10px;
-  padding-left: 10px;
+  margin-right: 5px;
+  padding-left: 5px;
+  margin-bottom: 5px;
 }
 
 .input {

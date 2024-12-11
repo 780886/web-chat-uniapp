@@ -17,13 +17,22 @@
     <!-- 底部输入框 -->
     <div class="chat-input-bar">
       <div class="input-actions">
-        <image src="/static/microphone-icon.png" alt="语音"/>
+<!--        <span class="iconfont">&#xe888;</span>-->
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-yuyin"></use>
+        </svg>
       </div>
-<!--      @keydown.enter-->
+      <!--      @keydown.enter-->
       <input type="text" v-model="content" class="input-box" placeholder="发送消息..." @confirm="sendMessage"/>
       <div class="input-actions">
-        <image src="/static/biaoqing.png" alt="表情"/>
-        <image src="/static/send-more.png" alt="更多"/>
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-biaoqing"></use>
+        </svg>
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-jia1"></use>
+        </svg>
+        <!--        <span class="iconfont">&#xe600;</span>-->
+        <!--        <span class="iconfont">&#xe7a6;</span>-->
       </div>
     </div>
   </div>
@@ -31,9 +40,9 @@
 
 <script>
 import request from "@/utils/request";
-import {onMounted, ref, onUnmounted,nextTick, watch} from 'vue';
+import {onMounted, ref, onUnmounted, nextTick, watch} from 'vue';
 import userChatStore from "../../store/chatStore";
-import { setNavigationBarTitle } from '../../utils/navigationBar';
+import {setNavigationBarTitle} from '../../utils/navigationBar';
 
 export default {
   props: {
@@ -50,7 +59,7 @@ export default {
   },
   setup(props) {
     const chatStore = userChatStore();
-	const name = props.name;
+    const name = props.name;
     const content = ref('');
     const messages = ref([]);
     const roomId = Number(props.roomId);
@@ -71,11 +80,11 @@ export default {
         },
         {immediate: true}
     );
-	
+
     // 在组件挂载时获取初始消息列表并初始化WebSocket连接
     onMounted(async () => {
       await chatStore.getMessageList(); // 获取初始消息列表
-	  await setNavigationBarTitle(name);
+      await setNavigationBarTitle(name);
     });
 
     // 在组件卸载时关闭WebSocket连接（可选）
@@ -166,7 +175,20 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  font-family: Arial, sans-serif;
+  padding-bottom: 46px;
+}
+
+.iconfont {
+  font-size: 36px; /* 设置字体大小为24px */
+}
+
+.icon {
+  width: 36px;
+  height: 36px;
+  margin-top: 4px;
+  //vertical-align: -0.15em;
+  //fill: currentColor;
+  //overflow: hidden;
 }
 
 /* 顶部导航 */
@@ -224,7 +246,7 @@ export default {
 .avatar img {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
+  border-radius: 10%;
 }
 
 .message-bubble {
@@ -284,7 +306,7 @@ export default {
   border-radius: 20px;
   font-size: 14px;
   margin: 0 10px;
-  height: 28px;
+  height: 36px;
   background-color: #fff;
   /* 明确设置背景，防止透明 */
 }

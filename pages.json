@@ -50,6 +50,24 @@
       }
     },
     {
+      "path": "pages/friend/friend-add",
+      "style": {
+        "navigationBarTitleText": "添加好友"
+      }
+    },
+    {
+      "path": "pages/friend/friend-detail",
+      "style": {
+        "navigationBarTitleText": "好友详情"
+      }
+    },
+    {
+      "path": "pages/contact/audit",
+      "style": {
+        "navigationBarTitleText": "验证消息"
+      }
+    },
+    {
       "path": "pages/contact/contact-detail",
       "style": {
         "navigationBarTitleText": ""

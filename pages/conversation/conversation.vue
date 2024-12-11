@@ -134,10 +134,10 @@ export default {
         });
       }
     },
-    navigateToChat(chat) {
+    navigateToChat(conversation) {
       setTimeout(() => {
         uni.navigateTo({
-          url: `/pages/chat/chat?roomId=${chat.roomId}&name=${chat.name}&avatar=${chat.avatar}`, // 通过 URL 的 query 传递参数
+          url: `/pages/chat/chat?roomId=${conversation.roomId}&name=${conversation.name}&avatar=${conversation.avatar}`, // 通过 URL 的 query 传递参数
         });
       }, 5);
     }

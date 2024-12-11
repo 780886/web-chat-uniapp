@@ -1,41 +1,41 @@
 <template>
   <div class="container">
-    <!-- 头部 -->
-    <!-- <div class="header">
-      <div class="title">通讯录</div>
-      <div class="search-icon">
-        <img src="/static/search-icon.png" alt="search"/>
-      </div>
-    </div -->
-
     <!-- 通讯录列表 -->
     <div class="contact-list">
       <div class="contact-item">
         <div class="contact-icon">
-          <image src="/static/yanzheng.png" alt="Verify" class="icon"/>
+<!--          <image src="/static/yanzheng.png" alt="Verify" class="icon"/>-->
+<!--          <span class="iconfont">&#xe601;</span>-->
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-xindepengyou"></use>
+          </svg>
         </div>
         <div class="contact-info">
-          <div class="contact-name" @click="verifyMessage">验证消息</div>
+          <div class="contact-name" @click="addFriend">新的朋友</div>
         </div>
-        <div class="arrow">></div>
+        <div class="arrow" @click="addFriend">></div>
       </div>
+<!--      <div class="contact-item">-->
+<!--        <div class="contact-icon">-->
+<!--          <image src="/static/black.png" alt="Blacklist" class="icon"/>-->
+<!--        </div>-->
+<!--        <div class="contact-info">-->
+<!--          <div class="contact-name" @click="blackList">黑名单</div>-->
+<!--        </div>-->
+<!--        <div class="arrow">></div>-->
+<!--      </div>-->
       <div class="contact-item">
         <div class="contact-icon">
-          <image src="/static/black.png" alt="Blacklist" class="icon"/>
+<!--          <image src="/static/group.png" alt="Group Chat" class="icon"/>-->
+<!--          <span class="iconfont">&#xe62d;</span>-->
+          <svg class="icon" aria-hidden="true">
+            <use xlink:href="#icon-qunliao"></use>
+          </svg>
         </div>
         <div class="contact-info">
-          <div class="contact-name" @click="blackList">黑名单</div>
+          <div class="contact-name" @click="myQunList">群聊</div>
         </div>
-        <div class="arrow">></div>
-      </div>
-      <div class="contact-item">
-        <div class="contact-icon">
-          <image src="/static/group.png" alt="Group Chat" class="icon"/>
-        </div>
-        <div class="contact-info">
-          <div class="contact-name" @click="myQunList">我的群聊</div>
-        </div>
-        <div class="arrow">></div>
+        <div class="arrow" @click="myQunList">></div>
       </div>
     </div>
 
@@ -236,10 +236,9 @@ export default {
         // });
       }
     },
-    verifyMessage() {
-      uni.showToast({
-        title: "此功能正在开发中...",
-        icon: "none",
+    addFriend() {
+      uni.navigateTo({
+        url: "/pages/friend/friend-add", // 登录成功后的页面
       });
     },
     blackList() {
@@ -334,10 +333,14 @@ export default {
   height: 40px;
 }
 
+.iconfont{
+  font-size: 40px;
+}
+
 .contact-icon {
 /*  width: 10px;
   height: 10px; */
-  border-radius: 50%;
+  border-radius: 10%;
   display: flex;
   justify-content: center;
   align-items: center;

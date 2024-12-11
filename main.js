@@ -2,6 +2,7 @@ import App from './App'
 import * as pinia from 'pinia';
 import useChatStore from './store/chatStore.js'
 import useUserStore from './store/userStore.js'
+import './static/icon/iconfont.js';
 
 // #ifndef VUE3
 import Vue from 'vue'

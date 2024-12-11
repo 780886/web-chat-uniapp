@@ -187,7 +187,7 @@
 	.avatar {
 		width: 60px;
 		height: 60px;
-		border-radius: 50%;
+		border-radius: 10%;
 		margin-right: 16px;
 	}
 
