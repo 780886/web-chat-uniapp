@@ -135,9 +135,10 @@ export default {
       }
     },
     navigateToChat(conversation) {
+      const roomId = Number(conversation.roomId); // 确保是数字
       setTimeout(() => {
         uni.navigateTo({
-          url: `/pages/chat/chat?roomId=${conversation.roomId}&name=${conversation.name}&avatar=${conversation.avatar}`, // 通过 URL 的 query 传递参数
+          url: `/pages/chat/chat?roomId=${roomId}&name=${conversation.name}&avatar=${conversation.avatar}`, // 通过 URL 的 query 传递参数
         });
       }, 5);
     }

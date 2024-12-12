@@ -44,6 +44,12 @@
       }
     },
     {
+      "path": "pages/chat/chat-v2",
+      "style": {
+        "navigationBarTitleText": "聊天"
+      }
+    },
+    {
       "path": "pages/contact/contact",
       "style": {
         "navigationBarTitleText": "通讯录"

@@ -199,12 +199,9 @@ export default {
 }
 
 .icon {
-  //width: 16px;
-  //height: 16px;
-  //font-size: 20px;
-  //margin-right: 5px;
-  //padding-left: 5px;
-  //margin-bottom: 5px;
+  font-size: 20px;
+  margin-right: 10px;
+  padding-left: 10px;
 }
 
 .input {

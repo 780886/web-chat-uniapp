@@ -47,7 +47,7 @@ import {setNavigationBarTitle} from '../../utils/navigationBar';
 export default {
   props: {
     roomId: {
-      type: Number,
+      type: [Number, String],
       required: true,
       // 默认值或转换函数
       default: 0,
@@ -63,9 +63,8 @@ export default {
     const content = ref('');
     const messages = ref([]);
     const roomId = Number(props.roomId);
+    console.log("会话roomId:",roomId);
     const avatar = props.avatar;
-    console.log("roomId", roomId);
-    console.log("avatar", avatar);
     // 立即设置roomId
     chatStore.setRoomId(roomId);
     chatStore.setAvatar(avatar);
@@ -81,6 +80,18 @@ export default {
         {immediate: true}
     );
 
+    const messageContainer = ref(null);
+
+    function scrollToBottom() {
+      this.$nextTick(() => {
+        const container = this.$refs.messageContainer;
+        if (container) {
+          // 滚动到最底部
+          container.scrollTop = container.scrollHeight - container.clientHeight;
+        }
+      });
+    }
+
     // 在组件挂载时获取初始消息列表并初始化WebSocket连接
     onMounted(async () => {
       await chatStore.getMessageList(); // 获取初始消息列表
@@ -95,8 +106,11 @@ export default {
     });
     // 返回给模板使用的响应式数据
     return {
+      roomId, // 直接返回 roomId
       chatStore,
       content,
+      scrollToBottom,
+      messageContainer, // 返回 messageContainer 给模板
     };
   },
   methods: {
@@ -113,7 +127,7 @@ export default {
 
       const body = {
         messageType: 1, // 文本消息
-        roomId: 40, // 替换为实际 roomId
+        roomId: this.roomId, // 替换为实际 roomId
         body: {
           content: this.content, // 消息内容
         },
@@ -138,6 +152,10 @@ export default {
           this.content = '';
           const chatStore = userChatStore();
           chatStore.addOwnMessage(res.data);
+          //滚动到底部
+          this.$nextTick(() => {
+            this.scrollToBottom();
+          });
         } else {
           uni.showToast({
             title: res.message || "发送消息失败",
@@ -153,10 +171,10 @@ export default {
       }
     },
     // scrollToBottom() {
-    //   // 获取消息容器
-    //   const container = this.$refs.messageContainer;
-    //   // 滚动到容器底部
-    //   container.scrollTop = container.scrollHeight;
+    //   if (messageContainer.value) {
+    //     // 滚动到最底部
+    //     messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
+    //   }
     // }
   },
 
@@ -175,7 +193,7 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  padding-bottom: 46px;
+  padding-bottom: 54px;
 }
 
 .iconfont {
