@@ -94,6 +94,8 @@
 
 <script>
 import request from "../../utils/request";
+import * as wsApi from "../../common/websocket";
+import UNI_APP from "../../.env";
 
 export default {
   data() {
@@ -120,7 +122,13 @@ export default {
         ],
     };
   },
+  onLoad() {
+    const loginToken = uni.getStorageSync("login-token");
+    wsApi.connect(UNI_APP.WS_URL, loginToken);
+  },
   onShow() {
+    const loginToken = uni.getStorageSync("login-token");
+    wsApi.connect(UNI_APP.WS_URL, loginToken);
     this.contactList(); // 组件加载时调用接口
   },
   methods: {

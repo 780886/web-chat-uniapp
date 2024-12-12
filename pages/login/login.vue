@@ -51,6 +51,7 @@
 <script>
 import request from "@/utils/request";
 import * as wsApi from '../../common/websocket';
+import UNI_APP from "../../.env";
 
 export default {
   data() {
@@ -152,10 +153,12 @@ export default {
         console.log("响应结果：", res);
         // 处理响应
         if (res.code === '0') {
-          // 存储用户信息和 token
+          //存储用户信息和token
           uni.setStorageSync('loginUser', res.data.loginUser);
           uni.setStorageSync('login-token', res.data.token);
           console.log('用户信息已存储');
+          //认证
+          wsApi.connect(UNI_APP.WS_URL, res.data.token);
           uni.showToast({
             title: "登录成功",
             icon: "success",
@@ -175,8 +178,7 @@ export default {
       } catch (error) {
         console.error("登录请求错误:", error);
         uni.showToast({
-          // title: "登录失败，请重试"+error,
-          title: error,
+          title: "登录失败，请重试",
           icon: "none",
         });
       }

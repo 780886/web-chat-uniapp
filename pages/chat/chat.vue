@@ -43,9 +43,16 @@ import request from "@/utils/request";
 import {onMounted, ref, onUnmounted, nextTick, watch} from 'vue';
 import userChatStore from "../../store/chatStore";
 import {setNavigationBarTitle} from '../../utils/navigationBar';
+import * as wsApi from "../../common/websocket";
+import UNI_APP from "../../.env";
 
 export default {
   props: {
+    name:{
+      type: String,
+      required: true,
+      default: '会话',
+    },
     roomId: {
       type: [Number, String],
       required: true,
@@ -94,6 +101,8 @@ export default {
 
     // 在组件挂载时获取初始消息列表并初始化WebSocket连接
     onMounted(async () => {
+      const loginToken = uni.getStorageSync("login-token");
+      wsApi.connect(UNI_APP.WS_URL, loginToken);
       await chatStore.getMessageList(); // 获取初始消息列表
       await setNavigationBarTitle(name);
     });
@@ -107,6 +116,7 @@ export default {
     // 返回给模板使用的响应式数据
     return {
       roomId, // 直接返回 roomId
+      name,
       chatStore,
       content,
       scrollToBottom,

@@ -49,7 +49,10 @@
 </template>
 
 <script>
-	export default {
+	import * as wsApi from "../../common/websocket";
+  import UNI_APP from "../../.env";
+
+  export default {
 		data() {
 			return {
 				// 数据和方法可以在这里进一步扩展
@@ -58,11 +61,14 @@
 				activeTab: 'my', // 默认选中的 tab
 			};
 		},
-		onLoad() {
-			const loginUser = uni.getStorageSync('loginUser');
-			this.userName = loginUser.userName;
-			this.nickName = loginUser.nickName;
-		},
+    onLoad() {
+      const loginToken = uni.getStorageSync("login-token");
+      wsApi.connect(UNI_APP.WS_URL, loginToken);
+    },
+    onShow() {
+      const loginToken = uni.getStorageSync("login-token");
+      wsApi.connect(UNI_APP.WS_URL, loginToken);
+    },
 		methods: {
 			// 可以在此处定义方法
 			navigateTo(tab) {

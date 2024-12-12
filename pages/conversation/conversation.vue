@@ -60,12 +60,13 @@ export default {
       conversations: []
     };
   },
-  //刚加载
   onLoad() {
     const loginToken = uni.getStorageSync("login-token");
     wsApi.connect(UNI_APP.WS_URL, loginToken);
   },
   onShow() {
+    const loginToken = uni.getStorageSync("login-token");
+    wsApi.connect(UNI_APP.WS_URL, loginToken);
     this.getConversationList(); // 组件加载时调用接口
   },
   methods: {
@@ -135,7 +136,6 @@ export default {
       }
     },
     navigateToChat(conversation) {
-      const roomId = Number(conversation.roomId); // 确保是数字
       setTimeout(() => {
         uni.navigateTo({
           url: `/pages/chat/chat?roomId=${roomId}&name=${conversation.name}&avatar=${conversation.avatar}`, // 通过 URL 的 query 传递参数

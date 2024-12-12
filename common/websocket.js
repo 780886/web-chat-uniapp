@@ -1,9 +1,14 @@
-let wsurl = "";
+import {WebsocketResponseType} from "./WebsocketResponseTypeEnum";
+import {f, l} from "vite/dist/node/types.d-aGj9QkWt";
+
+let websocketUrl = "";
 let loginToken = "";
 let messageCallBack = null;
 let closeCallBack = null;
 let connectCallBack = null;
 let isConnect = false; //连接标识 避免重复连接
+//是否授权成功
+let isAuthorize = false;//是否授权成功
 let rec = null;
 let isInit = false;
 let lastConnectTime = new Date(); // 最后一次连接时间
@@ -15,7 +20,7 @@ let init = () => {
     }
     isInit = true;
     uni.onSocketOpen((res) => {
-        console.log("WebSocket连接已打开");
+        console.log("open websocket socket");
         isConnect = true;
         // 授权
         let authorizeInfo = {
@@ -30,13 +35,17 @@ let init = () => {
 
     uni.onSocketMessage((res) => {
         let sendInfo = JSON.parse(res.data)
-        if (sendInfo.type === 1) {
+        if (sendInfo.type === WebsocketResponseType.LOGIN_AUTHORIZE_SUCCESS) {
             heartCheck.start()
             connectCallBack && connectCallBack();
+            isAuthorize = true;//是否授权成功
             console.log('WebSocket授权成功')
         } else if (sendInfo.type === 3) {
             // 重新开启心跳定时
             heartCheck.reset();
+        } else if (sendInfo.type === WebsocketResponseType.INVALIDATE_TOKEN){
+            console.log("login-token invalidate", loginToken);
+            isAuthorize = false;
         } else {
             // 其他消息转发出去
             console.log("接收到消息", sendInfo);
@@ -45,29 +54,31 @@ let init = () => {
     })
 
     uni.onSocketClose((res) => {
-        console.log('WebSocket连接关闭')
         isConnect = false;
+        isAuthorize = false;
+        console.log('websocket socket close')
         closeCallBack && closeCallBack(res);
     })
 
     uni.onSocketError((e) => {
-        console.log(e)
         isConnect = false;
+        isAuthorize = false;
+        console.log("websocket socket error",e)
         // APP 应用切出超过一定时间(约1分钟)会触发报错，此处回调给应用进行重连
         closeCallBack && closeCallBack({code: 1006});
     })
 };
 
 let connect = (url, token) => {
-    wsurl = url;
-    console.log("wsurl====>>>>>", wsurl);
+    websocketUrl = url;
     loginToken = token;
-    if (isConnect) {
+    if (isConnect && isAuthorize) {
         return;
     }
+    console.log("websocket connect url:", websocketUrl);
     lastConnectTime = new Date();
     uni.connectSocket({
-        url: wsurl, success: (res) => {
+        url: websocketUrl, success: (res) => {
             console.log("websocket连接成功");
         }, fail: (e) => {
             console.log(e);
@@ -80,7 +91,7 @@ let connect = (url, token) => {
 }
 
 //定义重连函数
-let reconnect = (wsurl, accessToken) => {
+let reconnect = (websocketUrl, accessToken) => {
     console.log("尝试重新连接");
     if (isConnect) {
         //如果已经连上就不在重连了
@@ -91,7 +102,7 @@ let reconnect = (wsurl, accessToken) => {
     let delay = timeDiff < 10000 ? 10000 - timeDiff : 0;
     rec && clearTimeout(rec);
     rec = setTimeout(function () {
-        connect(wsurl, accessToken);
+        connect(websocketUrl, accessToken);
     }, delay);
 };
 
