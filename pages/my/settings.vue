@@ -76,9 +76,8 @@ import * as wsApi from '../../common/websocket';
 					content: "退出登录后需要重新登录，确定要退出吗？",
 					success: (res) => {
 						if (res.confirm) {
-							console.log("用户确认退出登录");
               //关闭连接
-              wsApi.close(10001);
+              wsApi.logout();
               // 清除登录状态并跳转到登录页面
               uni.clearStorageSync();
 							uni.reLaunch({

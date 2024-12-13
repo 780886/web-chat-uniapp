@@ -159,7 +159,7 @@ export default {
           console.log('用户信息已存储');
           // wsApi.init();
           //认证
-          wsApi.connect(UNI_APP.WS_URL, res.data.token);
+          wsApi.setTokenAndAuthorize(res.data.token);
           // uni.showToast({
           //   title: "登录成功",
           //   icon: "success",

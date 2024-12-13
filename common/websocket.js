@@ -1,189 +1,234 @@
 import {WebsocketResponseType} from "./WebsocketResponseTypeEnum";
+import {WebsocketCodeEnum} from "./WebsocketCodeEnum";
 
 let websocketUrl = "";
-let loginToken = "";
+let loginToken = ""; // 登录后的 Token
 let messageCallBack = null;
 let closeCallBack = null;
 let connectCallBack = null;
-let isConnect = false; //连接标识 避免重复连接
-//是否授权成功
-let isAuthorize = false;//是否授权成功
+let isConnect = false; // 连接标识 避免重复连接
+let isAuthorize = false; // 是否授权成功
 let rec = null;
 let isInit = false;
 let lastConnectTime = new Date(); // 最后一次连接时间
 
+// 初始化 WebSocket
 let init = () => {
-    // 防止重复初始化
     if (isInit) {
         console.log("WebSocket 已经初始化...");
         return;
     }
     console.log("WebSocket 初始化...");
     isInit = true;
+
     uni.onSocketOpen((res) => {
         console.log("WebSocket已打开");
         isConnect = true;
-        if (isAuthorize) {
-            console.log("WebSocket已经认证过了.");
+
+        if (!loginToken) {
+            console.log("WebSocket未登录，无法认证...");
             return;
         }
-        // if(!loginToken){
-        //     console.log("WebSocket未登录.");
-        //     return;
-        // }
+
+        if (isAuthorize) {
+            console.log("WebSocket已经认证过了...");
+            return;
+        }
         // 授权
-        let authorizeInfo = {
-            type: 1,
-            token: loginToken
-        };
-        console.log("发送认证消息:", authorizeInfo)
-        uni.sendSocketMessage({
-            data: JSON.stringify(authorizeInfo)
-        });
-    })
+        authorize();
+    });
 
     uni.onSocketMessage((res) => {
-        console.log("接收到WebSocket消息:", res.data);
-        let sendInfo = JSON.parse(res.data)
+        console.log("接收到 WebSocket 消息:", res.data);
+        let sendInfo = JSON.parse(res.data);
+
         if (sendInfo.type === WebsocketResponseType.LOGIN_AUTHORIZE_SUCCESS) {
-            isAuthorize = true;//授权成功
+            isAuthorize = true; // 授权成功
             heartCheck.start();
-            console.log('WebSocket授权成功')
+            console.log("WebSocket 授权成功");
             connectCallBack && connectCallBack();
         } else if (sendInfo.type === 3) {
-            // 重新开启心跳定时
+            // 重置心跳
             heartCheck.reset();
         } else if (sendInfo.type === WebsocketResponseType.INVALIDATE_TOKEN) {
-            console.log("login-token 已过期", loginToken);
+            console.log("login-token 已过期:", loginToken);
             isAuthorize = false;
-            close(4001); // 关闭连接
+            close(WebsocketCodeEnum.TOKEN_INVALIDATE); // 关闭连接
             uni.reLaunch({
-                url: "/pages/login/login"
+                url: "/pages/login/login",
             }); // 跳转到登录页面
         } else {
             // 其他消息转发出去
             console.log("接收到消息", sendInfo);
-            messageCallBack && messageCallBack(sendInfo.type, sendInfo.data)
+            messageCallBack && messageCallBack(sendInfo.type, sendInfo.data);
         }
-    })
+    });
 
     uni.onSocketClose((res) => {
         isConnect = false;
         isAuthorize = false;
-        console.log('websocket socket close')
+        console.log("WebSocket 连接关闭，原因：", res)
+
+        //主动退出登录时不触发关闭回调
+        if (res.code === WebsocketCodeEnum.CLOSE_CONNECT) {
+            console.log("用户主动退出，不触发 closeCallBack");
+            return;
+        }
+
+        //调用关闭时回调
         closeCallBack && closeCallBack(res);
-    })
+    });
 
     uni.onSocketError((e) => {
         isConnect = false;
         isAuthorize = false;
-        console.log("websocket socket error", e)
-        // APP 应用切出超过一定时间(约1分钟)会触发报错，此处回调给应用进行重连
-        closeCallBack && closeCallBack({code: 1006});
-    })
+        console.log("WebSocket 连接出错", e);
+        closeCallBack && closeCallBack({code: WebsocketCodeEnum.CONNECT_ERROR});
+    });
 };
 
-let connect = (url, token) => {
+// 连接 WebSocket
+let connect = (url) => {
     websocketUrl = url;
-    loginToken = token;
     if (isConnect) {
         return;
     }
-    console.log("websocket connect url:", websocketUrl);
+    console.log("WebSocket 连接 URL:", websocketUrl);
     lastConnectTime = new Date();
     uni.connectSocket({
-        url: websocketUrl, success: (res) => {
-            console.log("websocket连接成功");
-        }, fail: (e) => {
-            console.log("websocket连接失败，10s后重连", e);
+        url: websocketUrl,
+        success: (res) => {
+            console.log("WebSocket 连接成功");
+        },
+        fail: (e) => {
+            console.log("WebSocket 连接失败，10 秒后重连", e);
             setTimeout(() => {
-                connect(websocketUrl, loginToken);
-            }, 10000)
-        }
+                connect(websocketUrl);
+            }, 10000);
+        },
     });
-}
+};
 
-//定义重连函数
-let reconnect = (websocketUrl, accessToken) => {
-    console.log("尝试重新连接");
-    if (isConnect) {
-        //如果已经连上或已经在重连就不在重连了
+// 设置 Token 并认证
+let setTokenAndAuthorize = (token) => {
+    loginToken = token;
+    if (isConnect && !isAuthorize) {
+        authorize();
+    }
+};
+
+// 授权方法
+let authorize = () => {
+    if (!loginToken) {
+        console.log("Token 为空，无法认证...");
         return;
     }
-    // 延迟10秒重连  避免过多次过频繁请求重连
-    let timeDiff = new Date().getTime() - lastConnectTime.getTime()
+    let authorizeInfo = {
+        type: 1,
+        token: loginToken,
+    };
+    console.log("发送认证消息:", authorizeInfo);
+    uni.sendSocketMessage({
+        data: JSON.stringify(authorizeInfo),
+        fail: (res) => {
+            console.log("认证消息发送失败:", res);
+        },
+    });
+};
+/**
+ * 退出登录
+ */
+let logout = () => {
+    console.log("用户退出登录");
+    //清空登录状态
+    loginToken = "";
+    //重置认证状态
+    isAuthorize = false;
+    //关闭websocket连接 使用自定义状态码
+    close(WebsocketCodeEnum.CLOSE_CONNECT);
+
+}
+
+// 重连 WebSocket
+let reconnect = () => {
+    console.log("尝试重新连接 WebSocket...");
+    if (isConnect) {
+        return;
+    }
+
+    let timeDiff = new Date().getTime() - lastConnectTime.getTime();
     let delay = timeDiff < 10000 ? 10000 - timeDiff : 0;
+
     rec && clearTimeout(rec);
-    rec = setTimeout(function () {
-        connect(websocketUrl, accessToken);
+    rec = setTimeout(() => {
+        connect(websocketUrl);
     }, delay);
 };
 
-//设置关闭连接
+// 关闭连接
 let close = (code) => {
     if (!isConnect) {
         return;
     }
     uni.closeSocket({
-        code: code, complete: (res) => {
-            console.log("关闭websocket连接");
+        code: code,
+        complete: () => {
+            console.log("WebSocket 连接关闭");
             isConnect = false;
-        }, fail: (e) => {
-            console.log("关闭websocket连接失败", e);
-        }
+        },
+        fail: (e) => {
+            console.log("关闭 WebSocket 连接失败", e);
+        },
     });
 };
 
-
-//心跳设置
+// 心跳设置
 var heartCheck = {
-    timeout: 30000, //每段时间发送一次心跳包 这里设置为30s
-    timeoutObj: null, //延时发送消息对象（启动心跳新建这个对象，收到消息后重置对象）
+    timeout: 30000,
+    timeoutObj: null,
     start: function () {
         if (isConnect) {
-            console.log('发送WebSocket心跳')
+            console.log("发送 WebSocket 心跳包");
             let heartBeat = {
-                type: 3, data: {}
+                type: 3,
+                data: {},
             };
             uni.sendSocketMessage({
-                data: JSON.stringify(heartBeat), fail(res) {
-                    console.log(res);
-                }
-            })
+                data: JSON.stringify(heartBeat),
+                fail: (res) => {
+                    console.log("心跳包发送失败:", res);
+                },
+            });
         }
-        this.reset(); // 确保定时任务持续运行
-    }, reset: function () {
+        this.reset();
+    },
+    reset: function () {
         clearTimeout(this.timeoutObj);
-        this.timeoutObj = setTimeout(function () {
+        this.timeoutObj = setTimeout(() => {
             heartCheck.start();
         }, this.timeout);
-    }
+    },
+};
 
-}
-
-// 实际调用的方法
-function sendMessage(agentData) {
+// 消息发送
+let sendMessage = (agentData) => {
     uni.sendSocketMessage({
-        data: agentData
-    })
-}
+        data: agentData,
+    });
+};
 
+// 回调设置
 let onConnect = (callback) => {
     connectCallBack = callback;
-}
+};
 
-
-function onMessage(callback) {
+let onMessage = (callback) => {
     messageCallBack = callback;
-}
+};
 
-
-function onClose(callback) {
+let onClose = (callback) => {
     closeCallBack = callback;
-}
+};
 
-
-// 将方法暴露出去
-export {
-    init, connect, reconnect, close, sendMessage, onConnect, onMessage, onClose
-}
+// 暴露方法
+export {init, connect, setTokenAndAuthorize, logout,reconnect, close, sendMessage, onConnect, onMessage, onClose};
