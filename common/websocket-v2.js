@@ -53,7 +53,10 @@ let init = () => {
         } else if (sendInfo.type === WebsocketResponseType.INVALIDATE_TOKEN) {
             console.log("login-token 已过期:", loginToken);
             isAuthorize = false;
-            close(WebsocketCodeEnum.TOKEN_INVALIDATE); // 关闭连接
+            // 停止心跳
+            heartCheck.stop();
+            // 关闭连接
+            close(WebsocketCodeEnum.TOKEN_INVALIDATE);
             uni.reLaunch({
                 url: "/pages/login/login",
             }); // 跳转到登录页面
@@ -69,11 +72,14 @@ let init = () => {
         isAuthorize = false;
         console.log("WebSocket 连接关闭，原因：", res)
 
+        // 停止心跳
+        heartCheck.stop();
         //主动退出登录时不触发关闭回调
         if (res.code === WebsocketCodeEnum.CLOSE_CONNECT) {
             console.log("用户主动退出，不触发 closeCallBack");
             return;
         }
+
 
         //调用关闭时回调
         closeCallBack && closeCallBack(res);
@@ -140,6 +146,8 @@ let authorize = () => {
  */
 let logout = () => {
     console.log("用户退出登录");
+    // 停止心跳逻辑
+    heartCheck.stop();
     //清空登录状态
     loginToken = "";
     //重置认证状态
@@ -184,13 +192,13 @@ let close = (code) => {
 
 // 心跳设置
 var heartCheck = {
-    timeout: 30000,
-    timeoutObj: null,
+    timeout: 30000, // 每30秒发送一次心跳包
+    timeoutObj: null, // 用于存储定时器对象
     start: function () {
-        if (isConnect) {
+        if (isConnect && isAuthorize) {
             console.log("发送 WebSocket 心跳包");
             let heartBeat = {
-                type: 3,
+                type: 3, // 心跳类型
                 data: {},
             };
             uni.sendSocketMessage({
@@ -200,14 +208,22 @@ var heartCheck = {
                 },
             });
         }
-        this.reset();
+        this.reset(); // 心跳类型
     },
     reset: function () {
+        // 清除已有的定时器
         clearTimeout(this.timeoutObj);
         this.timeoutObj = setTimeout(() => {
+            // 重启心跳
             heartCheck.start();
         }, this.timeout);
     },
+    stop: function () {
+        // 停止心跳逻辑，清除定时器
+        console.log("停止 WebSocket 心跳包");
+        clearTimeout(this.timeoutObj);
+        this.timeoutObj = null;
+    }
 };
 
 // 消息发送
