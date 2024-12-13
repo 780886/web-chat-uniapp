@@ -38,6 +38,12 @@
       }
     },
     {
+      "path": "pages/conversation/conversation-v2",
+      "style": {
+        "navigationBarTitleText": "会话"
+      }
+    },
+    {
       "path": "pages/chat/chat",
       "style": {
         "navigationBarTitleText": "聊天"

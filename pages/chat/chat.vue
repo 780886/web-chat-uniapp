@@ -281,7 +281,7 @@ export default {
   max-width: 40%;
   padding: 10px;
   border-radius: 10px;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.5;
   word-wrap: break-word; /* 允许长单词换行 */
   overflow: hidden; /* 隐藏超出部分 */

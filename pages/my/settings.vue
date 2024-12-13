@@ -78,7 +78,7 @@ import * as wsApi from '../../common/websocket';
 						if (res.confirm) {
 							console.log("用户确认退出登录");
               //关闭连接
-              wsApi.close();
+              wsApi.close(10001);
               // 清除登录状态并跳转到登录页面
               uni.clearStorageSync();
 							uni.reLaunch({

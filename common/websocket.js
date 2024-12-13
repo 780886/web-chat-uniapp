@@ -1,5 +1,4 @@
 import {WebsocketResponseType} from "./WebsocketResponseTypeEnum";
-import {f, l} from "vite/dist/node/types.d-aGj9QkWt";
 
 let websocketUrl = "";
 let loginToken = "";
@@ -16,36 +15,51 @@ let lastConnectTime = new Date(); // 最后一次连接时间
 let init = () => {
     // 防止重复初始化
     if (isInit) {
+        console.log("WebSocket 已经初始化...");
         return;
     }
+    console.log("WebSocket 初始化...");
     isInit = true;
     uni.onSocketOpen((res) => {
-        console.log("open websocket socket");
+        console.log("WebSocket已打开");
         isConnect = true;
+        if (isAuthorize) {
+            console.log("WebSocket已经认证过了.");
+            return;
+        }
+        // if(!loginToken){
+        //     console.log("WebSocket未登录.");
+        //     return;
+        // }
         // 授权
         let authorizeInfo = {
             type: 1,
             token: loginToken
         };
-        console.log("authorizeInfo===========",authorizeInfo)
+        console.log("发送认证消息:", authorizeInfo)
         uni.sendSocketMessage({
             data: JSON.stringify(authorizeInfo)
         });
     })
 
     uni.onSocketMessage((res) => {
+        console.log("接收到WebSocket消息:", res.data);
         let sendInfo = JSON.parse(res.data)
         if (sendInfo.type === WebsocketResponseType.LOGIN_AUTHORIZE_SUCCESS) {
-            heartCheck.start()
-            connectCallBack && connectCallBack();
-            isAuthorize = true;//是否授权成功
+            isAuthorize = true;//授权成功
+            heartCheck.start();
             console.log('WebSocket授权成功')
+            connectCallBack && connectCallBack();
         } else if (sendInfo.type === 3) {
             // 重新开启心跳定时
             heartCheck.reset();
-        } else if (sendInfo.type === WebsocketResponseType.INVALIDATE_TOKEN){
-            console.log("login-token invalidate", loginToken);
+        } else if (sendInfo.type === WebsocketResponseType.INVALIDATE_TOKEN) {
+            console.log("login-token 已过期", loginToken);
             isAuthorize = false;
+            close(4001); // 关闭连接
+            uni.reLaunch({
+                url: "/pages/login/login"
+            }); // 跳转到登录页面
         } else {
             // 其他消息转发出去
             console.log("接收到消息", sendInfo);
@@ -63,7 +77,7 @@ let init = () => {
     uni.onSocketError((e) => {
         isConnect = false;
         isAuthorize = false;
-        console.log("websocket socket error",e)
+        console.log("websocket socket error", e)
         // APP 应用切出超过一定时间(约1分钟)会触发报错，此处回调给应用进行重连
         closeCallBack && closeCallBack({code: 1006});
     })
@@ -72,7 +86,7 @@ let init = () => {
 let connect = (url, token) => {
     websocketUrl = url;
     loginToken = token;
-    if (isConnect && isAuthorize) {
+    if (isConnect) {
         return;
     }
     console.log("websocket connect url:", websocketUrl);
@@ -81,10 +95,9 @@ let connect = (url, token) => {
         url: websocketUrl, success: (res) => {
             console.log("websocket连接成功");
         }, fail: (e) => {
-            console.log(e);
-            console.log("websocket连接失败，10s后重连");
+            console.log("websocket连接失败，10s后重连", e);
             setTimeout(() => {
-                connect();
+                connect(websocketUrl, loginToken);
             }, 10000)
         }
     });
@@ -94,7 +107,7 @@ let connect = (url, token) => {
 let reconnect = (websocketUrl, accessToken) => {
     console.log("尝试重新连接");
     if (isConnect) {
-        //如果已经连上就不在重连了
+        //如果已经连上或已经在重连就不在重连了
         return;
     }
     // 延迟10秒重连  避免过多次过频繁请求重连
@@ -124,7 +137,7 @@ let close = (code) => {
 
 //心跳设置
 var heartCheck = {
-    timeout: 10000, //每段时间发送一次心跳包 这里设置为30s
+    timeout: 30000, //每段时间发送一次心跳包 这里设置为30s
     timeoutObj: null, //延时发送消息对象（启动心跳新建这个对象，收到消息后重置对象）
     start: function () {
         if (isConnect) {
@@ -138,6 +151,7 @@ var heartCheck = {
                 }
             })
         }
+        this.reset(); // 确保定时任务持续运行
     }, reset: function () {
         clearTimeout(this.timeoutObj);
         this.timeoutObj = setTimeout(function () {

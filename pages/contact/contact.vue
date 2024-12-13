@@ -122,10 +122,6 @@ export default {
         ],
     };
   },
-  onLoad() {
-    const loginToken = uni.getStorageSync("login-token");
-    wsApi.connect(UNI_APP.WS_URL, loginToken);
-  },
   onShow() {
     const loginToken = uni.getStorageSync("login-token");
     wsApi.connect(UNI_APP.WS_URL, loginToken);
@@ -310,18 +306,19 @@ export default {
 
 .contact-item {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  //justify-content: space-between;
+  //align-items: center;
   padding: 10px;
   background-color: #fff;
   border-radius: 8px;
   border: 1px solid #f0f0f0;
-  margin-bottom: 0px;
+  //margin-bottom: 0px;
 }
 
 .avatar-container {
-  flex-shrink: 0;
-  margin-right: 10px;
+  //flex-shrink: 0;
+  //margin-right: 10px;
+  display: flex;
 }
 
 .avatar {
@@ -355,7 +352,7 @@ export default {
 
 .contact-info {
   /* flex-grow: 1; */
-  margin-left: 6px;
+  margin-left: 8px;
   width: 88%;
 }
 

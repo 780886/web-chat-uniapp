@@ -8,7 +8,7 @@
 			</div>
 			<div class="user-info">
 				<div class="username">{{nickName}}</div>
-				<div class="account">账号:{{userName}}</div>
+				<div class="account">账号：{{userName}}</div>
 			</div>
 		</div>
 
@@ -61,11 +61,10 @@
 				activeTab: 'my', // 默认选中的 tab
 			};
 		},
-    onLoad() {
-      const loginToken = uni.getStorageSync("login-token");
-      wsApi.connect(UNI_APP.WS_URL, loginToken);
-    },
     onShow() {
+      const loginUser = uni.getStorageSync('loginUser');
+      this.userName = loginUser.userName;
+      this.nickName = loginUser.nickName;
       const loginToken = uni.getStorageSync("login-token");
       wsApi.connect(UNI_APP.WS_URL, loginToken);
     },
@@ -120,6 +119,12 @@
 		margin-bottom: 20px;
 	}
 
+  .profile-img{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
 	.profile-img img {
 		width: 60px;
 		height: 60px;
@@ -128,18 +133,20 @@
 	}
 
 	.user-info {
-		margin-left: 15px;
+		margin-left: 16px;
 	}
 
 	.username {
 		font-size: 20px;
 		font-weight: bold;
 		color: #333;
+    margin-top: -8px;
 	}
 
 	.account {
 		font-size: 14px;
 		color: #888;
+    margin-top: 14px;
 	}
 
 	.action-list {

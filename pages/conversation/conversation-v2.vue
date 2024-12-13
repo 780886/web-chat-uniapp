@@ -4,9 +4,15 @@
     <!-- <div class="search-bar">
       <input type="text" placeholder="请输入你要搜索的关键字" class="search-input" />
     </div> -->
+    <scroll-view
+        :scroll-y="true"
+        class="content"
+        @scrolltolower="loadMoreConversations"
+        style="flex: 1; overflow-y: auto;"
+    >
 
     <!-- 内容区域 -->
-    <div class="content">
+<!--    <div class="content">-->
       <div v-if="conversations.length === 0" class="empty-state">
         <img src="/static/empty.png" alt="暂无会话" class="empty-image"/>
         <div class="empty-text">暂无会话</div>
@@ -24,7 +30,11 @@
           <div class="chat-time">{{ formatTime(conversation.lastSendTime) }}</div> <!-- 显示时间 -->
         </div>
       </div>
-    </div>
+      <div v-if="noMoreData" class="no-more">
+        没有更多了~
+      </div>
+    </scroll-view>
+<!--    </div>-->
 
     <!-- 底部导航栏 -->
 <!--    <div class="tab-bar">-->
@@ -58,6 +68,8 @@ export default {
       activeTab: 'conversation', // 默认选中的 tab
       // 模拟一些聊天记录
       conversations: [],
+      loading: false, // 是否正在加载
+      noMoreData: false // 是否没有更多数据
     };
   },
   onLoad() {
@@ -67,7 +79,10 @@ export default {
   onShow() {
     const loginToken = uni.getStorageSync("login-token");
     wsApi.connect(UNI_APP.WS_URL, loginToken);
-    this.getConversationList(); // 组件加载时调用接口
+    this.pageNo = 1; // 每次进入页面时重置页码
+    this.noMoreData = false; // 重置没有更多数据标记
+    this.conversations = []; // 清空会话列表
+    this.getConversationList(); // 重新加载
   },
   methods: {
     // 格式化时间显示
@@ -96,7 +111,12 @@ export default {
       }
     },
     //获取会话列表
-    async getConversationList() {
+    async getConversationList(loadMore = false) {
+      // 防止重复加载
+      if (this.loading || this.noMoreData) {
+        return
+      }
+      this.loading = true;
       const loginToken = uni.getStorageSync("login-token");
       console.log("loginToken:", loginToken)
       try {
@@ -119,7 +139,20 @@ export default {
         console.log("响应结果：", res);
         // 处理响应
         if (res.code === '0') {
-          this.conversations = res.data.list;
+          const newConversations = res.data.list;
+          if (newConversations.length < this.pageSize) {
+            this.noMoreData = true; // 数据不足一页，标记为没有更多数据
+          }
+
+          if (loadMore) {
+            this.conversations = [...this.conversations, ...newConversations]; // 加载更多数据
+          } else {
+            this.conversations = newConversations; // 初始化加载
+            if (this.conversations< this.pageSize){
+              this.noMoreData = false; // 数据不足一页，标记为没有更多数据
+            }
+          }
+          this.pageNo += 1; // 增加页码
         } else {
           uni.showToast({
             title: res.message || "获取会话失败",
@@ -132,7 +165,13 @@ export default {
           title: "获取会话失败，请重试",
           icon: "none",
         });
+      }finally {
+        this.loading = false; // 请求结束，解锁
       }
+    },
+    // 加载更多
+    loadMoreConversations() {
+      this.getConversationList(true); // 加载下一页
     },
     navigateToChat(conversation) {
       setTimeout(() => {

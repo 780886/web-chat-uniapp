@@ -157,18 +157,32 @@ export default {
           uni.setStorageSync('loginUser', res.data.loginUser);
           uni.setStorageSync('login-token', res.data.token);
           console.log('用户信息已存储');
+          // wsApi.init();
           //认证
           wsApi.connect(UNI_APP.WS_URL, res.data.token);
-          uni.showToast({
-            title: "登录成功",
-            icon: "success",
-          });
+          // uni.showToast({
+          //   title: "登录成功",
+          //   icon: "success",
+          // });
           // 重定向到目标地址
           setTimeout(() => {
             uni.switchTab({
               url: "/pages/conversation/conversation", // 登录成功后的页面
             });
-          }, 3);
+          }, 300);
+          // wsApi.onConnect(() => {
+          //   console.log("认证成功，跳转页面");
+          //   uni.showToast({
+          //     title: "登录成功",
+          //     icon: "success",
+          //   });
+          //   uni.switchTab({
+          //     url: "/pages/conversation/conversation", // 登录成功后的页面
+          //   });
+          // });
+          // uni.switchTab({
+          //   url: "/pages/conversation/conversation", // 登录成功后的页面
+          // });
         } else {
           uni.showToast({
             title: res.message,

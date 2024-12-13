@@ -126,12 +126,12 @@ export default {
     try {
       //初始化时再挂载store对象
       this.$mountStore();
+      this.init();
       //登录状态校验
       const loginToken = uni.getStorageSync("login-token");
       const loginUser = uni.getStorageSync('loginUser');
       if (loginUser && loginToken) {
         // 初始化
-        this.init();
         // 跳转到聊天页面
         uni.switchTab({
           url: "/pages/conversation/conversation"
