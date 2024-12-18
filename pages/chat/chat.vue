@@ -45,6 +45,8 @@ import userChatStore from "../../store/chatStore";
 import {setNavigationBarTitle} from '../../utils/navigationBar';
 import * as wsApi from "../../common/websocket";
 import UNI_APP from "../../.env";
+import ClientInformation from "../../common/ClientInformation";
+import {ResponseCodeEnum} from "../../common/ResponseCodeEnum";
 
 export default {
   props: {
@@ -80,9 +82,10 @@ export default {
         () => chatStore.messages,
         (newMessages) => {
           messages.value = newMessages;
-          // nextTick(() => {
-          //   scrollToBottom(); // 等待 DOM 更新后滚动到底部
-          // });
+          nextTick(() => {
+            console.log("有新消息=================>>>")
+            scrollToBottom(); // 等待 DOM 更新后滚动到底部
+          });
         },
         {immediate: true}
     );
@@ -90,13 +93,9 @@ export default {
     const messageContainer = ref(null);
 
     function scrollToBottom() {
-      this.$nextTick(() => {
-        const container = this.$refs.messageContainer;
-        if (container) {
-          // 滚动到最底部
-          container.scrollTop = container.scrollHeight - container.clientHeight;
-        }
-      });
+      if (messageContainer.value) {
+        messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
+      }
     }
 
     // 在组件挂载时获取初始消息列表并初始化WebSocket连接
@@ -145,7 +144,7 @@ export default {
 
       try {
         const loginToken = uni.getStorageSync("login-token");
-        console.log("loginToken:" + loginToken)
+        console.log("loginToken:" + loginToken);
         // 调用封装的请求
         const res = await request({
           url: "/chat/sendMessage", // 替换为实际接口地址
@@ -154,11 +153,11 @@ export default {
           header: {
             // 额外的头信息
             "login-token": loginToken,
-            "ajax": true
+            "ajax": true,
           },
         });
         // 处理响应
-        if (res.code === '0') {
+        if (res.code === ResponseCodeEnum.SUCCESS) {
           this.content = '';
           const chatStore = userChatStore();
           chatStore.addOwnMessage(res.data);
@@ -242,6 +241,7 @@ export default {
 
 /* 聊天内容 */
 .chat-content {
+  max-height: 95%;
   flex: 1;
   padding: 10px;
   overflow-y: auto;

@@ -146,12 +146,12 @@ let authorize = () => {
  */
 let logout = () => {
     console.log("用户退出登录");
-    // 停止心跳逻辑
-    heartCheck.stop();
     //清空登录状态
     loginToken = "";
     //重置认证状态
     isAuthorize = false;
+    // 停止心跳逻辑
+    heartCheck.stop();
     //关闭websocket连接 使用自定义状态码
     close(WebsocketCodeEnum.CLOSE_CONNECT);
 

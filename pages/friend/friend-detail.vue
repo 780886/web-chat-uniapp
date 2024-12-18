@@ -31,6 +31,7 @@
 
 <script>
 import request from "../../utils/request";
+import ClientInformation from "../../common/ClientInformation";
 
 export default {
   data() {
@@ -70,7 +71,7 @@ export default {
           header: {
             // 额外的头信息
             "login-token": loginToken,
-            "ajax": true
+            "ajax": true,
           },
         });
 

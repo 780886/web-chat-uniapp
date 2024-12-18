@@ -1,5 +1,6 @@
 import {defineStore} from 'pinia';
 import request from "../utils/request";
+import ClientInformation from "../common/ClientInformation";
 
 
 let chatCache = [];
@@ -38,7 +39,7 @@ export default defineStore('chatStore', {
                     header: {
                         // 额外的头信息
                         "login-token": loginToken,
-                        "ajax": true
+                        "ajax": true,
                     },
                 });
                 console.log("消息列表:", res)

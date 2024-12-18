@@ -66,7 +66,7 @@
       this.userName = loginUser.userName;
       this.nickName = loginUser.nickName;
       const loginToken = uni.getStorageSync("login-token");
-      wsApi.connect(UNI_APP.WS_URL, loginToken);
+      wsApi.setTokenAndAuthorize(loginToken);
     },
 		methods: {
 			// 可以在此处定义方法

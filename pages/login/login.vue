@@ -52,6 +52,7 @@
 import request from "@/utils/request";
 import * as wsApi from '../../common/websocket';
 import UNI_APP from "../../.env";
+import ClientInformation from "../../common/ClientInformation";
 
 export default {
   data() {

@@ -1,5 +1,6 @@
 import {WebsocketResponseType} from "./WebsocketResponseTypeEnum";
 import {WebsocketCodeEnum} from "./WebsocketCodeEnum";
+import ClientInformation from "./ClientInformation";
 
 let websocketUrl = "";
 let loginToken = ""; // 登录后的 Token
@@ -26,7 +27,8 @@ let init = () => {
         isConnect = true;
 
         if (!loginToken) {
-            console.log("WebSocket未登录，无法认证...");
+            //跳转到登录页面
+            console.log("WebSocket未登录，无法认证...  loginToken:",loginToken);
             return;
         }
 
@@ -44,16 +46,19 @@ let init = () => {
 
         if (sendInfo.type === WebsocketResponseType.LOGIN_AUTHORIZE_SUCCESS) {
             isAuthorize = true; // 授权成功
-            heartCheck.start();
             console.log("WebSocket 授权成功");
+            heartCheck.start();
             connectCallBack && connectCallBack();
         } else if (sendInfo.type === 3) {
             // 重置心跳
             heartCheck.reset();
         } else if (sendInfo.type === WebsocketResponseType.INVALIDATE_TOKEN) {
             console.log("login-token 已过期:", loginToken);
-            isAuthorize = false;
-            close(WebsocketCodeEnum.TOKEN_INVALIDATE); // 关闭连接
+            // 停止心跳
+            isAuthorize = false; // 授权成功
+            heartCheck.stop();
+            // 关闭连接
+            close(WebsocketCodeEnum.TOKEN_INVALIDATE);
             uni.reLaunch({
                 url: "/pages/login/login",
             }); // 跳转到登录页面
@@ -69,6 +74,8 @@ let init = () => {
         isAuthorize = false;
         console.log("WebSocket 连接关闭，原因：", res)
 
+        // 停止心跳
+        heartCheck.stop();
         //主动退出登录时不触发关闭回调
         if (res.code === WebsocketCodeEnum.CLOSE_CONNECT) {
             console.log("用户主动退出，不触发 closeCallBack");
@@ -83,6 +90,8 @@ let init = () => {
         isConnect = false;
         isAuthorize = false;
         console.log("WebSocket 连接出错", e);
+        // 停止心跳
+        heartCheck.stop();
         closeCallBack && closeCallBack({code: WebsocketCodeEnum.CONNECT_ERROR});
     });
 };
@@ -123,9 +132,13 @@ let authorize = () => {
         console.log("Token 为空，无法认证...");
         return;
     }
+    // 获取设备 ID
+    const deviceId = ClientInformation.getDeviceId(); // 获取设备 ID
+    //认证信息
     let authorizeInfo = {
         type: 1,
         token: loginToken,
+        deviceId: deviceId,  // 加入 deviceId
     };
     console.log("发送认证消息:", authorizeInfo);
     uni.sendSocketMessage({
@@ -144,6 +157,8 @@ let logout = () => {
     loginToken = "";
     //重置认证状态
     isAuthorize = false;
+    // 停止心跳逻辑
+    heartCheck.stop();
     //关闭websocket连接 使用自定义状态码
     close(WebsocketCodeEnum.CLOSE_CONNECT);
 
@@ -208,6 +223,12 @@ var heartCheck = {
             heartCheck.start();
         }, this.timeout);
     },
+    stop: function () {
+        // 停止心跳逻辑，清除定时器
+        console.log("停止 WebSocket 心跳包");
+        clearTimeout(this.timeoutObj);
+        this.timeoutObj = null;
+    }
 };
 
 // 消息发送

@@ -69,6 +69,7 @@
 import request from "@/utils/request";
 import {validateEmail, validatePassword, validateUserName} from '../../utils/validation';
 import UNI_APP from '../../.env.js'
+import ClientInformation from "../../common/ClientInformation";
 
 export default {
   data() {

@@ -1,4 +1,5 @@
 import UNI_APP from '../.env.js'
+import ClientInformation from "../common/ClientInformation";
 
 
 export default function request({
@@ -10,15 +11,16 @@ export default function request({
     return new Promise((resolve, reject) => {
         // 设置默认的 DEVICE_ID
         // const deviceId = "127.0.0.1"; // 可替换为动态获取逻辑
-        const res = uni.getSystemInfoSync();
-        // const deviceId2 = `${res.brand}-${res.model}-${res.system}-${res.platform}`;
-        const deviceId = String(res.deviceId);
-        console.log("设备信息：", res);
-        console.log("设备ID:", res.deviceId);
+        // const res = uni.getSystemInfoSync();
+        // // const deviceId2 = `${res.brand}-${res.model}-${res.system}-${res.platform}`;
+        // const deviceId = String(res.deviceId);
+        const deviceId = ClientInformation.getDeviceId();
+        console.log("设备ID:", deviceId);
         const defaultHeaders = {
-            "DEVICE_ID": deviceId, // 自定义设备头部
+            "DEVICE-ID": deviceId, // 自定义设备头部
             "Content-Type": "application/json", // 默认 Content-Type
         };
+        console.log("defaultHeaders:", defaultHeaders);
         // 如果是 GET 请求，拼接查询参数到 URL
         if (method.toUpperCase() === "GET" && Object.keys(data).length) {
             const queryString = Object.keys(data)

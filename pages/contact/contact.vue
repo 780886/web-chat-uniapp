@@ -96,6 +96,7 @@
 import request from "../../utils/request";
 import * as wsApi from "../../common/websocket";
 import UNI_APP from "../../.env";
+import ClientInformation from "../../common/ClientInformation";
 
 export default {
   data() {
@@ -124,7 +125,7 @@ export default {
   },
   onShow() {
     const loginToken = uni.getStorageSync("login-token");
-    wsApi.connect(UNI_APP.WS_URL, loginToken);
+    wsApi.setTokenAndAuthorize(loginToken);
     this.contactList(); // 组件加载时调用接口
   },
   methods: {
@@ -144,7 +145,7 @@ export default {
           header: {
             // 额外的头信息
             "login-token": loginToken,
-            "ajax": true
+            "ajax": true,
           },
         });
 
