@@ -50,7 +50,7 @@ import {ResponseCodeEnum} from "../../common/ResponseCodeEnum";
 
 export default {
   props: {
-    name:{
+    name: {
       type: String,
       required: true,
       default: '会话',
@@ -72,7 +72,7 @@ export default {
     const content = ref('');
     const messages = ref([]);
     const roomId = Number(props.roomId);
-    console.log("会话roomId:",roomId);
+    console.log("会话roomId:", roomId);
     const avatar = props.avatar;
     // 立即设置roomId
     chatStore.setRoomId(roomId);
@@ -83,8 +83,8 @@ export default {
         (newMessages) => {
           messages.value = newMessages;
           nextTick(() => {
-            console.log("有新消息=================>>>")
-            scrollToBottom(); // 等待 DOM 更新后滚动到底部
+            console.log("当前聊天框有新消息：", newMessages);
+            scrollToBottom();
           });
         },
         {immediate: true}

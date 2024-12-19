@@ -60,7 +60,6 @@ export default {
         console.log("ws断开", res);
         // 重新连接
         this.reconnectWebsocket();
-
       })
     },
     reconnectWebsocket() {
@@ -126,6 +125,18 @@ export default {
     try {
       //初始化时再挂载store对象
       this.$mountStore();
+      /**
+       * 没有token 则跳转到登录页 避免浪费资源去建立 WebSocket 连接
+       * token 过期则重新登录  避免浪费资源去建立 WebSocket 连接
+       *
+       * 用户成功登录后，获取 token，然后初始化 WebSocket 连接。
+       * 在初始化 WebSocket 连接时，可以将 token 作为认证信息发送给服务器。
+       * 如果认证通过，则 WebSocket 可以正常工作，进入会话创建。
+       *
+       * 如果页面刷新或者重启应用时发现有有效的 token，可以直接初始化 WebSocket。
+       * 需要通过服务端认证 token 的有效性，如果认证失败则断开连接，并让用户重新登录。
+       */
+
       this.init();
       //登录状态校验
       const loginToken = uni.getStorageSync("login-token");
