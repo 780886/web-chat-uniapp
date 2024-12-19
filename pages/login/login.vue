@@ -53,6 +53,8 @@ import request from "@/utils/request";
 import * as wsApi from '../../common/websocket';
 import UNI_APP from "../../.env";
 import ClientInformation from "../../common/ClientInformation";
+import {setLoginToken, setLoginUser} from "../../utils/auth";
+import {ResponseCodeEnum} from "../../common/ResponseCodeEnum";
 
 export default {
   data() {
@@ -148,19 +150,37 @@ export default {
           url: "/authenticate/login", // 替换为实际接口地址
           method: "POST",
           data: body,
+          needAuth: false,
         });
 
         // 打印完整响应
         console.log("响应结果：", res);
         // 处理响应
-        if (res.code === '0') {
+        if (res.code === ResponseCodeEnum.SUCCESS) {
           //存储用户信息和token
-          uni.setStorageSync('loginUser', res.data.loginUser);
-          uni.setStorageSync('login-token', res.data.token);
+          setLoginUser(res.data.loginUser);
+          setLoginToken(res.data.token);
           console.log('用户信息已存储');
           // wsApi.init();
           //认证
-          wsApi.setTokenAndAuthorize(res.data.token);
+          // wsApi.init();
+          // wsApi.connect(UNI_APP.WS_URL,res.data.token);
+          // wsApi.onConnect(() => {
+          //   //重连成功提示
+          //   if (this.reconnecting) {
+          //     this.reconnecting = false;
+          //     uni.showToast({
+          //       title: "已重新连接",
+          //       icon: 'none'
+          //     })
+          //   }
+          // });
+          // 登录成功后的操作
+          const app = getApp();
+          if (app && app.init) {
+            console.log("登录成功之后初始化 app.vue init")
+            app.init();
+          }
           // uni.showToast({
           //   title: "登录成功",
           //   icon: "success",

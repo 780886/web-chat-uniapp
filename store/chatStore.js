@@ -25,8 +25,6 @@ export default defineStore('chatStore', {
         },
         async getMessageList() {
             try {
-                const loginToken = uni.getStorageSync("login-token");
-                console.log("loginToken:", loginToken)
                 // 调用封装的请求
                 const res = await request({
                     url: "/chat/message-list", // 替换为实际接口地址
@@ -37,8 +35,6 @@ export default defineStore('chatStore', {
                         roomId: this.roomId
                     },
                     header: {
-                        // 额外的头信息
-                        "login-token": loginToken,
                         "ajax": true,
                     },
                 });

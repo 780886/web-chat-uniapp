@@ -4,6 +4,7 @@ import * as wsApi from './common/websocket';
 import UNI_APP from './.env.js'
 import {WebsocketResponseType} from './common/WebsocketResponseTypeEnum'
 import {MessageType} from "./common/MessageTypeEnum";
+import {clearAll, getLoginToken} from "./utils/auth";
 
 
 export default {
@@ -35,17 +36,18 @@ export default {
     //初始化websocket
     initWebsocket() {
       //获取登录信息
-      const loginToken = uni.getStorageSync("login-token");
+      const loginToken = getLoginToken();
       wsApi.init();
       wsApi.connect(UNI_APP.WS_URL, loginToken);
       wsApi.onConnect(() => {
         //重连成功提示
         if (this.reconnecting) {
           this.reconnecting = false;
-          uni.showToast({
-            title: "已重新连接",
-            icon: 'none'
-          })
+          console.log("已重新连接")
+          // uni.showToast({
+          //   title: "已重新连接",
+          //   icon: 'none'
+          // })
         }
       });
       //监听消息
@@ -104,8 +106,7 @@ export default {
       console.log("exit");
       this.isExit = true;
       wsApi.close(3099);
-      uni.removeStorageSync("loginUser");
-      uni.removeStorageSync("login-token");
+      clearAll();
       uni.reLaunch({
         url: "/pages/login/login"
       })
@@ -136,9 +137,9 @@ export default {
        * 如果页面刷新或者重启应用时发现有有效的 token，可以直接初始化 WebSocket。
        * 需要通过服务端认证 token 的有效性，如果认证失败则断开连接，并让用户重新登录。
        */
-      const loginToken = uni.getStorageSync("login-token");
+      const loginToken = getLoginToken()
       if (!loginToken) {
-        // 跳转到登录页
+        console.log("app.vue onLaunch loginToken 不存在 直接跳到登陆页面")
         // #ifdef H5
         uni.reLaunch({
           url: "/pages/login/login"
@@ -146,11 +147,10 @@ export default {
         // #endif
         return;
       }
-
       /**
        * token认证是否过期
        */
-
+      console.log("app.vue onLaunch loginToken 存在 且认证成功 初始化 WebSocket 连接")
       // 初始化
       this.init();
       //登录状态校验

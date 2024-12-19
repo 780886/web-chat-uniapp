@@ -50,6 +50,7 @@ import * as wsApi from '../../common/websocket';
 import UNI_APP from "../../.env";
 import {toTimeText, isYestday, isYear, formatDateTime} from "../../utils/date";
 import ClientInformation from "../../common/ClientInformation";
+import {getLoginToken} from "../../utils/auth";
 
 export default {
   data() {
@@ -62,7 +63,7 @@ export default {
     };
   },
   onShow() {
-    const loginToken = uni.getStorageSync("login-token");
+    const loginToken = getLoginToken();
     wsApi.setTokenAndAuthorize(loginToken);
     this.getConversationList(); // 组件加载时调用接口
   },
@@ -94,8 +95,6 @@ export default {
     },
     //获取会话列表
     async getConversationList() {
-      const loginToken = uni.getStorageSync("login-token");
-      console.log("loginToken:", loginToken)
       try {
         // 调用封装的请求
         const res = await request({
@@ -106,8 +105,6 @@ export default {
             pageSize: this.pageSize
           },
           header: {
-            // 额外的头信息
-            "login-token": loginToken,
             "ajax": true,
           },
         });

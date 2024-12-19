@@ -87,8 +87,6 @@ export default {
       uni.navigateBack(); // 返回上一页
     },
     async handleReject(friendApply) {
-      const loginToken = uni.getStorageSync("login-token");
-      console.log("loginToken:", loginToken)
       try {
         // 调用封装的请求
         const res = await request({
@@ -100,8 +98,6 @@ export default {
             agree: false,
           },
           header: {
-            // 额外的头信息
-            "login-token": loginToken,
             "ajax": true,
           },
         });
@@ -129,8 +125,6 @@ export default {
       }
     },
     async handleAccept(friendApply) {
-      const loginToken = uni.getStorageSync("login-token");
-      console.log("loginToken:", loginToken)
       try {
         // 调用封装的请求
         const res = await request({
@@ -142,8 +136,6 @@ export default {
             agree: true,
           },
           header: {
-            // 额外的头信息
-            "login-token": loginToken,
             "ajax": true,
           },
         });
@@ -171,8 +163,6 @@ export default {
       }
     },
     async findFriend() {
-      const loginToken = uni.getStorageSync("login-token");
-      console.log("loginToken:", loginToken)
       try {
         // 调用封装的请求
         const res = await request({
@@ -183,7 +173,6 @@ export default {
           },
           header: {
             // 额外的头信息
-            "login-token": loginToken,
             "ajax": true,
           },
         });
@@ -218,8 +207,6 @@ export default {
       }
     },
     async getFriendApplyList() {
-      const loginToken = uni.getStorageSync("login-token");
-      console.log("loginToken:", loginToken)
       try {
         // 调用封装的请求
         const res = await request({
@@ -231,7 +218,6 @@ export default {
           },
           header: {
             // 额外的头信息
-            "login-token": loginToken,
             "ajax": true,
           },
         });
