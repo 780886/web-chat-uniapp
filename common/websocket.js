@@ -167,7 +167,7 @@ let logout = () => {
 // 重连 WebSocket
 let reconnect = () => {
     console.log("尝试重新连接 WebSocket...");
-    if (isConnect) {
+    if (isConnect && !isAuthorize) {
         return;
     }
 

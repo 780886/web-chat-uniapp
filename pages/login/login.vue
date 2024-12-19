@@ -160,7 +160,20 @@ export default {
           console.log('用户信息已存储');
           // wsApi.init();
           //认证
-          wsApi.setTokenAndAuthorize(res.data.token);
+          // wsApi.init();
+          // wsApi.setTokenAndAuthorize(res.data.token);
+          wsApi.init();
+          wsApi.connect(UNI_APP.WS_URL, res.data.token);
+          wsApi.onConnect(() => {
+            //重连成功提示
+            if (this.reconnecting) {
+              this.reconnecting = false;
+              uni.showToast({
+                title: "已重新连接",
+                icon: 'none'
+              })
+            }
+          });
           // uni.showToast({
           //   title: "登录成功",
           //   icon: "success",
