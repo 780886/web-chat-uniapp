@@ -136,25 +136,27 @@ export default {
        * 如果页面刷新或者重启应用时发现有有效的 token，可以直接初始化 WebSocket。
        * 需要通过服务端认证 token 的有效性，如果认证失败则断开连接，并让用户重新登录。
        */
-
-      this.init();
-      //登录状态校验
       const loginToken = uni.getStorageSync("login-token");
-      const loginUser = uni.getStorageSync('loginUser');
-      if (loginUser && loginToken) {
-        // 初始化
-        // 跳转到聊天页面
-        uni.switchTab({
-          url: "/pages/conversation/conversation"
-        })
-      } else {
+      if (!loginToken) {
         // 跳转到登录页
         // #ifdef H5
         uni.reLaunch({
           url: "/pages/login/login"
         })
         // #endif
+        return;
       }
+
+      /**
+       * token认证是否过期
+       */
+
+      // 初始化
+      this.init();
+      //登录状态校验
+      uni.switchTab({
+        url: "/pages/conversation/conversation"
+      })
     } catch (e) {
       // 跳转到登录页
       console.error("获取登录信息失败", e);
