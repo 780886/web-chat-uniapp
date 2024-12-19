@@ -34,6 +34,7 @@ import * as wsApi from '../../common/websocket';
 import UNI_APP from '../../.env.js'
 import {computed, watch} from 'vue';
 import userChatStore from "../../store/chatStore";
+import {getLoginToken} from "../../utils/auth";
 
 // 获取全局的 chatStore
 // const chatStore = chatStore.chats();
@@ -191,8 +192,6 @@ export default {
     },
     async getMessageList() {
       try {
-        const loginToken = uni.getStorageSync("login-token");
-        console.log("loginToken:", loginToken)
         // 调用封装的请求
         const res = await request({
           url: "/api/chat/message-list", // 替换为实际接口地址
@@ -203,8 +202,6 @@ export default {
             roomId: this.roomId
           },
           header: {
-            // 额外的头信息
-            "login-token": loginToken,
             "ajax": true
           },
         });
@@ -269,16 +266,12 @@ export default {
 
 
       try {
-        const loginToken = localStorage.getItem("login-token") || "";
-        console.log("loginToken:" + loginToken)
         // 调用封装的请求
         const res = await request({
           url: "/api/chat/sendMessage", // 替换为实际接口地址
           method: "POST",
           data: body,
           header: {
-            // 额外的头信息
-            "login-token": loginToken,
             "ajax": true
           },
         });

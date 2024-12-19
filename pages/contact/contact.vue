@@ -130,9 +130,6 @@ export default {
   },
   methods: {
     async contactList() {
-      // 请求体数据
-      const loginToken = uni.getStorageSync("login-token");
-      console.log("loginToken:" + loginToken)
       try {
         // 调用封装的请求
         const res = await request({
@@ -143,8 +140,6 @@ export default {
             pageSize: this.pageSize
           },
           header: {
-            // 额外的头信息
-            "login-token": loginToken,
             "ajax": true,
           },
         });

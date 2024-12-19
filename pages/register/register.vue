@@ -147,6 +147,7 @@ export default {
           url: "/authenticate/email-register", // 替换为实际注册接口地址
           method: "POST",
           data: body,
+          needAuth: false,
         });
         // 打印完整响应
         console.log("响应结果：", res);

@@ -47,6 +47,7 @@ import * as wsApi from "../../common/websocket";
 import UNI_APP from "../../.env";
 import ClientInformation from "../../common/ClientInformation";
 import {ResponseCodeEnum} from "../../common/ResponseCodeEnum";
+import {getLoginToken} from "../../utils/auth";
 
 export default {
   props: {
@@ -100,7 +101,7 @@ export default {
 
     // 在组件挂载时获取初始消息列表并初始化WebSocket连接
     onMounted(async () => {
-      const loginToken = uni.getStorageSync("login-token");
+      const loginToken = getLoginToken()
       wsApi.connect(UNI_APP.WS_URL, loginToken);
       await chatStore.getMessageList(); // 获取初始消息列表
       await setNavigationBarTitle(name);
@@ -143,8 +144,6 @@ export default {
       };
 
       try {
-        const loginToken = uni.getStorageSync("login-token");
-        console.log("loginToken:" + loginToken);
         // 调用封装的请求
         const res = await request({
           url: "/chat/sendMessage", // 替换为实际接口地址
@@ -152,7 +151,6 @@ export default {
           data: body,
           header: {
             // 额外的头信息
-            "login-token": loginToken,
             "ajax": true,
           },
         });
