@@ -181,10 +181,10 @@ export default {
             console.log("登录成功之后初始化 app.vue init")
             app.init();
           }
-          // uni.showToast({
-          //   title: "登录成功",
-          //   icon: "success",
-          // });
+          uni.showToast({
+            title: "登录成功",
+            icon: "success",
+          });
           // 重定向到目标地址
           setTimeout(() => {
             uni.switchTab({

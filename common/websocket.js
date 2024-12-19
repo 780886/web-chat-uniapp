@@ -72,10 +72,9 @@ let init = () => {
     uni.onSocketClose((res) => {
         isConnect = false;
         isAuthorize = false;
-        console.log("WebSocket 连接关闭，原因：", res)
-
         // 停止心跳
         heartCheck.stop();
+        console.log("WebSocket 连接关闭，原因：", res);
         //主动退出登录时不触发关闭回调
         if (res.code === WebsocketCodeEnum.CLOSE_CONNECT) {
             console.log("用户主动退出，不触发 closeCallBack");
@@ -89,9 +88,9 @@ let init = () => {
     uni.onSocketError((e) => {
         isConnect = false;
         isAuthorize = false;
-        console.log("WebSocket 连接出错", e);
         // 停止心跳
         heartCheck.stop();
+        console.log("WebSocket 连接出错", e);
         closeCallBack && closeCallBack({code: WebsocketCodeEnum.CONNECT_ERROR});
     });
 };
