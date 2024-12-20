@@ -110,6 +110,7 @@ export default {
             title: "已拒绝",
             icon: "none",
           });
+          this.friendApplyList();
         } else {
           uni.showToast({
             title: res.message || "",
@@ -148,6 +149,7 @@ export default {
             title: "已同意",
             icon: "none",
           });
+          this.friendApplyList();
         } else {
           uni.showToast({
             title: res.message || "",

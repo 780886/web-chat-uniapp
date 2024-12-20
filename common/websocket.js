@@ -54,6 +54,7 @@ let init = () => {
             heartCheck.reset();
         } else if (sendInfo.type === WebsocketResponseType.INVALIDATE_TOKEN) {
             console.log("login-token 已过期:", loginToken);
+            loginToken = "";
             // 停止心跳
             isAuthorize = false; // 授权成功
             heartCheck.stop();
@@ -165,11 +166,15 @@ let logout = () => {
 
 // 重连 WebSocket
 let reconnect = () => {
-    console.log("尝试重新连接 WebSocket...");
-    if (isConnect && !isAuthorize) {
+    if (isConnect) {
         return;
     }
-
+    if (!isAuthorize){
+        return;
+    }
+    console.log("isConnect:", isConnect);
+    console.log("isAuthorize:", isAuthorize);
+    console.log("尝试重新连接 WebSocket...");
     let timeDiff = new Date().getTime() - lastConnectTime.getTime();
     let delay = timeDiff < 10000 ? 10000 - timeDiff : 0;
 

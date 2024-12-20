@@ -1,17 +1,12 @@
 <template>
   <div class="chat-page">
-    <!-- 搜索栏 -->
-    <!-- <div class="search-bar">
-      <input type="text" placeholder="请输入你要搜索的关键字" class="search-input" />
-    </div> -->
-
     <!-- 内容区域 -->
     <div class="content">
       <div v-if="conversations.length === 0" class="empty-state">
         <img src="/static/empty.png" alt="暂无会话" class="empty-image"/>
         <div class="empty-text">暂无会话</div>
       </div>
-      <div v-else class="chat-list">
+      <div v-else class="chat-list" @scrolltolower="loadMore">
         <div v-for="(conversation, index) in conversations" :key="index" class="chat-item"
              @click="navigateToChat(conversation)">
           <div class="chat-avatar">
@@ -25,22 +20,6 @@
         </div>
       </div>
     </div>
-
-    <!-- 底部导航栏 -->
-<!--    <div class="tab-bar">-->
-<!--      <div class="tab-item" :class="{ active: activeTab === 'conversation' }" @click="navigateTo('conversation')">-->
-<!--        <img src="/static/conversation-selected.png" alt="消息" class="tab-icon"/>-->
-<!--        <div class="tab-text">消息</div>-->
-<!--      </div>-->
-<!--      <div class="tab-item" :class="{ active: activeTab === 'contact' }" @click="navigateTo('contact')">-->
-<!--        <img src="/static/contact-selected.png" alt="通讯录" class="tab-icon"/>-->
-<!--        <div class="tab-text">通讯录</div>-->
-<!--      </div>-->
-<!--      <div class="tab-item" :class="{ active: activeTab === 'my' }" @click="navigateTo('my')">-->
-<!--        <img src="/static/me-selected.png" alt="我的" class="tab-icon"/>-->
-<!--        <div class="tab-text">我</div>-->
-<!--      </div>-->
-<!--    </div>-->
   </div>
 </template>
 
@@ -60,6 +39,7 @@ export default {
       activeTab: 'conversation', // 默认选中的 tab
       // 模拟一些聊天记录
       conversations: [],
+      loading: false, // 控制加载状态
     };
   },
   onShow() {
@@ -70,7 +50,7 @@ export default {
   methods: {
     // 格式化时间显示
     formatTime(time) {
-      return toTimeText(time,false);
+      return toTimeText(time, false);
       // const date = new Date(time);
       // const hours = String(date.getHours()).padStart(2, '0');
       // const minutes = String(date.getMinutes()).padStart(2, '0');
@@ -93,8 +73,15 @@ export default {
         });
       }
     },
+    loadMore() {
+      this.getConversationList(); // 触发获取更多会话
+    },
     //获取会话列表
     async getConversationList() {
+      if (this.loading) {
+        return; // 防止重复请求
+      }
+      this.loading = true;
       try {
         // 调用封装的请求
         const res = await request({
@@ -113,7 +100,13 @@ export default {
         console.log("响应结果：", res);
         // 处理响应
         if (res.code === '0') {
-          this.conversations = res.data.list;
+          // this.conversations = res.data.list;
+          if (this.pageNo === 1) {
+            this.conversations = res.data.list; // 如果是第一页，重新赋值
+          } else {
+            this.conversations.push(...res.data.list); // 否则追加数据
+          }
+          this.pageNo++; // 页数递增
         } else {
           uni.showToast({
             title: res.message || "获取会话失败",
@@ -126,6 +119,8 @@ export default {
           title: "获取会话失败，请重试",
           icon: "none",
         });
+      } finally {
+        this.loading = false; // 请求完成，关闭加载状态
       }
     },
     navigateToChat(conversation) {
@@ -167,6 +162,7 @@ export default {
   align-items: center;
   justify-content: center;
   background-color: #ffffff;
+  height: 100%; /* 确保内容区域占满 100% 高度 */
 }
 
 .empty-state {
@@ -188,6 +184,7 @@ export default {
   padding: 14px;
   overflow-y: auto;
   width: 100%;
+  height: 100%; /* 设置为 100% 高度 */
 }
 
 .chat-item {
@@ -195,6 +192,7 @@ export default {
   padding: 10px;
   border-bottom: 1px solid #ddd;
   align-items: center;
+  height: 10%; /* 每个项占据 10% 的高度 */
 }
 
 .chat-avatar {
@@ -230,7 +228,7 @@ export default {
 .chat-time {
   font-size: 12px;
   color: #b0b0b0;
-  margin-left: 30px;
+  //margin-left: 30px;
   /* 时间的颜色 */
 }
 

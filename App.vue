@@ -166,7 +166,9 @@ export default {
       })
       // #endif
     }
-
+  },
+  onUnload(){
+    this.exit();
   }
 }
 </script>

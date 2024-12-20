@@ -55,6 +55,7 @@ import UNI_APP from "../../.env";
 import ClientInformation from "../../common/ClientInformation";
 import {setLoginToken, setLoginUser} from "../../utils/auth";
 import {ResponseCodeEnum} from "../../common/ResponseCodeEnum";
+import {validateEmail, validateUserName} from "../../utils/validation";
 
 export default {
   data() {
@@ -125,17 +126,26 @@ export default {
         });
         return;
       }
-      // 验证邮箱格式
-      if (!this.validateEmail(this.userName)) {
-        console.log(this.validateEmail(this.userName))
-        uni.showToast({
-          title: "邮箱格式不正确",
-          icon: "none",
-        });
-        return;
+      //是否包含@
+      if (this.userName.indexOf("@") === 1) {
+        // 验证邮箱格式
+        if (!this.validateEmail(this.userName)) {
+          console.log(this.validateEmail(this.userName))
+          uni.showToast({
+            title: "邮箱格式不正确",
+            icon: "none",
+          });
+          return;
+        }
+      }else {
+        if (!validateUserName(this.userName)) {
+          uni.showToast({
+            title: "用户名不正确",
+            icon: "none",
+          });
+          return;
+        }
       }
-
-
       // 请求体数据
       const body = {
         userName: this.userName,

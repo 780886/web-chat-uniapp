@@ -276,7 +276,7 @@ export default {
 }
 
 .message-bubble {
-  max-width: 40%;
+  max-width: 70%;
   padding: 10px;
   border-radius: 10px;
   font-size: 16px;

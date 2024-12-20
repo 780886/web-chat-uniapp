@@ -8,7 +8,6 @@ export default function request({
                                     method = "GET",
                                     data = {},
                                     header = {},
-                                    showLoading = true, // 是否显示加载中提示
                                     needAuth = true // 是否需要鉴权（默认为需要）
                                 }) {
     return new Promise((resolve, reject) => {
@@ -56,12 +55,12 @@ export default function request({
         console.log("请求URL:", UNI_APP.BASE_URL + url);
         console.log("请求头:", finalHeaders);
 
-        // 如果需要显示 loading 提示
-        if (showLoading) {
-            uni.showLoading({
-                title: '加载中...',
-            });
-        }
+        // // 如果需要显示 loading 提示
+        // if (showLoading) {
+        //     uni.showLoading({
+        //         title: '加载中...',
+        //     });
+        // }
 
         // 发起请求
         uni.request({
@@ -95,7 +94,7 @@ export default function request({
                 }
             },
             fail: (err) => {
-                uni.hideLoading();
+                // uni.hideLoading();
                 // 全局错误处理
                 uni.showToast({
                     title: "网络请求失败",
@@ -103,9 +102,9 @@ export default function request({
                 });
                 reject(err);
             },
-            complete: () => {
-                uni.hideLoading();
-            }
+            // complete: () => {
+            //     uni.hideLoading();
+            // }
         });
     });
 }
