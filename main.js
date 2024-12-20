@@ -3,8 +3,7 @@ import * as pinia from 'pinia';
 import useChatStore from './store/chatStore.js'
 import useUserStore from './store/userStore.js'
 // import './static/icon/iconfont.js';
-
-
+// import './static/icon/iconfont.css'; // 确保路径正确
 
 // #ifndef VUE3
 import Vue from 'vue'

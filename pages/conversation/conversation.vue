@@ -35,7 +35,7 @@ export default {
   data() {
     return {
       pageNo: 1,
-      pageSize: 10,
+      pageSize: 15,
       activeTab: 'conversation', // 默认选中的 tab
       // 模拟一些聊天记录
       conversations: [],
@@ -45,6 +45,7 @@ export default {
   onShow() {
     const loginToken = getLoginToken();
     wsApi.setTokenAndAuthorize(loginToken);
+    this.pageNo = 1;
     this.getConversationList(); // 组件加载时调用接口
   },
   methods: {
@@ -189,7 +190,7 @@ export default {
 
 .chat-item {
   display: flex;
-  padding: 10px;
+  padding: 3.9% 10px;
   border-bottom: 1px solid #ddd;
   align-items: center;
   height: 10%; /* 每个项占据 10% 的高度 */
