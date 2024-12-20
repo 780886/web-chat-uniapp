@@ -5,10 +5,10 @@
       <div class="contact-item">
         <div class="contact-icon">
 <!--          <image src="/static/yanzheng.png" alt="Verify" class="icon"/>-->
-<!--          <span class="iconfont">&#xe601;</span>-->
-          <svg class="icon" aria-hidden="true">
+         <span class="iconfont">&#xe601;</span>
+       <!--   <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-xindepengyou"></use>
-          </svg>
+          </svg> -->
         </div>
         <div class="contact-info">
           <div class="contact-name" @click="addFriend">新的朋友</div>
@@ -27,10 +27,10 @@
       <div class="contact-item">
         <div class="contact-icon">
 <!--          <image src="/static/group.png" alt="Group Chat" class="icon"/>-->
-<!--          <span class="iconfont">&#xe62d;</span>-->
-          <svg class="icon" aria-hidden="true">
+         <span class="iconfont">&#xe62d;</span>
+         <!-- <svg class="icon" aria-hidden="true">
             <use xlink:href="#icon-qunliao"></use>
-          </svg>
+          </svg> -->
         </div>
         <div class="contact-info">
           <div class="contact-name" @click="myQunList">群聊</div>
