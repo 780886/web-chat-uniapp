@@ -27,7 +27,7 @@
 import request from "@/utils/request";
 import * as wsApi from '../../common/websocket';
 import UNI_APP from "../../.env";
-import {toTimeText, isYestday, isYear, formatDateTime} from "../../utils/date";
+import {toTimeText, isYestday, isYear, formatDateTime, conversationToTimeText} from "../../utils/date";
 import ClientInformation from "../../common/ClientInformation";
 import {getLoginToken} from "../../utils/auth";
 
@@ -51,7 +51,7 @@ export default {
   methods: {
     // 格式化时间显示
     formatTime(time) {
-      return toTimeText(time, false);
+      return conversationToTimeText(time, true);
       // const date = new Date(time);
       // const hours = String(date.getHours()).padStart(2, '0');
       // const minutes = String(date.getMinutes()).padStart(2, '0');

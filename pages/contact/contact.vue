@@ -15,15 +15,6 @@
         </div>
         <div class="arrow" @click="addFriend">></div>
       </div>
-<!--      <div class="contact-item">-->
-<!--        <div class="contact-icon">-->
-<!--          <image src="/static/black.png" alt="Blacklist" class="icon"/>-->
-<!--        </div>-->
-<!--        <div class="contact-info">-->
-<!--          <div class="contact-name" @click="blackList">黑名单</div>-->
-<!--        </div>-->
-<!--        <div class="arrow">></div>-->
-<!--      </div>-->
       <div class="contact-item">
         <div class="contact-icon">
 <!--          <image src="/static/group.png" alt="Group Chat" class="icon"/>-->
@@ -38,18 +29,6 @@
         <div class="arrow" @click="myQunList">></div>
       </div>
     </div>
-
-    <!-- 联系人列表 -->
-    <!-- <div v-for="(contact, index) in contacts" :key="index" class="contact-item">
-      <div class="contact-icon">
-        <img :src="contact.avatar" alt="Avatar" class="icon" />
-      </div>
-      <div class="contact-info">
-        <div class="contact-name">{{ contact.name }}</div>
-        <div class="contact-status">{{ contact.status }}</div>
-      </div>
-      <div class="arrow">></div>
-    </div> -->
     <!-- 联系人列表 -->
     <div class="contact-list">
       <div v-for="(group, index) in groupContacts" :key="index">
@@ -69,32 +48,6 @@
         </div>
       </div>
     </div>
-
-    <!-- 字母索引 -->
-    <!-- <div class="alphabet-index">
-      <div class="alphabet">A</div>
-      <div class="alphabet">B</div>
-      <div class="alphabet">C</div>c
-      <div class="alphabet">D</div> -->
-    <!-- ...省略部分字母，直到Z-->
-    <!-- <div class="alphabet">Z</div> -->
-    <!-- </div> -->
-
-    <!-- 底部导航栏 -->
-<!--    <div class="tab-bar">-->
-<!--      <div class="tab-item" :class="{ active: activeTab === 'conversation' }" @click="navigateTo('conversation')">-->
-<!--        <img src="/static/conversation-selected.png" alt="消息" class="tab-icon"/>-->
-<!--        <div class="tab-text">消息</div>-->
-<!--      </div>-->
-<!--      <div class="tab-item" :class="{ active: activeTab === 'contact' }" @click="navigateTo('contact')">-->
-<!--        <img src="/static/contact-selected.png" alt="通讯录" class="tab-icon"/>-->
-<!--        <div class="tab-text">通讯录</div>-->
-<!--      </div>-->
-<!--      <div class="tab-item" :class="{ active: activeTab === 'my' }" @click="navigateTo('my')">-->
-<!--        <img src="/static/me-selected.png" alt="我的" class="tab-icon"/>-->
-<!--        <div class="tab-text">我</div>-->
-<!--      </div>-->
-<!--    </div>-->
   </div>
 </template>
 
@@ -158,6 +111,7 @@ export default {
             const nationality = contact.userVO.nationality;
             const flagUrl = contact.userVO.flagUrl;
             const roomId = contact.roomId;
+            const firstLetter  = contact.firstLetter;
             const userId = contact.userVO.userId;
             const userName = contact.userVO.userName;
             const nickName = contact.userVO.nickName;
@@ -166,16 +120,43 @@ export default {
               nationality: nationality,
               flagUrl: flagUrl,
               roomId: roomId,
+              firstLetter:firstLetter,
               userId: userId,
               userName: userName,
               nickName: nickName,
               avatar: avatar
             }
-          })
-          this.groupContacts = [{
-            letter: "A",
-            contacts: contacts
-          }]
+          });
+          // 分组函数
+          const groupContactsByFirstLetter = (contacts) => {
+            return contacts.reduce((grouped, contact) => {
+              const firstLetter = contact.firstLetter || "#";
+              if (!grouped[firstLetter]) {
+                grouped[firstLetter] = []; // 初始化分组
+              }
+              grouped[firstLetter].push(contact); // 添加联系人到对应组
+              return grouped;
+            }, {});
+          };
+
+          // 分组联系人
+          const groupedContacts = groupContactsByFirstLetter(contacts);
+
+          // 转换为页面渲染的格式
+          this.groupContacts = Object.keys(groupedContacts).sort((a, b) => {
+            // 特殊字符 "#" 排到最后
+            if (a === "#") return 1;
+            if (b === "#") return -1;
+            return a.localeCompare(b); // 按字母排序
+          }).map(letter => ({
+            letter: letter,
+            contacts: groupedContacts[letter]
+          }));
+
+          // this.groupContacts = [{
+          //   letter: "A",
+          //   contacts: contacts
+          // }]
           console.log("groupContacts",this.groupContacts)
         } else {
           uni.showToast({
@@ -310,7 +291,7 @@ export default {
   display: flex;
   //justify-content: space-between;
   //align-items: center;
-  padding: 10px;
+  padding: 14px;
   background-color: #fff;
   border-radius: 8px;
   border: 1px solid #f0f0f0;
