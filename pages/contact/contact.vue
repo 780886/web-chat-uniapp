@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <!-- 通讯录列表 -->
-    <div class="contact-list">
+    <div class="book-list">
       <div class="contact-item">
         <div class="contact-icon">
 <!--          <image src="/static/yanzheng.png" alt="Verify" class="icon"/>-->
@@ -270,6 +270,13 @@ export default {
   width: 24px;
   height: 24px;
 }
+
+.book-list {
+  /* overflow-y: auto; */
+  width: 100%;
+ margin-bottom: 10px;
+}
+
 
 .contact-list {
   overflow-y: auto;

@@ -127,7 +127,7 @@ export default {
         return;
       }
       //是否包含@
-      if (this.userName.indexOf("@") === 1) {
+      if (this.userName.indexOf("@") !== -1) {
         // 验证邮箱格式
         if (!this.validateEmail(this.userName)) {
           console.log(this.validateEmail(this.userName))
