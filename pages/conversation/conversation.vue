@@ -10,7 +10,7 @@
         <div v-for="(conversation, index) in conversations" :key="index" class="chat-item"
              @click="navigateToChat(conversation)">
           <div class="chat-avatar">
-            <img :src="conversation.avatar" alt="头像" class="avatar-img"/>
+            <image :src="getAvatar(conversation.avatar)" alt="头像" class="avatar-img"/>
           </div>
           <div class="chat-info">
             <div class="chat-name">{{ conversation.name }}</div>
@@ -30,6 +30,7 @@ import UNI_APP from "../../.env";
 import {toTimeText, isYestday, isYear, formatDateTime, conversationToTimeText} from "../../utils/date";
 import ClientInformation from "../../common/ClientInformation";
 import {getLoginToken} from "../../utils/auth";
+import {getAvatar} from "../../common/Avatar";
 
 export default {
   data() {
@@ -49,6 +50,7 @@ export default {
     this.getConversationList(); // 组件加载时调用接口
   },
   methods: {
+    getAvatar,
     // 格式化时间显示
     formatTime(time) {
       return conversationToTimeText(time, true);

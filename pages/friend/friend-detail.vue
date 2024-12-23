@@ -10,7 +10,7 @@
 
     <!-- 好友信息 -->
     <div class="friend-info">
-      <img class="avatar" :src="friend.avatar || defaultAvatar"/>
+      <image class="avatar" :src="getAvatar(friend.avatar)"/>
       <div class="info">
         <span class="nickname">{{ friend.nickName }}</span>
         <span class="account">账号: {{ friend.account }}</span>
@@ -32,6 +32,7 @@
 <script>
 import request from "../../utils/request";
 import ClientInformation from "../../common/ClientInformation";
+import {getAvatar} from "../../common/Avatar";
 
 export default {
   data() {
@@ -42,7 +43,6 @@ export default {
         account: '60025', // 好友账号
       },
       isRequestSent: false, // 是否已发送好友申请
-      defaultAvatar: '/static/default-avatar.png', // 默认头像路径
     };
   },
   //接收参数
@@ -53,6 +53,7 @@ export default {
     this.friend.account = options.userSecretIdentify;
   },
   methods: {
+    getAvatar,
     goBack() {
       uni.navigateBack(); // 返回上一页
     },

@@ -109,6 +109,7 @@
     "selectedColor": "#587ff0",
     "borderStyle": "black",
     "backgroundColor": "#ffffff",
+//    "height": "50rpx",  // 设置自定义高度
     "list": [
       {
         "pagePath": "pages/conversation/conversation",

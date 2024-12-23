@@ -48,6 +48,7 @@ import UNI_APP from "../../.env";
 import ClientInformation from "../../common/ClientInformation";
 import {ResponseCodeEnum} from "../../common/ResponseCodeEnum";
 import {getLoginToken} from "../../utils/auth";
+import {getAvatar} from "../../common/Avatar";
 
 export default {
   props: {
@@ -74,7 +75,7 @@ export default {
     const messages = ref([]);
     const roomId = Number(props.roomId);
     console.log("会话roomId:", roomId);
-    const avatar = props.avatar;
+    const avatar = getAvatar(props.avatar);
     // 立即设置roomId
     chatStore.setRoomId(roomId);
     chatStore.setAvatar(avatar);
@@ -201,6 +202,7 @@ export default {
   flex-direction: column;
   height: 100vh;
   padding-bottom: 54px;
+  //padding-bottom: env(safe-area-inset-bottom, 54px); /* 避免输入框被遮挡 */
 }
 
 .iconfont {
@@ -311,7 +313,7 @@ export default {
   padding: 10px;
   box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
   z-index: 10;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 /* .input-box {
@@ -330,10 +332,10 @@ export default {
   flex: 1;
   padding: 0 12px;
   border: 1px solid #ddd;
-  border-radius: 20px;
-  font-size: 14px;
+  border-radius: 2px;
+  font-size: 20px;
   margin: 5px 10px;
-  height: 36px;
+  height: 40px;
   background-color: #fff;
   /* 明确设置背景，防止透明 */
 }

@@ -26,7 +26,7 @@
       <!-- 验证消息列表 -->
       <div class="message-list" v-if="!showTip">
         <div class="message-item" v-for="(friendApply, index) in friendApplyList" :key="index">
-          <img class="avatar" :src="friendApply.avatar" alt="头像"/>
+          <image class="avatar" :src="getAvatar(friendApply.avatar)" alt="头像"/>
           <div class="info">
             <span class="nickname">{{ friendApply.nickName }}</span>
             <span class="message">好友申请</span>
@@ -58,6 +58,7 @@
 <script>
 import request from "../../utils/request";
 import ClientInformation from "../../common/ClientInformation";
+import {getAvatar} from "../../common/Avatar";
 
 export default {
   data() {
@@ -83,6 +84,7 @@ export default {
     this.getFriendApplyList();
   },
   methods: {
+    getAvatar,
     goBack() {
       uni.navigateBack(); // 返回上一页
     },

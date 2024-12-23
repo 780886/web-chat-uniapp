@@ -1,6 +1,7 @@
 import {defineStore} from 'pinia';
 import request from "../utils/request";
 import ClientInformation from "../common/ClientInformation";
+import {getAvatar} from "../common/Avatar";
 
 
 let chatCache = [];
@@ -114,7 +115,7 @@ export default defineStore('chatStore', {
             const content = data.content;
             const messageId = data.id;
             // const avatar = "https://wgq-im.oss-cn-nanjing.aliyuncs.com/DF957A521978414F505D705F8952C6B8.jpg";
-            const avatar = this.avatar;
+            const avatar = getAvatar(this.avatar);
             const message = {
                 type: type, // 消息类型（"left" 或 "right"）
                 content: content, // 消息内容

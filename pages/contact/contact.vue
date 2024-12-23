@@ -41,7 +41,7 @@
         <div v-for="(contact, idx) in group.contacts" :key="idx" class="contact-item"
              @click="navigateToDetail(contact)">
           <div class="avatar-container">
-            <img class="avatar" :src="contact.avatar" alt="Avatar"/>
+            <image class="avatar" :src="contact.avatar" alt="Avatar"/>
           </div>
           <div class="contact-info">
             <div class="contact-name">{{ contact.nickName }}</div>
@@ -58,6 +58,7 @@ import request from "../../utils/request";
 import * as wsApi from "../../common/websocket";
 import UNI_APP from "../../.env";
 import ClientInformation from "../../common/ClientInformation";
+import {getAvatar} from "../../common/Avatar";
 
 export default {
   data() {
@@ -117,7 +118,7 @@ export default {
             const userId = contact.userVO.userId;
             const userName = contact.userVO.userName;
             const nickName = contact.userVO.nickName;
-            const avatar = contact.userVO.avatar;
+            const avatar = getAvatar(contact.userVO.avatar);
             return {
               nationality: nationality,
               flagUrl: flagUrl,
