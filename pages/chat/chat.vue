@@ -23,7 +23,7 @@
         <!--        </svg>-->
       </div>
       <!--      @keydown.enter-->
-      <input type="text" v-model="content" class="input-box" placeholder="发送消息..." @confirm="sendMessage"/>
+      <input type="text" v-model="content" class="input-box" placeholder="发送消息..." confirm-type="send" @confirm="sendMessage"/>
       <div class="input-actions">
         <!--        <svg class="icon" aria-hidden="true">-->
         <!--          <use xlink:href="#icon-biaoqing"></use>-->
@@ -331,7 +331,7 @@ export default {
   border: 1px solid #ddd;
   border-radius: 20px;
   font-size: 14px;
-  margin: 0 10px;
+  margin: 5px 10px;
   height: 36px;
   background-color: #fff;
   /* 明确设置背景，防止透明 */

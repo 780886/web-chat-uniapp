@@ -6,7 +6,7 @@
           class="search-input"
           type="text"
           v-model="userIdentify"
-          placeholder="请输入好友ID"
+          placeholder="用户名/邮箱"
           @confirm="findFriend"
       />
       <div class="clear-btn" v-if="userIdentify" @click="clearInput">
@@ -300,7 +300,7 @@ export default {
   margin: 20px 15px;
   background-color: #f5f5f5;
   border-radius: 10px;
-  padding: 5px 10px;
+  padding: 10px 10px;
 }
 
 .search-input {

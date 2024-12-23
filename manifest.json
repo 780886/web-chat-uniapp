@@ -48,7 +48,13 @@
             /* SDK配置 */
             "sdkConfigs" : {},
             "splashscreen" : {
-                "useOriginalMsgbox" : true
+                "useOriginalMsgbox" : true,
+                "androidStyle" : "common",
+                "android" : {
+                    "hdpi" : "C:/Users/汪国庆/Desktop/login/wgq19991122_画板 1.png",
+                    "xhdpi" : "C:/Users/汪国庆/Desktop/login/wgq19991122_画板 1.png",
+                    "xxhdpi" : "C:/Users/汪国庆/Desktop/login/wgq19991122_画板 1.png"
+                }
             },
             "icons" : {
                 "android" : {
