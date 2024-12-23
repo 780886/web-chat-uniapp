@@ -300,7 +300,7 @@ export default {
   display: flex;
   //justify-content: space-between;
   //align-items: center;
-  padding: 14px;
+  padding: 6px 14px;
   background-color: #fff;
   border-radius: 8px;
   border: 1px solid #f0f0f0;
@@ -314,8 +314,8 @@ export default {
 }
 
 .avatar {
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   border-radius: 10%;
 }
 

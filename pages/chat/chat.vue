@@ -239,7 +239,7 @@ export default {
 
 /* 聊天内容 */
 .chat-content {
-  max-height: 95%;
+  max-height: 100%;
   flex: 1;
   padding: 10px;
   overflow-y: auto;
@@ -311,6 +311,7 @@ export default {
   padding: 10px;
   box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
   z-index: 10;
+  margin-bottom: 10px;
 }
 
 /* .input-box {
@@ -327,7 +328,7 @@ export default {
   /* 确保输入框在顶层 */
   position: relative;
   flex: 1;
-  padding: 0px 12px;
+  padding: 0 12px;
   border: 1px solid #ddd;
   border-radius: 20px;
   font-size: 14px;

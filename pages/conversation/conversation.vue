@@ -190,7 +190,7 @@ export default {
 
 .chat-item {
   display: flex;
-  padding: 3.9% 10px;
+  padding: 2.7% 10px;
   border-bottom: 1px solid #ddd;
   align-items: center;
   height: 10%; /* 每个项占据 10% 的高度 */
@@ -202,8 +202,8 @@ export default {
 }
 
 .avatar-img {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border-radius: 10%;
 }
 
@@ -213,12 +213,12 @@ export default {
 }
 
 .chat-name {
-  font-size: 16px;
+  font-size: 18px;
   color: #333;
 }
 
 .chat-last-message {
-  font-size: 14px;
+  font-size: 18px;
   color: #999;
   max-width: 80%;
   white-space: nowrap; /* 防止文本换行 */
