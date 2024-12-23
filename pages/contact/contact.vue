@@ -2,7 +2,7 @@
   <div class="container">
     <!-- 通讯录列表 -->
     <div class="book-list">
-      <div class="contact-item">
+      <div class="book-item">
         <div class="contact-icon">
 <!--          <image src="/static/yanzheng.png" alt="Verify" class="icon"/>-->
 <!--         <span class="iconfont">&#xe601;</span>-->
@@ -16,7 +16,7 @@
         </div>
 <!--        <div class="arrow" @click="addFriend">></div>-->
       </div>
-      <div class="contact-item">
+      <div class="book-item">
         <div class="contact-icon">
 <!--          <image src="/static/group.png" alt="Group Chat" class="icon"/>-->
 <!--         <span class="iconfont">&#xe62d;</span>-->
@@ -296,13 +296,24 @@ export default {
   margin-bottom: 3px;
 }
 
+.book-item {
+  display: flex;
+  //justify-content: space-between;
+  //align-items: center;
+  padding: 10px 14px;
+  background-color: #fff;
+  border-radius: 10px;
+  border: 1px solid #f0f0f0;
+  //margin-bottom: 0px;
+}
+
 .contact-item {
   display: flex;
   //justify-content: space-between;
   //align-items: center;
   padding: 6px 14px;
   background-color: #fff;
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid #f0f0f0;
   //margin-bottom: 0px;
 }
@@ -320,8 +331,9 @@ export default {
 }
 
 .icon{
- width: 40px;
-  height: 40px;
+ width: 45px;
+  height: 45px;
+  border-radius: 10%;
 }
 
 .iconfont{
