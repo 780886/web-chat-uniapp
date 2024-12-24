@@ -29,22 +29,6 @@
         <div class="arrow">></div>
       </div> -->
     </div>
-
-    <!-- 底部导航栏 -->
-    <!--		<div class="tab-bar">-->
-    <!--			<div class="tab-item" :class="{ active: activeTab === 'conversation' }" @click="navigateTo('conversation')">-->
-    <!--				<img src="/static/conversation-selected.png" alt="消息" class="tab-icon" />-->
-    <!--				<div class="tab-text">消息</div>-->
-    <!--			</div>-->
-    <!--			<div class="tab-item" :class="{ active: activeTab === 'contact' }" @click="navigateTo('contact')">-->
-    <!--				<img src="/static/contact-selected.png" alt="通讯录" class="tab-icon" />-->
-    <!--				<div class="tab-text">通讯录</div>-->
-    <!--			</div>-->
-    <!--			<div class="tab-item" :class="{ active: activeTab === 'my' }" @click="navigateTo('my')">-->
-    <!--				<img src="/static/me-selected.png" alt="我的" class="tab-icon" />-->
-    <!--				<div class="tab-text">我</div>-->
-    <!--			</div>-->
-    <!--		</div>-->
   </div>
 </template>
 
@@ -168,10 +152,11 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px;
+  padding: 14px 16px;
   background-color: #fff;
   border-radius: 8px;
   border: 1px solid #f0f0f0;
+  margin-top: 20px;
   margin-bottom: 12px;
 }
 
@@ -181,8 +166,8 @@ export default {
 }
 
 .icon {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
 }
 
 .action-text {

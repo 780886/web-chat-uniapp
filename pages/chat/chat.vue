@@ -314,7 +314,8 @@ export default {
   padding: 10px;
   box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
   z-index: 10;
-  margin-bottom: 5px;
+  margin-bottom: 2px;
+  /*padding-bottom: 10px;*/
 }
 
 /* .input-box {
