@@ -10,7 +10,7 @@
         </div>
         <div class="message-bubble">{{ message.content }}</div>
         <div class="avatar" v-if="message.type === 'right'">
-          <img :src="message.avatar" alt="头像"/>
+          <img :src="getAvatar(message.avatar)" alt="头像"/>
         </div>
       </div>
     </div>
@@ -75,7 +75,7 @@ export default {
     const messages = ref([]);
     const roomId = Number(props.roomId);
     console.log("会话roomId:", roomId);
-    const avatar = getAvatar(props.avatar);
+    const avatar = props.avatar;
     // 立即设置roomId
     chatStore.setRoomId(roomId);
     chatStore.setAvatar(avatar);
@@ -125,6 +125,7 @@ export default {
     };
   },
   methods: {
+    getAvatar,
     //发送消息
     async sendMessage() {
       console.log("Enter key pressed, content: ", this.content); // 检查 content 是否有值
