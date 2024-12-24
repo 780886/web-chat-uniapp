@@ -192,8 +192,8 @@ export default {
 
 .chat-item {
   display: flex;
-  padding: 2.7% 10px;
-  border-bottom: 1px solid #ddd;
+  padding: 2.7% 2px;
+  //border-bottom: 1px solid #ddd;
   align-items: center;
   height: 10%; /* 每个项占据 10% 的高度 */
 }
@@ -212,6 +212,7 @@ export default {
 .chat-info {
   margin-left: 8px;
   flex: 1;
+  border-bottom: 1px solid #ddd;
 }
 
 .chat-name {

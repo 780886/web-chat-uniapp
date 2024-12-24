@@ -312,10 +312,10 @@ export default {
   display: flex;
   //justify-content: space-between;
   //align-items: center;
-  padding: 6px 14px;
+  padding: 6px 16px;
   background-color: #fff;
   border-radius: 10px;
-  border: 1px solid #f0f0f0;
+  //border: 1px solid #f0f0f0;
   //margin-bottom: 0px;
 }
 
@@ -360,6 +360,7 @@ export default {
   /* flex-grow: 1; */
   margin-left: 8px;
   width: 88%;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .contact-name {
