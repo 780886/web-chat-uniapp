@@ -208,11 +208,13 @@ export default {
   height: 50px;
   border-radius: 10%;
 }
-
+.chat{
+  width: 80%;
+  border-bottom: 1px solid #ddd;
+}
 .chat-info {
   margin-left: 8px;
   flex: 1;
-  border-bottom: 1px solid #ddd;
 }
 
 .chat-name {
@@ -228,45 +230,11 @@ export default {
   overflow: hidden; /* 隐藏超出部分 */
   text-overflow: ellipsis; /* 超出部分显示省略号 */
 }
-
+.chat-item-parent{
+  width: 20%;
+}
 .chat-time {
   font-size: 12px;
   color: #b0b0b0;
-  //margin-left: 30px;
-  /* 时间的颜色 */
-}
-
-.tab-bar {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  background-color: #ffffff;
-  padding: 10px 0;
-  border-top: 1px solid #ddd;
-  position: absolute;
-  bottom: 0%;
-  width: 100%;
-}
-
-.tab-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 14px;
-  color: #999999;
-}
-
-.tab-item.active {
-  color: #007aff;
-}
-
-.tab-icon {
-  width: 24px;
-  height: 24px;
-  margin-bottom: 5px;
-}
-
-.tab-text {
-  font-size: 12px;
 }
 </style>

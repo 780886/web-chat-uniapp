@@ -112,7 +112,7 @@
     "color": "#999999",
     "selectedColor": "#587ff0",
     "borderStyle": "black",
-    "backgroundColor": "#ffffff",
+    "backgroundColor": "#f7f7f7",
     "list": [
       {
         "pagePath": "pages/conversation/conversation",
