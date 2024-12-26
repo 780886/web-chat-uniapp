@@ -18,21 +18,21 @@
     <div class="chat-input-bar">
       <div class="input-actions">
         <span class="iconfont">&#xe888;</span>
-        <!--        <svg class="icon" aria-hidden="true">-->
-        <!--          <use xlink:href="#icon-yuyin"></use>-->
-        <!--        </svg>-->
       </div>
       <!--      @keydown.enter-->
       <input type="text" v-model="content" class="input-box" placeholder="发送消息..." confirm-type="send" @confirm="sendMessage"/>
       <div class="input-actions">
-        <!--        <svg class="icon" aria-hidden="true">-->
-        <!--          <use xlink:href="#icon-biaoqing"></use>-->
-        <!--        </svg>-->
-        <!--        <svg class="icon" aria-hidden="true">-->
-        <!--          <use xlink:href="#icon-jia1"></use>-->
-        <!--        </svg>-->
         <span class="iconfont">&#xe600;</span>
-        <span class="iconfont">&#xe7a6;</span>
+        <span class="iconfont" @click="toggleMenu">&#xe7a6;</span>
+      </div>
+    </div>
+    <!-- 弹出功能菜单 -->
+    <div v-show="menuVisible" class="function-menu">
+      <div class="menu-grid">
+        <div class="menu-item" v-for="(item, index) in menuItems" :key="index">
+          <img :src="item.icon" class="menu-icon" />
+          <span class="menu-text">{{ item.text }}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -70,15 +70,35 @@ export default {
   },
   setup(props) {
     const chatStore = userChatStore();
+    const messageContainer = ref(null);
     const name = props.name;
     const content = ref('');
     const messages = ref([]);
     const roomId = Number(props.roomId);
     console.log("会话roomId:", roomId);
     const avatar = props.avatar;
+    // 控制功能菜单显示状态
+    const menuVisible = ref(false);
     // 立即设置roomId
     chatStore.setRoomId(roomId);
     chatStore.setAvatar(avatar);
+
+    // 功能菜单项
+    const menuItems = [
+      { text: '相册', icon: '/static/icons/photo.png' },
+      { text: '拍摄', icon: '/static/icons/camera.png' },
+      { text: '视频通话', icon: '/static/icons/video.png' },
+      { text: '位置', icon: '/static/icons/location.png' },
+      { text: '红包', icon: '/static/icons/redpacket.png' },
+      { text: '转账', icon: '/static/icons/transfer.png' },
+    ];
+
+
+    // 切换功能菜单显示状态
+    function toggleMenu() {
+      menuVisible.value = !menuVisible.value;
+    }
+
     // 监听store中的messages状态变化
     watch(
         () => chatStore.messages,
@@ -92,7 +112,7 @@ export default {
         {immediate: true}
     );
 
-    const messageContainer = ref(null);
+
 
     function scrollToBottom() {
       if (messageContainer.value) {
@@ -122,6 +142,9 @@ export default {
       content,
       scrollToBottom,
       messageContainer, // 返回 messageContainer 给模板
+      menuVisible,
+      menuItems,
+      toggleMenu,
     };
   },
   methods: {
@@ -282,7 +305,7 @@ export default {
   max-width: 70%;
   padding: 10px;
   border-radius: 10px;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.5;
   word-wrap: break-word; /* 允许长单词换行 */
   overflow: hidden; /* 隐藏超出部分 */
@@ -318,15 +341,6 @@ export default {
   /*padding-bottom: 10px;*/
 }
 
-/* .input-box {
-  flex: 1;
-  padding: 0px 12px;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  font-size: 14px;
-  margin: 0 10px;
-  height: 28px;
-} */
 .input-box {
   z-index: 2;
   /* 确保输入框在顶层 */
@@ -347,4 +361,48 @@ export default {
   height: 24px;
   cursor: pointer;
 }
+
+/* 功能菜单 */
+.function-menu {
+  position: fixed;
+  bottom: 54px; /* 适配输入框位置 */
+  left: 0;
+  width: 100%;
+  background-color: #ffffff;
+  border-top: 1px solid #ddd;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+}
+
+.menu-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 25%;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.menu-icon {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 5px;
+}
+
+.menu-text {
+  font-size: 14px;
+  color: #333;
+  text-align: center;
+}
+
 </style>
