@@ -17,7 +17,7 @@
       <div class="action-item">
         <div class="action-icon">
           <image src="/static/shezhi.png" alt="Settings" class="icon"/>
-          <div class="action-text">设置</div>
+          <div class="action-text" @click="navigateTo('settings')">设置</div>
         </div>
         <div class="arrow" @click="navigateTo('settings')">></div>
       </div>
