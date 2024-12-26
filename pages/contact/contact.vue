@@ -6,8 +6,8 @@
         <div class="contact-icon">
           <image src="/static/xindepengyou.png" alt="Verify" class="icon"/>
         </div>
-        <div class="contact-info">
-          <div class="contact-name" @click="addFriend">新的朋友</div>
+        <div class="book-info">
+          <div class="book-name" @click="addFriend">新的朋友</div>
         </div>
 <!--        <div class="arrow" @click="addFriend">></div>-->
       </div>
@@ -15,8 +15,8 @@
         <div class="contact-icon">
           <image src="/static/qunliao.png" alt="Group Chat" class="icon"/>
         </div>
-        <div class="contact-info">
-          <div class="contact-name" @click="myQunList">群聊</div>
+        <div class="book-info">
+          <div class="book-name" @click="myQunList">群聊</div>
         </div>
 <!--        <div class="arrow" @click="myQunList">></div>-->
       </div>
@@ -279,11 +279,11 @@ export default {
 
 .group-header {
   padding: 4px 10px;
-  /* background-color: #f5f5f5; */
+   background-color: #ededed;
   font-size: 10px;
   font-weight: bold;
   color: #555;
-  border-radius: 5px;
+  /*border-radius: 5px;*/
   margin-bottom: 3px;
 }
 
@@ -293,7 +293,7 @@ export default {
   //align-items: center;
   padding: 10px 14px;
   background-color: #fff;
-  border-radius: 10px;
+  /*border-radius: 10px;*/
   border: 1px solid #f0f0f0;
   //margin-bottom: 0px;
 }
@@ -346,11 +346,27 @@ export default {
   height: 30px;
 }
 
+.book-info {
+  /* flex-grow: 1; */
+  margin-left: 8px;
+  width: 88%;
+}
+
 .contact-info {
   /* flex-grow: 1; */
   margin-left: 8px;
   width: 88%;
   border-bottom: 1px solid #f0f0f0;
+}
+
+.book-name {
+  font-size: 22px;
+//font-weight: bold;
+  color: #333;
+  max-width: 50%;
+  white-space: nowrap;   /* 防止文本换行 */
+  overflow: hidden;      /* 隐藏超出部分 */
+  text-overflow: ellipsis; /* 超出部分显示省略号 */
 }
 
 .contact-name {

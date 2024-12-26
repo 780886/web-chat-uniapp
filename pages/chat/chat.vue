@@ -20,7 +20,8 @@
         <span class="iconfont">&#xe888;</span>
       </div>
       <!--      @keydown.enter-->
-      <input type="text" v-model="content" class="input-box" placeholder="发送消息..." confirm-type="send" @confirm="sendMessage"/>
+      <input type="text" v-model="content" class="input-box" placeholder="发送消息..." confirm-type="send"
+             @confirm="sendMessage"/>
       <div class="input-actions">
         <span class="iconfont">&#xe600;</span>
         <span class="iconfont" @click="toggleMenu">&#xe7a6;</span>
@@ -29,9 +30,53 @@
     <!-- 弹出功能菜单 -->
     <div v-show="menuVisible" class="function-menu">
       <div class="menu-grid">
-        <div class="menu-item" v-for="(item, index) in menuItems" :key="index">
-          <img :src="item.icon" class="menu-icon" />
-          <span class="menu-text">{{ item.text }}</span>
+        <!--相机-->
+        <div class="menu-item">
+          <div class="menu-icon">
+            <!-- 使用 v-html 渲染 Unicode -->
+            <span class="iconfont">&#xe87a;</span>
+          </div>
+          <div class="menu-text">相机</div>
+        </div>
+        <!--拍摄-->
+        <div class="menu-item">
+          <div class="menu-icon"  @click="takePhoto">
+            <!-- 使用 v-html 渲染 Unicode -->
+            <span class="iconfont">&#xe61d;</span>
+          </div>
+          <div class="menu-text">拍摄</div>
+        </div>
+        <!--文件-->
+        <div class="menu-item">
+          <div class="menu-icon">
+            <!-- 使用 v-html 渲染 Unicode -->
+            <span class="iconfont">&#xe665;</span>
+          </div>
+          <div class="menu-text">文件</div>
+        </div>
+        <!--语音输入-->
+        <div class="menu-item">
+          <div class="menu-icon">
+            <!-- 使用 v-html 渲染 Unicode -->
+            <span class="iconfont">&#xe64f;</span>
+          </div>
+          <div class="menu-text">语音输入</div>
+        </div>
+        <!--视频通话-->
+        <div class="menu-item">
+          <div class="menu-icon">
+            <!-- 使用 v-html 渲染 Unicode -->
+            <span class="iconfont">&#xe602;</span>
+          </div>
+          <div class="menu-text">视频通话</div>
+        </div>
+        <!--语音通话-->
+        <div class="menu-item">
+          <div class="menu-icon">
+            <!-- 使用 v-html 渲染 Unicode -->
+            <span class="iconfont">&#xe64f;</span>
+          </div>
+          <div class="menu-text">语音通话</div>
         </div>
       </div>
     </div>
@@ -83,20 +128,15 @@ export default {
     chatStore.setRoomId(roomId);
     chatStore.setAvatar(avatar);
 
-    // 功能菜单项
-    const menuItems = [
-      { text: '相册', icon: '/static/icons/photo.png' },
-      { text: '拍摄', icon: '/static/icons/camera.png' },
-      { text: '视频通话', icon: '/static/icons/video.png' },
-      { text: '位置', icon: '/static/icons/location.png' },
-      { text: '红包', icon: '/static/icons/redpacket.png' },
-      { text: '转账', icon: '/static/icons/transfer.png' },
-    ];
-
-
     // 切换功能菜单显示状态
     function toggleMenu() {
       menuVisible.value = !menuVisible.value;
+
+      // 根据菜单显示状态调整输入框高度
+      const chatInputBar = document.querySelector(".chat-input-bar");
+      if (chatInputBar) {
+        chatInputBar.style.bottom = menuVisible.value ? "272px" : "0";
+      }
     }
 
     // 监听store中的messages状态变化
@@ -113,7 +153,6 @@ export default {
     );
 
 
-
     function scrollToBottom() {
       if (messageContainer.value) {
         messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
@@ -126,6 +165,10 @@ export default {
       wsApi.connect(UNI_APP.WS_URL, loginToken);
       await chatStore.getMessageList(); // 获取初始消息列表
       await setNavigationBarTitle(name);
+      const chatInputBar = document.querySelector(".chat-input-bar");
+      if (chatInputBar) {
+        chatInputBar.style.bottom = "0px"; // 初始时输入框在底部
+      }
     });
 
     // 在组件卸载时关闭WebSocket连接（可选）
@@ -143,11 +186,27 @@ export default {
       scrollToBottom,
       messageContainer, // 返回 messageContainer 给模板
       menuVisible,
-      menuItems,
       toggleMenu,
+
     };
   },
   methods: {
+    takePhoto(){
+      // 调用uni.chooseImage API
+      uni.chooseImage({
+        count: 1, // 默认9, 设置图片的数量
+        sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+        sourceType: ['camera'], // 可以指定来源是相册还是相机，默认二者都有
+        success: (res) => { // 成功的回调
+          const tempFilePaths = res.tempFilePaths;
+          console.log(tempFilePaths);
+          // 处理图片，例如预览、上传等
+        },
+        fail: (err) => { // 失败的回调
+          console.log('Error while choosing image:', err);
+        }
+      });
+    },
     getAvatar,
     //发送消息
     async sendMessage() {
@@ -226,35 +285,10 @@ export default {
   flex-direction: column;
   height: 100vh;
   padding-bottom: 54px;
-  //padding-bottom: env(safe-area-inset-bottom, 54px); /* 避免输入框被遮挡 */
 }
 
 .iconfont {
   font-size: 36px; /* 设置字体大小为24px */
-}
-
-.icon {
-  //width: 36px;
-  //height: 36px;
-  //margin-top: 1px;
-  //vertical-align: -0.15em;
-  //fill: currentColor;
-  //overflow: hidden;
-}
-
-/* 顶部导航 */
-.chat-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 15px;
-  background-color: #fff;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.chat-title {
-  font-size: 18px;
-  font-weight: bold;
 }
 
 .back-btn img,
@@ -269,14 +303,7 @@ export default {
   flex: 1;
   padding: 10px;
   overflow-y: auto;
-  background-color: #f7f7f7;
-}
-
-.date-separator {
-  text-align: center;
-  font-size: 12px;
-  color: #999;
-  margin: 10px 0;
+  background-color: #ededed;
 }
 
 .message-item {
@@ -303,7 +330,7 @@ export default {
 
 .message-bubble {
   max-width: 70%;
-  padding: 10px;
+  padding: 12px;
   border-radius: 10px;
   font-size: 18px;
   line-height: 1.5;
@@ -313,7 +340,8 @@ export default {
 }
 
 .message-item.left .message-bubble {
-  background-color: #f0f0f0;
+  /*background-color: #f0f0f0;*/
+  background-color: #ffffff;
   margin-left: 10px;
 }
 
@@ -328,16 +356,16 @@ export default {
 /* 底部输入框 */
 .chat-input-bar {
   position: fixed;
-  bottom: 0;
+  bottom: 0; /* 提高输入框的位置，具体值根据功能菜单高度调整 */
   left: 0;
   width: 100%;
-  background-color: #ffffff;
+  background-color: #f8f8f8;
   display: flex;
   align-items: center;
   padding: 10px;
   box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
   z-index: 10;
-  margin-bottom: 2px;
+  /*margin-bottom: 2px;*/
   /*padding-bottom: 10px;*/
 }
 
@@ -364,23 +392,28 @@ export default {
 
 /* 功能菜单 */
 .function-menu {
-  position: fixed;
-  bottom: 54px; /* 适配输入框位置 */
+  /*position: fixed;*/
+  /*position: absolute; !* 紧贴输入框的布局 *!*/
+  /*bottom: 54px; !* 适配输入框位置 *!*/
+  position: fixed; /* 固定功能菜单位置 */
+  bottom: 0; /* 功能菜单贴近底部 */
   left: 0;
   width: 100%;
-  background-color: #ffffff;
+  background-color: #f7f7f7;
   border-top: 1px solid #ddd;
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-  z-index: 999;
+  /*z-index: 999;*/
+  z-index: 9; /* 保证功能菜单在输入框下方 */
   display: flex;
   flex-direction: column;
   padding: 10px 0;
 }
 
+
 .menu-grid {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-around;
+  /*justify-content: space-around;*/
 }
 
 .menu-item {
@@ -389,20 +422,25 @@ export default {
   align-items: center;
   justify-content: center;
   width: 25%;
-  padding: 10px;
+  padding: 16px 35px;
   cursor: pointer;
 }
 
 .menu-icon {
-  width: 50px;
-  height: 50px;
+  width: 70px;
+  height: 70px;
   margin-bottom: 5px;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .menu-text {
   font-size: 14px;
   color: #333;
   text-align: center;
+  width: 70px;
 }
 
 </style>

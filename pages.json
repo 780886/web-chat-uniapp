@@ -34,7 +34,8 @@
     {
       "path": "pages/conversation/conversation",
       "style": {
-        "navigationBarTitleText": "会话"
+        "navigationBarTitleText": "会话",
+        "navigationBarBackgroundColor": "#ededed"
       }
     },
     {
@@ -46,7 +47,8 @@
     {
       "path": "pages/chat/chat",
       "style": {
-        "navigationBarTitleText": "聊天"
+        "navigationBarTitleText": "聊天",
+        "navigationBarBackgroundColor": "#ededed"
       }
     },
     {
@@ -58,7 +60,8 @@
     {
       "path": "pages/contact/contact",
       "style": {
-        "navigationBarTitleText": "通讯录"
+        "navigationBarTitleText": "通讯录",
+        "navigationBarBackgroundColor": "#ededed"
       }
     },
     {
@@ -88,7 +91,8 @@
     {
       "path": "pages/my/my",
       "style": {
-        "navigationBarTitleText": ""
+        "navigationBarTitleText": "",
+        "navigationBarBackgroundColor": "#ffffff"
       }
     },
     {
@@ -109,7 +113,6 @@
     "selectedColor": "#587ff0",
     "borderStyle": "black",
     "backgroundColor": "#ffffff",
-//    "height": "50rpx",  // 设置自定义高度
     "list": [
       {
         "pagePath": "pages/conversation/conversation",
