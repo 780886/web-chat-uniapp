@@ -12,22 +12,24 @@
       </div>
     </div>
 
-    <!-- 操作项 -->
-    <div class="action-list">
-      <div class="action-item">
-        <div class="action-icon">
-          <image src="/static/shezhi.png" alt="Settings" class="icon"/>
-          <div class="action-text" @click="navigateTo('settings')">设置</div>
+    <div class="action">
+      <!-- 操作项 -->
+      <div class="action-list">
+        <div class="action-item">
+          <div class="action-icon">
+            <image src="/static/shezhi.png" alt="Settings" class="icon"/>
+            <div class="action-text" @click="navigateTo('settings')">设置</div>
+          </div>
+          <div class="arrow" @click="navigateTo('settings')">></div>
         </div>
-        <div class="arrow" @click="navigateTo('settings')">></div>
+        <!-- <div class="action-item">
+          <div class="action-icon">
+            <img src="/static/info-icon.png" alt="About" />
+          </div>
+          <div class="action-text">关于</div>
+          <div class="arrow">></div>
+        </div> -->
       </div>
-      <!-- <div class="action-item">
-        <div class="action-icon">
-          <img src="/static/info-icon.png" alt="About" />
-        </div>
-        <div class="action-text">关于</div>
-        <div class="arrow">></div>
-      </div> -->
     </div>
   </div>
 </template>
@@ -142,6 +144,10 @@ export default {
   font-size: 14px;
   color: #888;
   margin-top: 14px;
+}
+
+.action{
+  /*background-color: #ededed;*/
 }
 
 .action-list {
