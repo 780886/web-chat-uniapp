@@ -15,8 +15,8 @@
           <div class="chat-info">
             <div class="chat-name">{{ conversation.name }}</div>
             <div class="chat-last-message">{{ conversation.content }}</div>
+            <div class="chat-time">{{ formatTime(conversation.lastSendTime) }}</div> <!-- 显示时间 -->
           </div>
-          <div class="chat-time">{{ formatTime(conversation.lastSendTime) }}</div> <!-- 显示时间 -->
         </div>
       </div>
     </div>
@@ -184,7 +184,7 @@ export default {
 }
 
 .chat-list {
-  padding: 14px;
+  padding: 10px 10px;
   overflow-y: auto;
   width: 100%;
   height: 100%; /* 设置为 100% 高度 */
@@ -192,7 +192,7 @@ export default {
 
 .chat-item {
   display: flex;
-  padding: 2.7% 2px;
+  padding: 2% 2px;
   /*border-bottom: 1px solid #ddd;*/
   align-items: center;
   height: 10%; /* 每个项占据 10% 的高度 */
@@ -204,8 +204,8 @@ export default {
 }
 
 .avatar-img {
-  width: 50px;
-  height: 50px;
+  width: 53px;
+  height: 53px;
   border-radius: 10%;
 }
 
@@ -213,6 +213,9 @@ export default {
   margin-left: 8px;
   flex: 1;
   border-bottom: 1px solid #ddd;
+  position: relative;
+  //padding-bottom: 16px; /* 增加下方的内边距，移动边框 */
+  //padding-top: 10px; /* 整体下移 */
 }
 
 .chat-name {
@@ -232,8 +235,9 @@ export default {
 .chat-time {
   font-size: 12px;
   color: #b0b0b0;
-  //margin-left: 30px;
-  /* 时间的颜色 */
+  position: absolute; /* 绝对定位 */
+  top: 0; /* 距离顶部 0 */
+  right: 0; /* 距离右侧 0 */
 }
 
 .tab-bar {

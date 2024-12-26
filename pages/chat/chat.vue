@@ -367,6 +367,7 @@ export default {
   z-index: 10;
   /*margin-bottom: 2px;*/
   /*padding-bottom: 10px;*/
+  //transition: bottom 0.3s ease; /* 动画效果 */
 }
 
 .input-box {
