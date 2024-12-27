@@ -184,7 +184,7 @@ export default {
 }
 
 .chat-list {
-  padding: 10px 10px;
+  padding: 2px 10px;
   overflow-y: auto;
   width: 100%;
   height: 100%; /* 设置为 100% 高度 */
@@ -214,8 +214,8 @@ export default {
   flex: 1;
   border-bottom: 1px solid #ddd;
   position: relative;
-  //padding-bottom: 16px; /* 增加下方的内边距，移动边框 */
-  //padding-top: 10px; /* 整体下移 */
+  padding-bottom: 6px; /* 增加下方的内边距，移动边框 */
+  /*padding-top: 2px; !* 整体下移 *!*/
 }
 
 .chat-name {
