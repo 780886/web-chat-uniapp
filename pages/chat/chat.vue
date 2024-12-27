@@ -45,6 +45,8 @@
             <span class="iconfont">&#xe61d;</span>
           </div>
           <div class="menu-text">拍摄</div>
+          <!-- 预览图片 -->
+<!--          <image v-for="(item, index) in images" :key="index" :src="item" @click="previewImage(index)"></image>-->
         </div>
         <!--文件-->
         <div class="menu-item">
@@ -206,7 +208,7 @@ export default {
     takePhoto() {
       // 调用uni.chooseImage API
       uni.chooseImage({
-        count: 1, // 默认9, 设置图片的数量
+        count: 1, // 默认1, 设置图片的数量
         sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
         sourceType: ['camera'], // 可以指定来源是相册还是相机，默认二者都有
         success: (res) => { // 成功的回调
