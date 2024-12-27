@@ -15,7 +15,7 @@
       </div>
     </div>
     <!-- 底部输入框 -->
-    <div class="chat-input-bar">
+    <div class="chat-input-bar" :style="{ bottom: chatInputBarBottom }">
       <div class="input-actions">
         <span class="iconfont">&#xe888;</span>
       </div>
@@ -124,6 +124,7 @@ export default {
     const avatar = props.avatar;
     // 控制功能菜单显示状态
     const menuVisible = ref(false);
+    const chatInputBarBottom = ref("0px");
     // 立即设置roomId
     chatStore.setRoomId(roomId);
     chatStore.setAvatar(avatar);
@@ -131,12 +132,7 @@ export default {
     // 切换功能菜单显示状态
     function toggleMenu() {
       menuVisible.value = !menuVisible.value;
-
-      // 根据菜单显示状态调整输入框高度
-      const chatInputBar = document.querySelector(".chat-input-bar");
-      if (chatInputBar) {
-        chatInputBar.style.bottom = menuVisible.value ? "272px" : "0";
-      }
+      chatInputBarBottom.value = menuVisible.value ? "267px" : "0px";
     }
 
     // 监听store中的messages状态变化
@@ -186,6 +182,7 @@ export default {
       scrollToBottom,
       messageContainer, // 返回 messageContainer 给模板
       menuVisible,
+      chatInputBarBottom,
       toggleMenu,
 
     };
