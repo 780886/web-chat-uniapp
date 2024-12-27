@@ -34,13 +34,13 @@
         <div class="menu-item">
           <div class="menu-icon">
             <!-- 使用 v-html 渲染 Unicode -->
-            <span class="iconfont">&#xe87a;</span>
+            <span class="iconfont" @click="openAlbum">&#xe87a;</span>
           </div>
           <div class="menu-text">相机</div>
         </div>
         <!--拍摄-->
         <div class="menu-item">
-          <div class="menu-icon"  @click="takePhoto">
+          <div class="menu-icon" @click="takePhoto">
             <!-- 使用 v-html 渲染 Unicode -->
             <span class="iconfont">&#xe61d;</span>
           </div>
@@ -48,7 +48,7 @@
         </div>
         <!--文件-->
         <div class="menu-item">
-          <div class="menu-icon">
+          <div class="menu-icon" @click="openFile">
             <!-- 使用 v-html 渲染 Unicode -->
             <span class="iconfont">&#xe665;</span>
           </div>
@@ -58,7 +58,7 @@
         <div class="menu-item">
           <div class="menu-icon">
             <!-- 使用 v-html 渲染 Unicode -->
-            <span class="iconfont">&#xe64f;</span>
+            <span class="iconfont">&#xe60f;</span>
           </div>
           <div class="menu-text">语音输入</div>
         </div>
@@ -188,7 +188,22 @@ export default {
     };
   },
   methods: {
-    takePhoto(){
+    openAlbum() {
+      uni.chooseImage({
+        count: 1, // 默认9，设置图片的选择数量
+        sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+        sourceType: ['album'], // 从相册选择
+        success: (res) => {
+          const tempFilePaths = res.tempFilePaths;
+          console.log(tempFilePaths);
+          // 处理选中的图片，例如预览、上传等
+        },
+        fail: (err) => {
+          console.log('Error while opening album:', err);
+        }
+      });
+    },
+    takePhoto() {
       // 调用uni.chooseImage API
       uni.chooseImage({
         count: 1, // 默认9, 设置图片的数量
@@ -203,6 +218,30 @@ export default {
           console.log('Error while choosing image:', err);
         }
       });
+    },
+    openFile() {
+      // 判断当前环境是否为移动设备
+      if (uni.getSystemInfoSync().platform === 'android' || uni.getSystemInfoSync().platform === 'ios') {
+        // 使用plus.io获取文件
+        plus.io.resolveLocalFileSystemURL(filePath, function (entry) {
+          // 判断文件是否存在
+          if (entry) {
+            // 打开文件
+            entry.open('r', function (file) {
+              // 根据文件类型调用相应的应用打开文件
+              plus.runtime.openFile(file);
+            }, function (e) {
+              console.log("打开文件失败: " + e.message);
+            });
+          } else {
+            console.log("文件不存在");
+          }
+        }, function (e) {
+          console.log("获取文件失败: " + e.message);
+        });
+      } else {
+        console.log("此功能仅支持移动设备");
+      }
     },
     getAvatar,
     //发送消息
@@ -364,7 +403,7 @@ export default {
   z-index: 10;
   /*margin-bottom: 2px;*/
   /*padding-bottom: 10px;*/
-  //transition: bottom 0.3s ease; /* 动画效果 */
+/ / transition: bottom 0.3 s ease; /* 动画效果 */
 }
 
 .input-box {
