@@ -450,7 +450,7 @@ export default {
   right: 0;
   bottom: 0;
   width: 100%;
-  min-height: 60px; /* 稍微减小输入框高度 */
+  min-height: 58px; /* 稍微减小输入框高度 */
   background-color: #f8f8f8;
   display: flex;
   align-items: center;
