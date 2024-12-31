@@ -135,16 +135,16 @@ export default {
     function toggleMenu() {
       menuVisible.value = !menuVisible.value;
       const menuHeight = 267;
-      
-      // 获取系统信息
-      const systemInfo = uni.getSystemInfoSync();
-      const safeAreaBottom = systemInfo.safeAreaInsets?.bottom || 0;
-      
-      // 计算底部位置
+      const safeAreaBottom = uni.getSystemInfoSync().safeAreaInsets?.bottom || 0;
+  
+       // 直接切换位置
       chatInputBarBottom.value = menuVisible.value 
         ? `${menuHeight + safeAreaBottom}px` 
         : `${safeAreaBottom}px`;
-    }
+          nextTick(() => {
+            scrollToBottom();
+          });
+        }
 
     // 监听store中的messages状态变化
     watch(
@@ -156,27 +156,15 @@ export default {
             scrollToBottom();
           });
         },
-        { deep: true } // 添加 deep 以监听数组内部变化
+        {immediate: true}
     );
 
 
-     // 定义 scrollToBottom 函数
-     const scrollToBottom = () => {
-        nextTick(() => {
-          const container = messageContainer.value;
-          if (container) {
-            setTimeout(() => {
-              // 计算实际需要滚动的位置
-              const scrollHeight = container.scrollHeight;
-              const clientHeight = container.clientHeight;
-              const maxScrollTop = scrollHeight - clientHeight + 100; // 添加额外偏移量
-              
-              // 确保滚动到最底部
-              container.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
-            }, 100);
-          }
-        });
-      };
+    function scrollToBottom() {
+      if (messageContainer.value) {
+        messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
+      }
+    }
 
     // 在组件挂载时获取初始消息列表并初始化WebSocket连接
     onMounted(async () => {
@@ -188,29 +176,13 @@ export default {
       // if (chatInputBar) {
       //   chatInputBar.style.bottom = "0px"; // 初始时输入框在底部
       // }、
-     // 获取系统信息
+          // 获取系统信息
       const systemInfo = uni.getSystemInfoSync();
+      // 根据实际设备调整底部安全区域
       const safeAreaBottom = systemInfo.safeAreaInsets?.bottom || 0;
       
-      // 初始化底部安全区域
+      // 更新底部安全区域
       chatInputBarBottom.value = `${safeAreaBottom}px`;
-
-       // 确保初始消息加载后滚动到底部
-      nextTick(() => {
-        scrollToBottom();
-      });
-      
-      // 监听软键盘
-      uni.onKeyboardHeightChange(res => {
-        if (res.height > 0) {
-          // 键盘弹出时，隐藏功能菜单
-          menuVisible.value = false;
-          chatInputBarBottom.value = `${res.height}px`;
-        } else {
-          // 键盘收起时，恢复原始位置
-          chatInputBarBottom.value = `${safeAreaBottom}px`;
-        }
-      });
     });
 
     // 在组件卸载时关闭WebSocket连接（可选）
@@ -218,7 +190,6 @@ export default {
       // if (chatStore.ws) {
       //   chatStore.ws.close();
       // }
-      uni.offKeyboardHeightChange();
     });
     // 返回给模板使用的响应式数据
     return {
@@ -326,9 +297,10 @@ export default {
           this.content = '';
           const chatStore = userChatStore();
           chatStore.addOwnMessage(res.data);
-           // 确保消息发送成功后滚动到底部
-          await nextTick();
-          this.scrollToBottom();
+          //滚动到底部
+          this.$nextTick(() => {
+            this.scrollToBottom();
+          });
         } else {
           uni.showToast({
             title: res.message || "发送消息失败",
@@ -362,17 +334,22 @@ export default {
   box-sizing: border-box;
 }
 
+/* .chat-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding-bottom: 54px;
+} */
 .chat-page {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  position: relative;
-  background-color: #ededed;
+  padding-bottom: env(safe-area-inset-bottom); /* 添加安全区域padding */
+  position: relative; /* 添加相对定位 */
 }
 
-/* 图标大小调整 */
 .iconfont {
-  font-size: 28px; /* 调整图标大小 */
+  font-size: 36px; /* 设置字体大小为24px */
 }
 
 .back-btn img,
@@ -381,22 +358,26 @@ export default {
   height: 20px;
 }
 
-/* 聊天内容区域样式调整 */
+/* 聊天内容 */
+/* .chat-content {
+  max-height: 100%;
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  background-color: #ededed;
+} */
+/* 修改聊天内容区域样式 */
 .chat-content {
   flex: 1;
   padding: 10px;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  /* 增加底部padding以确保内容不被输入框遮挡 */
-  padding-bottom: calc(100px + env(safe-area-inset-bottom)); /* 调整为100px */
-  height: calc(100vh - env(safe-area-inset-top));
+  background-color: #ededed;
+  padding-bottom: 60px; /* 为底部输入框留出空间 */
 }
 
-/* 消息项样式微调 */
 .message-item {
   display: flex;
-  margin: 8px 0; /* 从10px改为8px，使消息间距更紧凑 */
-  word-break: break-word;
+  margin: 10px 0;
 }
 
 .message-item.left {
@@ -411,22 +392,20 @@ export default {
 }
 
 .avatar img {
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   border-radius: 10%;
 }
 
 .message-bubble {
   max-width: 70%;
-  padding: 8px 10px; /* 减小内边距 */
+  padding: 12px;
   border-radius: 10px;
   font-size: 18px;
   line-height: 1.5;
   word-wrap: break-word; /* 允许长单词换行 */
   overflow: hidden; /* 隐藏超出部分 */
   text-overflow: ellipsis; /* 超出部分显示省略号 */
-  display: flex;
-  align-items: center; /* 垂直居中 */
 }
 
 .message-item.left .message-bubble {
@@ -443,35 +422,47 @@ export default {
   /* 移除原来的右间距 */
 }
 
-/* 输入框样式调整 */
-.chat-input-bar {
+/* 底部输入框 */
+/* .chat-input-bar {
   position: fixed;
+  bottom: 0; 
   left: 0;
-  right: 0;
-  bottom: 0;
   width: 100%;
-  min-height: 60px; /* 稍微减小输入框高度 */
   background-color: #f8f8f8;
   display: flex;
   align-items: center;
-  padding: 8px 10px;
+  padding: 10px;
+  box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+} */
+/* 修改输入框样式 */
+.chat-input-bar {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  background-color: #f8f8f8;
+  display: flex;
+  align-items: center;
+  padding: 10px;
   box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
   z-index: 100;
-  padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  padding-bottom: calc(10px + env(safe-area-inset-bottom));
 }
 
 
 .input-box {
+  z-index: 2;
+  /* 确保输入框在顶层 */
+  position: relative;
   flex: 1;
-  height: 36px; /* 固定高度 */
-  line-height: 36px;
   padding: 0 12px;
   border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px; /* 移动端更合适的字体大小 */
-  margin: 0 10px;
+  border-radius: 2px;
+  font-size: 20px;
+  margin: 5px 10px;
+  height: 40px;
   background-color: #fff;
-  -webkit-appearance: none; /* 移除 iOS 默认样式 */
+  /* 明确设置背景，防止透明 */
 }
 
 .input-actions img {
@@ -480,29 +471,42 @@ export default {
   cursor: pointer;
 }
 
+/* 功能菜单 */
+/* .function-menu {
+  position: fixed; 
+  bottom: 0; 
+  left: 0;
+  width: 100%;
+  background-color: #f7f7f7;
+  border-top: 1px solid #ddd;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 9; 
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+} */
 .function-menu {
   position: fixed;
   left: 0;
-  right: 0;
   bottom: 0;
   width: 100%;
   background-color: #f7f7f7;
   border-top: 1px solid #ddd;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
   z-index: 99;
-  padding: 15px 0;
+  padding: 10px 0;
   height: 267px;
-  padding-bottom: calc(15px + env(safe-area-inset-bottom));
-  display: none;
+  padding-bottom: env(safe-area-inset-bottom);
+  display: none; /* 默认隐藏 */
 }
 /* 显示时的样式 */
 .function-menu.visible {
   display: block; /* 显示时直接显示 */
 }
 .menu-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
-  padding: 0 15px;
+  display: flex;
+  flex-wrap: wrap;
+  /*justify-content: space-around;*/
 }
 
 .menu-item {
@@ -510,25 +514,26 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 25%;
+  padding: 16px 35px;
+  cursor: pointer;
 }
 
-/* 菜单图标样式优化 */
 .menu-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
+  width: 70px;
+  height: 70px;
+  margin-bottom: 5px;
   background-color: white;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 8px;
 }
 
-/* 菜单文字样式 */
 .menu-text {
-  font-size: 12px;
+  font-size: 14px;
   color: #333;
   text-align: center;
+  width: 70px;
 }
 
 </style>

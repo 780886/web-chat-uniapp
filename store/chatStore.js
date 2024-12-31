@@ -125,6 +125,8 @@ export default defineStore('chatStore', {
             }
             // 赋值处理后的数据
             this.messages.push(message);
+            // 触发更新通知
+            uni.$emit('onMessage');
             console.log("this.chats", this.messages);
         },
     },
