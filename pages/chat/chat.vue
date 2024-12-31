@@ -415,12 +415,250 @@ export default {
     // 打开文件
     openFile() {
       // #ifdef APP-PLUS
+      // App端使用plus.io API
       plus.io.resolveLocalFileSystemURL('_doc/', (entry) => {
-        entry.createReader().readEntries((entries) => {
-          // 实现文件选择逻辑
+        plus.nativeUI.actionSheet({
+          title: '选择文件类型',
+          cancel: '取消',
+          buttons: [{
+            title: '文档文件'
+          }, {
+            title: '图片文件'
+          }, {
+            title: '其他文件'
+          }]
+        }, (e) => {
+          if (e.index > 0) {
+            uni.chooseFile({
+              count: 1,
+              extension: e.index === 1 ? ['.doc', '.docx', '.pdf', '.txt'] : 
+                       e.index === 2 ? ['.jpg', '.jpeg', '.png', '.gif'] : 
+                       ['*'],
+              success: async (res) => {
+                const file = res.tempFiles[0];
+                // 检查文件大小
+                if (file.size > 10 * 1024 * 1024) { // 10MB限制
+                  uni.showToast({
+                    title: '文件大小不能超过10MB',
+                    icon: 'none'
+                  });
+                  return;
+                }
+                
+                try {
+                  // 上传文件
+                  const uploadRes = await this.uploadFile(file.path);
+                  
+                  // 发送文件消息
+                  const body = {
+                    messageType: 3, // 假设3是文件类型
+                    roomId: this.roomId,
+                    body: {
+                      content: uploadRes.url,
+                      fileName: file.name,
+                      fileSize: file.size,
+                      fileType: file.type || this.getFileType(file.name)
+                    }
+                  };
+                  
+                  const res = await request({
+                    url: "/chat/sendMessage",
+                    method: "POST",
+                    data: body,
+                    header: {
+                      "ajax": true,
+                    }
+                  });
+                  
+                  if (res.code === ResponseCodeEnum.SUCCESS) {
+                    this.chatStore.addOwnMessage(res.data);
+                  } else {
+                    uni.showToast({
+                      title: res.message || "发送失败",
+                      icon: "none"
+                    });
+                  }
+                } catch (error) {
+                  console.error("发送文件失败:", error);
+                  uni.showToast({
+                    title: "发送失败,请重试",
+                    icon: "none"
+                  });
+                }
+              }
+            });
+          }
         });
       });
       // #endif
+
+      // #ifdef H5
+      // H5端使用input type="file"
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '*/*';
+      input.onchange = async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        // 检查文件大小
+        if (file.size > 10 * 1024 * 1024) {
+          uni.showToast({
+            title: '文件大小不能超过10MB',
+            icon: 'none'
+          });
+          return;
+        }
+        
+        try {
+          // 上传文件
+          const formData = new FormData();
+          formData.append('file', file);
+          
+          const uploadRes = await request({
+            url: '/upload/file',
+            method: 'POST',
+            data: formData,
+            header: {
+              'Content-Type': 'multipart/form-data'
+            }
+          });
+          
+          // 发送文件消息
+          const body = {
+            messageType: 3,
+            roomId: this.roomId,
+            body: {
+              content: uploadRes.data.url,
+              fileName: file.name,
+              fileSize: file.size,
+              fileType: file.type
+            }
+          };
+          
+          const res = await request({
+            url: "/chat/sendMessage",
+            method: "POST",
+            data: body,
+            header: {
+              "ajax": true,
+            }
+          });
+          
+          if (res.code === ResponseCodeEnum.SUCCESS) {
+            this.chatStore.addOwnMessage(res.data);
+          } else {
+            uni.showToast({
+              title: res.message || "发送失败",
+              icon: "none"
+            });
+          }
+        } catch (error) {
+          console.error("发送文件失败:", error);
+          uni.showToast({
+            title: "发送失败,请重试",
+            icon: "none"
+          });
+        }
+      };
+      input.click();
+      // #endif
+
+      // #ifdef MP-WEIXIN
+      // 微信小程序使用wx.chooseMessageFile
+      wx.chooseMessageFile({
+        count: 1,
+        type: 'file',
+        success: async (res) => {
+          const file = res.tempFiles[0];
+          
+          if (file.size > 10 * 1024 * 1024) {
+            uni.showToast({
+              title: '文件大小不能超过10MB',
+              icon: 'none'
+            });
+            return;
+          }
+          
+          try {
+            // 上传文件
+            const uploadRes = await this.uploadFile(file.path);
+            
+            // 发送文件消息
+            const body = {
+              messageType: 3,
+              roomId: this.roomId,
+              body: {
+                content: uploadRes.url,
+                fileName: file.name,
+                fileSize: file.size,
+                fileType: this.getFileType(file.name)
+              }
+            };
+            
+            const res = await request({
+              url: "/chat/sendMessage",
+              method: "POST",
+              data: body,
+              header: {
+                "ajax": true,
+              }
+            });
+            
+            if (res.code === ResponseCodeEnum.SUCCESS) {
+              this.chatStore.addOwnMessage(res.data);
+            } else {
+              uni.showToast({
+                title: res.message || "发送失败",
+                icon: "none"
+              });
+            }
+          } catch (error) {
+            console.error("发送文件失败:", error);
+            uni.showToast({
+              title: "发送失败,请重试",
+              icon: "none"
+            });
+          }
+        }
+      });
+      // #endif
+    },
+
+    // 上传文件的通用方法
+    async uploadFile(filePath) {
+      return new Promise((resolve, reject) => {
+        uni.uploadFile({
+          url: UNI_APP.BASE_URL + '/upload/file',
+          filePath: filePath,
+          name: 'file',
+          header: {
+            'token': getLoginToken()
+          },
+          success: (uploadRes) => {
+            const data = JSON.parse(uploadRes.data);
+            if (data.code === ResponseCodeEnum.SUCCESS) {
+              resolve(data.data);
+            } else {
+              reject(new Error(data.message));
+            }
+          },
+          fail: (error) => {
+            reject(error);
+          }
+        });
+      });
+    },
+
+    // 获取文件类型的辅助方法
+    getFileType(fileName) {
+      const ext = fileName.split('.').pop().toLowerCase();
+      const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
+      const docExts = ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'pdf', 'txt'];
+      
+      if (imageExts.includes(ext)) return 'image';
+      if (docExts.includes(ext)) return 'document';
+      return 'other';
     },
 
     // 开始语音输入
