@@ -1,8 +1,8 @@
 <template>
   <div class="chat-page">
     <!-- 聊天内容区域 -->
-    <scroll-view class="chat-content" scroll-y ref="messageContainer" 
-      :scroll-top="scrollTop" @scrolltoupper="loadMoreMessages">
+    <scroll-view class="chat-content" scroll-y ref="messageContainer"
+                 :scroll-top="scrollTop" @scrolltoupper="loadMoreMessages">
       <!-- 加载更多 -->
       <view class="loading" v-if="isLoading">
         <text>加载中...</text>
@@ -17,14 +17,14 @@
           <!-- 文本消息 -->
           <text v-if="message.messageType === 1">{{message.content}}</text>
           <!-- 图片消息 -->
-          <image v-if="message.messageType === 2" 
-            :src="message.content" 
-            mode="widthFix"
-            @tap="previewImage(message.content)"
-            lazy-load/>
-          <!-- 语音消息 -->  
+          <image v-if="message.messageType === 2"
+                 :src="message.content"
+                 mode="widthFix"
+                 @tap="previewImage(message.content)"
+                 lazy-load/>
+          <!-- 语音消息 -->
           <view v-if="message.messageType === 3" class="voice-message"
-            @tap="playVoice(message.content)">
+                @tap="playVoice(message.content)">
             <text>{{message.duration}}''</text>
             <text class="iconfont">&#xe60f;</text>
           </view>
@@ -36,29 +36,29 @@
     </scroll-view>
 
     <!-- 底部输入区域 -->
-    <view class="input-container" :style="{ bottom: areaHeight + 'px' }">
+    <view class="input-container">
       <view class="chat-input-bar">
         <view class="input-actions">
           <text class="iconfont voice-icon" @tap="toggleVoiceInput">&#xe888;</text>
         </view>
-        
+
         <!-- 文本输入框/语音按钮 -->
         <view v-if="!isVoiceMode" class="text-input">
-          <input type="text" 
-            v-model="content" 
-            class="input-box"
-            placeholder="发送消息..." 
-            confirm-type="send"
-            :adjust-position="false"
-            @confirm="sendTextMessage"
-            @focus="onInputFocus"
-            @blur="onInputBlur"/>
+          <input type="text"
+                 v-model="content"
+                 class="input-box"
+                 placeholder="发送消息..."
+                 confirm-type="send"
+                 :adjust-position="false"
+                 @confirm="sendTextMessage"
+                 @focus="onInputFocus"
+                 @blur="onInputBlur"/>
         </view>
         <view v-else class="voice-input">
-          <button class="voice-btn" 
-            @touchstart="startRecording"
-            @touchend="stopRecording"
-            @touchcancel="cancelRecording">
+          <button class="voice-btn"
+                  @touchstart="startRecording"
+                  @touchend="stopRecording"
+                  @touchcancel="cancelRecording">
             按住说话
           </button>
         </view>
@@ -136,7 +136,7 @@ export default {
       default: '会话',
     },
     roomId: {
-      type: [Number, String], 
+      type: [Number, String],
       required: true,
       default: 0,
     },
@@ -155,7 +155,7 @@ export default {
     const isLoading = ref(false);
     const scrollTop = ref(0);
     const areaHeight = ref(0);
-    
+
     chatStore.setRoomId(roomId);
     chatStore.setAvatar(props.avatar);
 
@@ -185,7 +185,7 @@ export default {
     const stopRecording = () => {
       uni.showToast({
         title: '发送语音',
-        icon: 'none' 
+        icon: 'none'
       });
       // 实现发送语音逻辑
     }
@@ -239,13 +239,13 @@ export default {
 
     // 监听消息变化,自动滚动
     watch(
-      () => chatStore.messages,
-      () => {
-        nextTick(() => {
-          scrollToBottom();
-        });
-      },
-      { deep: true }
+        () => chatStore.messages,
+        () => {
+          nextTick(() => {
+            scrollToBottom();
+          });
+        },
+        { deep: true }
     );
 
     const scrollToBottom = () => {
@@ -265,7 +265,7 @@ export default {
       await chatStore.getMessageList();
       await setNavigationBarTitle(props.name);
       scrollToBottom();
-      
+
       uni.onKeyboardHeightChange(res => {
         if (res.height > 0) {
           menuVisible.value = false;
@@ -403,7 +403,7 @@ export default {
       });
     },
 
-    // 发起语音通话  
+    // 发起语音通话
     startVoiceCall() {
       uni.showToast({
         title: '语音通话功能开发中',
@@ -502,16 +502,14 @@ export default {
 }
 
 .input-container {
+  position: relative;
+}
+
+.chat-input-bar {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
-  width: 100%;
-  transition: all 0.3s ease;
-  z-index: 100;
-}
-
-.chat-input-bar {
   width: 100%;
   min-height: 58px;
   background-color: #f8f8f8;
@@ -519,6 +517,7 @@ export default {
   align-items: center;
   padding: 8px 10px;
   box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+  z-index: 100;
   padding-bottom: calc(8px + env(safe-area-inset-bottom));
 }
 
@@ -560,9 +559,13 @@ export default {
 }
 
 .dynamic-area {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 58px;
   width: 100%;
   transition: all 0.3s ease;
-  background-color: #f7f7f7;
+  z-index: 98;
 }
 
 .function-menu {
