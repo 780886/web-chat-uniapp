@@ -14,71 +14,62 @@
         </div>
       </div>
     </div>
-    <!-- 底部输入框 -->
-    <div class="chat-input-bar" :style="{ bottom: chatInputBarBottom }">
-      <div class="input-actions">
-        <span class="iconfont">&#xe888;</span>
+    <div class="input-container">
+      <!-- 底部输入框 -->
+      <div class="chat-input-bar" :style="{ bottom: chatInputBarBottom }">
+        <div class="input-actions">
+          <span class="iconfont">&#xe888;</span>
+        </div>
+        <input type="text" v-model="content" class="input-box" placeholder="发送消息..." confirm-type="send"
+              @confirm="sendMessage" @focus="onInputFocus"
+              @blur="onInputBlur"/>
+        <div class="input-actions">
+          <span class="iconfont">&#xe600;</span>
+          <span class="iconfont" @click="toggleMenu">&#xe7a6;</span>
+        </div>
       </div>
-      <!--      @keydown.enter-->
-      <input type="text" v-model="content" class="input-box" placeholder="发送消息..." confirm-type="send"
-             @confirm="sendMessage"/>
-      <div class="input-actions">
-        <span class="iconfont">&#xe600;</span>
-        <span class="iconfont" @click="toggleMenu">&#xe7a6;</span>
-      </div>
-    </div>
-    <!-- 弹出功能菜单 -->
-    <div v-show="menuVisible" :class="['function-menu', menuVisible ? 'visible' : '']">
-      <div class="menu-grid">
-        <!--相机-->
-        <div class="menu-item">
-          <div class="menu-icon">
-            <!-- 使用 v-html 渲染 Unicode -->
-            <span class="iconfont" @click="openAlbum">&#xe87a;</span>
+      <!-- 动态区域 - 用于显示功能菜单或键盘 -->
+      <div class="dynamic-area" :style="{ height: areaHeight + 'px' }">
+        <!-- 功能菜单 -->
+        <div v-show="menuVisible" class="function-menu">
+          <div class="menu-grid">
+            <div class="menu-item">
+              <div class="menu-icon">
+                <span class="iconfont" @click="openAlbum">&#xe87a;</span>
+              </div>
+              <div class="menu-text">相机</div>
+            </div>
+            <div class="menu-item">
+              <div class="menu-icon" @click="takePhoto">
+                <span class="iconfont">&#xe61d;</span>
+              </div>
+              <div class="menu-text">拍摄</div>
+            </div>
+            <div class="menu-item">
+              <div class="menu-icon" @click="openFile">
+                <span class="iconfont">&#xe665;</span>
+              </div>
+              <div class="menu-text">文件</div>
+            </div>
+            <div class="menu-item">
+              <div class="menu-icon">
+                <span class="iconfont">&#xe60f;</span>
+              </div>
+              <div class="menu-text">语音输入</div>
+            </div>
+            <div class="menu-item">
+              <div class="menu-icon">
+                <span class="iconfont">&#xe602;</span>
+              </div>
+              <div class="menu-text">视频通话</div>
+            </div>
+            <div class="menu-item">
+              <div class="menu-icon">
+                <span class="iconfont">&#xe64f;</span>
+              </div>
+              <div class="menu-text">语音通话</div>
+            </div>
           </div>
-          <div class="menu-text">相机</div>
-        </div>
-        <!--拍摄-->
-        <div class="menu-item">
-          <div class="menu-icon" @click="takePhoto">
-            <!-- 使用 v-html 渲染 Unicode -->
-            <span class="iconfont">&#xe61d;</span>
-          </div>
-          <div class="menu-text">拍摄</div>
-          <!-- 预览图片 -->
-<!--          <image v-for="(item, index) in images" :key="index" :src="item" @click="previewImage(index)"></image>-->
-        </div>
-        <!--文件-->
-        <div class="menu-item">
-          <div class="menu-icon" @click="openFile">
-            <!-- 使用 v-html 渲染 Unicode -->
-            <span class="iconfont">&#xe665;</span>
-          </div>
-          <div class="menu-text">文件</div>
-        </div>
-        <!--语音输入-->
-        <div class="menu-item">
-          <div class="menu-icon">
-            <!-- 使用 v-html 渲染 Unicode -->
-            <span class="iconfont">&#xe60f;</span>
-          </div>
-          <div class="menu-text">语音输入</div>
-        </div>
-        <!--视频通话-->
-        <div class="menu-item">
-          <div class="menu-icon">
-            <!-- 使用 v-html 渲染 Unicode -->
-            <span class="iconfont">&#xe602;</span>
-          </div>
-          <div class="menu-text">视频通话</div>
-        </div>
-        <!--语音通话-->
-        <div class="menu-item">
-          <div class="menu-icon">
-            <!-- 使用 v-html 渲染 Unicode -->
-            <span class="iconfont">&#xe64f;</span>
-          </div>
-          <div class="menu-text">语音通话</div>
         </div>
       </div>
     </div>
@@ -107,7 +98,6 @@ export default {
     roomId: {
       type: [Number, String],
       required: true,
-      // 默认值或转换函数
       default: 0,
     },
     avatar: {
@@ -124,17 +114,22 @@ export default {
     const roomId = Number(props.roomId);
     console.log("会话roomId:", roomId);
     const avatar = props.avatar;
-    // 控制功能菜单显示状态
     const menuVisible = ref(false);
     const chatInputBarBottom = ref("0px");
-    // 立即设置roomId
     chatStore.setRoomId(roomId);
     chatStore.setAvatar(avatar);
+    const areaHeight = ref(0); // 动态区域高度
 
-    // 切换功能菜单显示状态
+    // 切换功能菜单
     function toggleMenu() {
       menuVisible.value = !menuVisible.value;
-      const menuHeight = 267;
+      if (menuVisible.value) {
+        // 显示菜单时隐藏键盘
+        uni.hideKeyboard();
+        areaHeight.value = 280; // 设置菜单高度
+      } else {
+        areaHeight.value = 0;
+      }
       
       // 获取系统信息
       const systemInfo = uni.getSystemInfoSync();
@@ -142,9 +137,29 @@ export default {
       
       // 计算底部位置
       chatInputBarBottom.value = menuVisible.value 
-        ? `${menuHeight + safeAreaBottom}px` 
+        ? `${areaHeight.value + safeAreaBottom}px` 
         : `${safeAreaBottom}px`;
     }
+
+    // 输入框获取焦点
+    const onInputFocus = (event) => {
+      menuVisible.value = false; // 隐藏功能菜单
+      const keyboardHeight = event.detail.height;
+      if (keyboardHeight) {
+        areaHeight.value = keyboardHeight;
+        chatInputBarBottom.value = `${keyboardHeight}px`;
+      }
+    };
+
+    // 输入框失去焦点
+    const onInputBlur = () => {
+      if (!menuVisible.value) {
+        areaHeight.value = 0;
+        const systemInfo = uni.getSystemInfoSync();
+        const safeAreaBottom = systemInfo.safeAreaInsets?.bottom || 0;
+        chatInputBarBottom.value = `${safeAreaBottom}px`;
+      }
+    };
 
     // 监听store中的messages状态变化
     watch(
@@ -156,94 +171,79 @@ export default {
             scrollToBottom();
           });
         },
-        { deep: true } // 添加 deep 以监听数组内部变化
+        { deep: true }
     );
 
-
-     // 定义 scrollToBottom 函数
      const scrollToBottom = () => {
         nextTick(() => {
           const container = messageContainer.value;
           if (container) {
             setTimeout(() => {
-              // 计算实际需要滚动的位置
               const scrollHeight = container.scrollHeight;
               const clientHeight = container.clientHeight;
-              const maxScrollTop = scrollHeight - clientHeight + 100; // 添加额外偏移量
-              
-              // 确保滚动到最底部
+              const maxScrollTop = scrollHeight - clientHeight + 100;
               container.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
             }, 100);
           }
         });
       };
 
-    // 在组件挂载时获取初始消息列表并初始化WebSocket连接
     onMounted(async () => {
       const loginToken = getLoginToken()
       wsApi.connect(UNI_APP.WS_URL, loginToken);
-      await chatStore.getMessageList(); // 获取初始消息列表
+      await chatStore.getMessageList();
       await setNavigationBarTitle(name);
-      // const chatInputBar = document.querySelector(".chat-input-bar");
-      // if (chatInputBar) {
-      //   chatInputBar.style.bottom = "0px"; // 初始时输入框在底部
-      // }、
-     // 获取系统信息
+      
       const systemInfo = uni.getSystemInfoSync();
       const safeAreaBottom = systemInfo.safeAreaInsets?.bottom || 0;
-      
-      // 初始化底部安全区域
       chatInputBarBottom.value = `${safeAreaBottom}px`;
 
-       // 确保初始消息加载后滚动到底部
       nextTick(() => {
         scrollToBottom();
       });
       
-      // 监听软键盘
       uni.onKeyboardHeightChange(res => {
         if (res.height > 0) {
-          // 键盘弹出时，隐藏功能菜单
           menuVisible.value = false;
+          areaHeight.value = res.height;
           chatInputBarBottom.value = `${res.height}px`;
         } else {
-          // 键盘收起时，恢复原始位置
-          chatInputBarBottom.value = `${safeAreaBottom}px`;
+          if (!menuVisible.value) {
+            areaHeight.value = 0;
+            chatInputBarBottom.value = `${safeAreaBottom}px`;
+          }
         }
       });
     });
 
-    // 在组件卸载时关闭WebSocket连接（可选）
     onUnmounted(() => {
-      // if (chatStore.ws) {
-      //   chatStore.ws.close();
-      // }
       uni.offKeyboardHeightChange();
     });
-    // 返回给模板使用的响应式数据
+
     return {
-      roomId, // 直接返回 roomId
+      roomId,
       name,
       chatStore,
       content,
       scrollToBottom,
-      messageContainer, // 返回 messageContainer 给模板
+      messageContainer,
       menuVisible,
       chatInputBarBottom,
       toggleMenu,
-
+      onInputFocus,
+      onInputBlur,
+      areaHeight
     };
   },
   methods: {
     openAlbum() {
       uni.chooseImage({
-        count: 1, // 默认9，设置图片的选择数量
-        sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
-        sourceType: ['album'], // 从相册选择
+        count: 1,
+        sizeType: ['original', 'compressed'],
+        sourceType: ['album'],
         success: (res) => {
           const tempFilePaths = res.tempFilePaths;
           console.log(tempFilePaths);
-          // 处理选中的图片，例如预览、上传等
         },
         fail: (err) => {
           console.log('Error while opening album:', err);
@@ -251,31 +251,24 @@ export default {
       });
     },
     takePhoto() {
-      // 调用uni.chooseImage API
       uni.chooseImage({
-        count: 1, // 默认1, 设置图片的数量
-        sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
-        sourceType: ['camera'], // 可以指定来源是相册还是相机，默认二者都有
-        success: (res) => { // 成功的回调
+        count: 1,
+        sizeType: ['original', 'compressed'],
+        sourceType: ['camera'],
+        success: (res) => {
           const tempFilePaths = res.tempFilePaths;
           console.log(tempFilePaths);
-          // 处理图片，例如预览、上传等
         },
-        fail: (err) => { // 失败的回调
+        fail: (err) => {
           console.log('Error while choosing image:', err);
         }
       });
     },
     openFile() {
-      // 判断当前环境是否为移动设备
       if (uni.getSystemInfoSync().platform === 'android' || uni.getSystemInfoSync().platform === 'ios') {
-        // 使用plus.io获取文件
         plus.io.resolveLocalFileSystemURL(filePath, function (entry) {
-          // 判断文件是否存在
           if (entry) {
-            // 打开文件
             entry.open('r', function (file) {
-              // 根据文件类型调用相应的应用打开文件
               plus.runtime.openFile(file);
             }, function (e) {
               console.log("打开文件失败: " + e.message);
@@ -291,9 +284,8 @@ export default {
       }
     },
     getAvatar,
-    //发送消息
     async sendMessage() {
-      console.log("Enter key pressed, content: ", this.content); // 检查 content 是否有值
+      console.log("Enter key pressed, content: ", this.content);
       if (this.content.trim() === "") {
         uni.showToast({
           title: "请输入内容",
@@ -303,30 +295,26 @@ export default {
       }
 
       const body = {
-        messageType: 1, // 文本消息
-        roomId: this.roomId, // 替换为实际 roomId
+        messageType: 1,
+        roomId: this.roomId,
         body: {
-          content: this.content, // 消息内容
+          content: this.content,
         },
       };
 
       try {
-        // 调用封装的请求
         const res = await request({
-          url: "/chat/sendMessage", // 替换为实际接口地址
+          url: "/chat/sendMessage",
           method: "POST",
           data: body,
           header: {
-            // 额外的头信息
             "ajax": true,
           },
         });
-        // 处理响应
         if (res.code === ResponseCodeEnum.SUCCESS) {
           this.content = '';
           const chatStore = userChatStore();
           chatStore.addOwnMessage(res.data);
-           // 确保消息发送成功后滚动到底部
           await nextTick();
           this.scrollToBottom();
         } else {
@@ -343,15 +331,7 @@ export default {
         });
       }
     },
-    // scrollToBottom() {
-    //   if (messageContainer.value) {
-    //     // 滚动到最底部
-    //     messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
-    //   }
-    // }
   },
-
-
 };
 </script>
 
@@ -370,9 +350,8 @@ export default {
   background-color: #ededed;
 }
 
-/* 图标大小调整 */
 .iconfont {
-  font-size: 28px; /* 调整图标大小 */
+  font-size: 28px;
 }
 
 .back-btn img,
@@ -381,21 +360,18 @@ export default {
   height: 20px;
 }
 
-/* 聊天内容区域样式调整 */
 .chat-content {
   flex: 1;
   padding: 10px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  /* 增加底部padding以确保内容不被输入框遮挡 */
-  padding-bottom: calc(100px + env(safe-area-inset-bottom)); /* 调整为100px */
+  padding-bottom: calc(100px + env(safe-area-inset-bottom));
   height: calc(100vh - env(safe-area-inset-top));
 }
 
-/* 消息项样式微调 */
 .message-item {
   display: flex;
-  margin: 8px 0; /* 从10px改为8px，使消息间距更紧凑 */
+  margin: 8px 0;
   word-break: break-word;
 }
 
@@ -405,9 +381,7 @@ export default {
 
 .message-item.right {
   flex-direction: row;
-  /* 保持正常排列方向 */
   justify-content: flex-end;
-  /* 保证消息内容靠右 */
 }
 
 .avatar img {
@@ -418,19 +392,18 @@ export default {
 
 .message-bubble {
   max-width: 70%;
-  padding: 8px 10px; /* 减小内边距 */
+  padding: 8px 10px;
   border-radius: 10px;
   font-size: 18px;
   line-height: 1.5;
-  word-wrap: break-word; /* 允许长单词换行 */
-  overflow: hidden; /* 隐藏超出部分 */
-  text-overflow: ellipsis; /* 超出部分显示省略号 */
+  word-wrap: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
   display: flex;
-  align-items: center; /* 垂直居中 */
+  align-items: center;
 }
 
 .message-item.left .message-bubble {
-  /*background-color: #f0f0f0;*/
   background-color: #ffffff;
   margin-left: 10px;
 }
@@ -438,19 +411,16 @@ export default {
 .message-item.right .message-bubble {
   background-color: #bde4ff;
   margin-left: 10px;
-  /* 调整文本与头像的间距 */
   margin-right: 10px;
-  /* 移除原来的右间距 */
 }
 
-/* 输入框样式调整 */
 .chat-input-bar {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
   width: 100%;
-  min-height: 58px; /* 稍微减小输入框高度 */
+  min-height: 58px;
   background-color: #f8f8f8;
   display: flex;
   align-items: center;
@@ -460,18 +430,17 @@ export default {
   padding-bottom: calc(8px + env(safe-area-inset-bottom));
 }
 
-
 .input-box {
   flex: 1;
-  height: 36px; /* 固定高度 */
+  height: 36px;
   line-height: 36px;
   padding: 0 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  font-size: 16px; /* 移动端更合适的字体大小 */
+  font-size: 16px;
   margin: 0 10px;
   background-color: #fff;
-  -webkit-appearance: none; /* 移除 iOS 默认样式 */
+  -webkit-appearance: none;
 }
 
 .input-actions img {
@@ -480,24 +449,24 @@ export default {
   cursor: pointer;
 }
 
-.function-menu {
+.dynamic-area {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
   width: 100%;
+  transition: height 0.3s ease;
+  z-index: 98;
+}
+
+.function-menu {
+  height: 100%;
   background-color: #f7f7f7;
   border-top: 1px solid #ddd;
-  z-index: 99;
   padding: 15px 0;
-  height: 267px;
   padding-bottom: calc(15px + env(safe-area-inset-bottom));
-  display: none;
 }
-/* 显示时的样式 */
-.function-menu.visible {
-  display: block; /* 显示时直接显示 */
-}
+
 .menu-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -512,7 +481,6 @@ export default {
   justify-content: center;
 }
 
-/* 菜单图标样式优化 */
 .menu-icon {
   width: 60px;
   height: 60px;
@@ -524,11 +492,9 @@ export default {
   margin-bottom: 8px;
 }
 
-/* 菜单文字样式 */
 .menu-text {
   font-size: 12px;
   color: #333;
   text-align: center;
 }
-
 </style>
