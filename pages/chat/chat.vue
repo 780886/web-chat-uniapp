@@ -16,7 +16,7 @@
     </div>
     <div class="input-container">
       <!-- 底部输入框 -->
-      <div class="chat-input-bar" :style="{ bottom: chatInputBarBottom }">
+      <div class="chat-input-bar" :style="{ transform: `translateY(-${areaHeight}px)` }">
         <div class="input-actions">
           <span class="iconfont">&#xe888;</span>
         </div>
@@ -29,7 +29,7 @@
         </div>
       </div>
       <!-- 动态区域 - 用于显示功能菜单或键盘 -->
-      <div class="dynamic-area" :style="{ height: areaHeight + 'px' }">
+      <div class="dynamic-area" :style="{ height: areaHeight + 'px', transform: `translateY(-${areaHeight}px)` }">
         <!-- 功能菜单 -->
         <div v-show="menuVisible" class="function-menu">
           <div class="menu-grid">
@@ -130,15 +130,6 @@ export default {
       } else {
         areaHeight.value = 0;
       }
-      
-      // 获取系统信息
-      const systemInfo = uni.getSystemInfoSync();
-      const safeAreaBottom = systemInfo.safeAreaInsets?.bottom || 0;
-      
-      // 计算底部位置
-      chatInputBarBottom.value = menuVisible.value 
-        ? `${areaHeight.value + safeAreaBottom}px` 
-        : `${safeAreaBottom}px`;
     }
 
     // 输入框获取焦点
@@ -147,7 +138,6 @@ export default {
       const keyboardHeight = event.detail.height;
       if (keyboardHeight) {
         areaHeight.value = keyboardHeight;
-        chatInputBarBottom.value = `${keyboardHeight}px`;
       }
     };
 
@@ -155,9 +145,6 @@ export default {
     const onInputBlur = () => {
       if (!menuVisible.value) {
         areaHeight.value = 0;
-        const systemInfo = uni.getSystemInfoSync();
-        const safeAreaBottom = systemInfo.safeAreaInsets?.bottom || 0;
-        chatInputBarBottom.value = `${safeAreaBottom}px`;
       }
     };
 
@@ -193,10 +180,6 @@ export default {
       wsApi.connect(UNI_APP.WS_URL, loginToken);
       await chatStore.getMessageList();
       await setNavigationBarTitle(name);
-      
-      const systemInfo = uni.getSystemInfoSync();
-      const safeAreaBottom = systemInfo.safeAreaInsets?.bottom || 0;
-      chatInputBarBottom.value = `${safeAreaBottom}px`;
 
       nextTick(() => {
         scrollToBottom();
@@ -206,11 +189,9 @@ export default {
         if (res.height > 0) {
           menuVisible.value = false;
           areaHeight.value = res.height;
-          chatInputBarBottom.value = `${res.height}px`;
         } else {
           if (!menuVisible.value) {
             areaHeight.value = 0;
-            chatInputBarBottom.value = `${safeAreaBottom}px`;
           }
         }
       });
@@ -428,6 +409,7 @@ export default {
   box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
   z-index: 100;
   padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  transition: transform 0.3s ease;
 }
 
 .input-box {
@@ -455,7 +437,7 @@ export default {
   right: 0;
   bottom: 0;
   width: 100%;
-  transition: height 0.3s ease;
+  transition: all 0.3s ease;
   z-index: 98;
 }
 
