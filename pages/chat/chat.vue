@@ -36,7 +36,7 @@
     </scroll-view>
 
     <!-- 底部输入区域 -->
-    <view class="input-container">
+    <view class="input-container" :style="{ bottom: areaHeight + 'px' }">
       <view class="chat-input-bar">
         <view class="input-actions">
           <text class="iconfont voice-icon" @tap="toggleVoiceInput">&#xe888;</text>
@@ -502,14 +502,16 @@ export default {
 }
 
 .input-container {
-  position: relative;
-}
-
-.chat-input-bar {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
+  width: 100%;
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+.chat-input-bar {
   width: 100%;
   min-height: 58px;
   background-color: #f8f8f8;
@@ -517,7 +519,6 @@ export default {
   align-items: center;
   padding: 8px 10px;
   box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
-  z-index: 100;
   padding-bottom: calc(8px + env(safe-area-inset-bottom));
 }
 
@@ -559,13 +560,9 @@ export default {
 }
 
 .dynamic-area {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 58px;
   width: 100%;
   transition: all 0.3s ease;
-  z-index: 98;
+  background-color: #f7f7f7;
 }
 
 .function-menu {
