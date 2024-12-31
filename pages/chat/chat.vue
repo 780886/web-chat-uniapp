@@ -72,7 +72,7 @@
 
     <!-- 扩展菜单区域 -->
     <view class="dynamic-area" :style="{ height: areaHeight + 'px', transform: `translateY(${areaHeight}px)` }">
-      <view v-show="menuVisible" class="function-menu">
+      <view v-show="false" class="function-menu">
         <view class="menu-grid">
           <view class="menu-item" @tap="openAlbum">
             <view class="menu-icon">
