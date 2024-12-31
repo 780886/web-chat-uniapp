@@ -37,7 +37,7 @@
 
     <!-- 底部输入区域 -->
     <view class="input-container">
-      <view class="chat-input-bar">
+      <view class="chat-input-bar" :style="{ transform: `translateY(-${areaHeight}px)` }">
         <view class="input-actions">
           <text class="iconfont voice-icon" @tap="toggleVoiceInput">&#xe888;</text>
         </view>
@@ -70,7 +70,7 @@
       </view>
 
       <!-- 扩展菜单区域 -->
-      <view class="dynamic-area" :style="{ height: areaHeight + 'px' }">
+      <view class="dynamic-area" :class="{ visible: menuVisible }" :style="{ height: '280px' }">
         <view v-show="menuVisible" class="function-menu">
           <view class="menu-grid">
             <view class="menu-item" @tap="openAlbum">
@@ -215,9 +215,6 @@ export default {
       menuVisible.value = !menuVisible.value;
       if (menuVisible.value) {
         uni.hideKeyboard();
-        areaHeight.value = 280;
-      } else {
-        areaHeight.value = 0;
       }
     }
 
@@ -562,10 +559,16 @@ export default {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 58px;
+  bottom: 58px; 
   width: 100%;
-  transition: all 0.3s ease;
   z-index: 98;
+  background-color: #f7f7f7;
+  transform: translateY(100%); 
+  transition: transform 0.3s ease;
+}
+
+.dynamic-area.visible {
+  transform: translateY(0); 
 }
 
 .function-menu {
