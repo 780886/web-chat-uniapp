@@ -14,21 +14,20 @@
           <image :src="message.avatar" mode="aspectFill" lazy-load/>
         </div>
         <div class="message-bubble">
-          <div class="message-bubble">{{ message.content }}</div>
-<!--          &lt;!&ndash; 文本消息 &ndash;&gt;-->
-<!--          <text v-if="message.messageType === 1">{{message.content}}</text>-->
-<!--          &lt;!&ndash; 图片消息 &ndash;&gt;-->
-<!--          <image v-if="message.messageType === 2"-->
-<!--                 :src="message.content"-->
-<!--                 mode="widthFix"-->
-<!--                 @tap="previewImage(message.content)"-->
-<!--                 lazy-load/>-->
-<!--          &lt;!&ndash; 语音消息 &ndash;&gt;-->
-<!--          <view v-if="message.messageType === 3" class="voice-message"-->
-<!--                @tap="playVoice(message.content)">-->
-<!--            <text>{{message.duration}}''</text>-->
-<!--            <text class="iconfont">&#xe60f;</text>-->
-<!--          </view>-->
+          <!-- 文本消息 -->
+          <text v-if="message.messageType === 1">{{message.content}}</text>
+          <!-- 图片消息 -->
+          <image v-if="message.messageType === 2"
+                 :src="message.content"
+                 mode="widthFix"
+                 @tap="previewImage(message.content)"
+                 lazy-load/>
+          <!-- 语音消息 -->
+          <view v-if="message.messageType === 3" class="voice-message"
+                @tap="playVoice(message.content)">
+            <text>{{message.duration}}''</text>
+            <text class="iconfont">&#xe60f;</text>
+          </view>
         </div>
         <div class="avatar" v-if="message.type === 'right'">
           <image :src="getAvatar(message.avatar)" mode="aspectFill" lazy-load/>
@@ -473,10 +472,10 @@ export default {
 
 .message-bubble {
   max-width: 70%;
-  padding: 6px;
+  padding: 8px 10px;
   border-radius: 10px;
-  font-size: 16px;
-  line-height: 1;
+  font-size: 18px;
+  line-height: 1.5;
   word-wrap: break-word;
 }
 
@@ -520,7 +519,7 @@ export default {
   box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
   z-index: 100;
   padding-bottom: calc(8px + env(safe-area-inset-bottom));
-  /* transition: transform 0.3s ease; */
+  transition: transform 0.3s ease;
 }
 
 .text-input {
@@ -564,9 +563,9 @@ export default {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: -280px;
+  bottom: 0;
   width: 100%;
-  /* transition: all 0.3s ease; */
+  transition: all 0.3s ease;
   z-index: 98;
 }
 
