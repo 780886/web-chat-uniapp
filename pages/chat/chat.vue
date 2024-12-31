@@ -65,7 +65,7 @@
         </view>
 
         <view class="input-actions">
-          <text class="iconfont emoji-icon">&#xe600;</text>
+          <text class="iconfont emoji-icon" @tap="toggleEmoji">&#xe600;</text>
           <text class="iconfont more-icon" @tap="toggleMenu">&#xe7a6;</text>
         </view>
       </view>
@@ -112,6 +112,14 @@
             </view>
           </view>
         </view>
+        <!-- 表情包区域 -->
+        <view v-show="emojiVisible" class="emoji-menu">
+          <view class="emoji-grid">
+            <view v-for="(emoji, index) in emojiList" :key="index" class="emoji-item" @tap="selectEmoji(emoji.code)">
+              <image :src="emoji.url" mode="aspectFill" class="emoji-image"/>
+            </view>
+          </view>
+        </view>
       </view>
     </view>
   </div>
@@ -128,6 +136,7 @@ import ClientInformation from "../../common/ClientInformation";
 import {ResponseCodeEnum} from "../../common/ResponseCodeEnum";
 import {getLoginToken} from "../../utils/auth";
 import {getAvatar} from "../../common/Avatar";
+import {emojiList} from "../../utils/emoji";
 
 export default {
   props: {
@@ -152,6 +161,7 @@ export default {
     const content = ref('');
     const roomId = Number(props.roomId);
     const menuVisible = ref(false);
+    const emojiVisible = ref(false);
     const isVoiceMode = ref(false);
     const isLoading = ref(false);
     const scrollTop = ref(0);
@@ -222,9 +232,26 @@ export default {
       }
     }
 
+    // 切换表情包
+    const toggleEmoji = () => {
+      emojiVisible.value = !emojiVisible.value;
+      if (emojiVisible.value) {
+        uni.hideKeyboard();
+        areaHeight.value = 280;
+      } else {
+        areaHeight.value = 0;
+      }
+    }
+
+    // 选择表情
+    const selectEmoji = (code) => {
+      content.value += code;
+    }
+
     // 输入框获取焦点
     const onInputFocus = (event) => {
       menuVisible.value = false;
+      emojiVisible.value = false;
       const keyboardHeight = event.detail.height;
       if (keyboardHeight) {
         areaHeight.value = keyboardHeight;
@@ -233,7 +260,7 @@ export default {
 
     // 输入框失去焦点
     const onInputBlur = () => {
-      if (!menuVisible.value) {
+      if (!menuVisible.value && !emojiVisible.value) {
         areaHeight.value = 0;
       }
     }
@@ -270,9 +297,10 @@ export default {
       uni.onKeyboardHeightChange(res => {
         if (res.height > 0) {
           menuVisible.value = false;
+          emojiVisible.value = false;
           areaHeight.value = res.height;
         } else {
-          if (!menuVisible.value) {
+          if (!menuVisible.value && !emojiVisible.value) {
             areaHeight.value = 0;
           }
         }
@@ -289,12 +317,13 @@ export default {
       content,
       messageContainer,
       menuVisible,
+      emojiVisible,
       isVoiceMode,
       isLoading,
       scrollTop,
       areaHeight,
       toggleMenu,
-      toggleVoiceInput,
+      toggleEmoji,
       onInputFocus,
       onInputBlur,
       startRecording,
@@ -303,7 +332,10 @@ export default {
       previewImage,
       playVoice,
       loadMoreMessages,
-      scrollToBottom
+      scrollToBottom,
+      emojiList,
+      selectEmoji,
+      toggleVoiceInput
     };
   },
   methods: {
@@ -607,5 +639,31 @@ export default {
   font-size: 12px;
   color: #333;
   text-align: center;
+}
+
+.emoji-menu {
+  height: 100%;
+  background-color: #f7f7f7;
+  border-top: 1px solid #ddd;
+  padding: 15px 0;
+  padding-bottom: calc(15px + env(safe-area-inset-bottom));
+}
+
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 10px;
+  padding: 0 10px;
+}
+
+.emoji-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.emoji-image {
+  width: 24px;
+  height: 24px;
 }
 </style>
