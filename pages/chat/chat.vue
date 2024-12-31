@@ -68,47 +68,47 @@
           <text class="iconfont more-icon" @tap="toggleMenu">&#xe7a6;</text>
         </view>
       </view>
+    </view>
 
-      <!-- 扩展菜单区域 -->
-      <view class="dynamic-area" :class="{ visible: menuVisible }" :style="{ height: '280px' }">
-        <view v-show="menuVisible" class="function-menu">
-          <view class="menu-grid">
-            <view class="menu-item" @tap="openAlbum">
-              <view class="menu-icon">
-                <text class="iconfont">&#xe87a;</text>
-              </view>
-              <text class="menu-text">相册</text>
+    <!-- 扩展菜单区域 -->
+    <view class="dynamic-area" :style="{ height: areaHeight + 'px', transform: `translateY(-${areaHeight}px)` }">
+      <view v-show="menuVisible" class="function-menu">
+        <view class="menu-grid">
+          <view class="menu-item" @tap="openAlbum">
+            <view class="menu-icon">
+              <text class="iconfont">&#xe87a;</text>
             </view>
-            <view class="menu-item" @tap="takePhoto">
-              <view class="menu-icon">
-                <text class="iconfont">&#xe61d;</text>
-              </view>
-              <text class="menu-text">拍摄</text>
+            <text class="menu-text">相册</text>
+          </view>
+          <view class="menu-item" @tap="takePhoto">
+            <view class="menu-icon">
+              <text class="iconfont">&#xe61d;</text>
             </view>
-            <view class="menu-item" @tap="openFile">
-              <view class="menu-icon">
-                <text class="iconfont">&#xe665;</text>
-              </view>
-              <text class="menu-text">文件</text>
+            <text class="menu-text">拍摄</text>
+          </view>
+          <view class="menu-item" @tap="openFile">
+            <view class="menu-icon">
+              <text class="iconfont">&#xe665;</text>
             </view>
-            <view class="menu-item" @tap="startVoiceInput">
-              <view class="menu-icon">
-                <text class="iconfont">&#xe60f;</text>
-              </view>
-              <text class="menu-text">语音输入</text>
+            <text class="menu-text">文件</text>
+          </view>
+          <view class="menu-item" @tap="startVoiceInput">
+            <view class="menu-icon">
+              <text class="iconfont">&#xe60f;</text>
             </view>
-            <view class="menu-item" @tap="startVideoCall">
-              <view class="menu-icon">
-                <text class="iconfont">&#xe602;</text>
-              </view>
-              <text class="menu-text">视频通话</text>
+            <text class="menu-text">语音输入</text>
+          </view>
+          <view class="menu-item" @tap="startVideoCall">
+            <view class="menu-icon">
+              <text class="iconfont">&#xe602;</text>
             </view>
-            <view class="menu-item" @tap="startVoiceCall">
-              <view class="menu-icon">
-                <text class="iconfont">&#xe64f;</text>
-              </view>
-              <text class="menu-text">语音通话</text>
+            <text class="menu-text">视频通话</text>
+          </view>
+          <view class="menu-item" @tap="startVoiceCall">
+            <view class="menu-icon">
+              <text class="iconfont">&#xe64f;</text>
             </view>
+            <text class="menu-text">语音通话</text>
           </view>
         </view>
       </view>
@@ -215,6 +215,9 @@ export default {
       menuVisible.value = !menuVisible.value;
       if (menuVisible.value) {
         uni.hideKeyboard();
+        areaHeight.value = 280;
+      } else {
+        areaHeight.value = 0;
       }
     }
 
@@ -516,6 +519,7 @@ export default {
   box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
   z-index: 100;
   padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  transition: transform 0.3s ease;
 }
 
 .text-input {
@@ -559,16 +563,10 @@ export default {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 58px; 
+  bottom: 58px; /* 修改为固定在输入框下方 */
   width: 100%;
+  transition: all 0.3s ease;
   z-index: 98;
-  background-color: #f7f7f7;
-  transform: translateY(100%); 
-  transition: transform 0.3s ease;
-}
-
-.dynamic-area.visible {
-  transform: translateY(0); 
 }
 
 .function-menu {
