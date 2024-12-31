@@ -1,78 +1,118 @@
 <template>
   <div class="chat-page">
-    <!-- 滚动区域 -->
-    <div class="chat-content" ref="messageContainer">
-      <!-- 循环展示消息 -->
+    <!-- 聊天内容区域 -->
+    <scroll-view class="chat-content" scroll-y ref="messageContainer" 
+      :scroll-top="scrollTop" @scrolltoupper="loadMoreMessages">
+      <!-- 加载更多 -->
+      <view class="loading" v-if="isLoading">
+        <text>加载中...</text>
+      </view>
+      <!-- 消息列表 -->
       <div v-for="(message, index) in chatStore.messages" :key="index"
            :class="['message-item', message.type === 'right' ? 'right' : 'left']">
         <div class="avatar" v-if="message.type === 'left'">
-          <img :src="message.avatar" alt="头像"/>
+          <image :src="message.avatar" mode="aspectFill" lazy-load/>
         </div>
-        <div class="message-bubble">{{ message.content }}</div>
+        <div class="message-bubble">
+          <!-- 文本消息 -->
+          <text v-if="message.messageType === 1">{{message.content}}</text>
+          <!-- 图片消息 -->
+          <image v-if="message.messageType === 2" 
+            :src="message.content" 
+            mode="widthFix"
+            @tap="previewImage(message.content)"
+            lazy-load/>
+          <!-- 语音消息 -->  
+          <view v-if="message.messageType === 3" class="voice-message"
+            @tap="playVoice(message.content)">
+            <text>{{message.duration}}''</text>
+            <text class="iconfont">&#xe60f;</text>
+          </view>
+        </div>
         <div class="avatar" v-if="message.type === 'right'">
-          <img :src="getAvatar(message.avatar)" alt="头像"/>
+          <image :src="getAvatar(message.avatar)" mode="aspectFill" lazy-load/>
         </div>
       </div>
-    </div>
-    <div class="input-container">
-      <!-- 底部输入框 -->
-      <div class="chat-input-bar" :style="{ transform: `translateY(-${areaHeight}px)` }">
-        <div class="input-actions">
-          <span class="iconfont">&#xe888;</span>
-        </div>
-        <input type="text" v-model="content" class="input-box" placeholder="发送消息..." confirm-type="send"
-              @confirm="sendMessage" @focus="onInputFocus"
-              @blur="onInputBlur"/>
-        <div class="input-actions">
-          <span class="iconfont">&#xe600;</span>
-          <span class="iconfont" @click="toggleMenu">&#xe7a6;</span>
-        </div>
-      </div>
-      <!-- 动态区域 - 用于显示功能菜单或键盘 -->
-      <div class="dynamic-area" :style="{ height: areaHeight + 'px', transform: `translateY(-${areaHeight}px)` }">
-        <!-- 功能菜单 -->
-        <div v-show="menuVisible" class="function-menu">
-          <div class="menu-grid">
-            <div class="menu-item">
-              <div class="menu-icon">
-                <span class="iconfont" @click="openAlbum">&#xe87a;</span>
-              </div>
-              <div class="menu-text">相机</div>
-            </div>
-            <div class="menu-item">
-              <div class="menu-icon" @click="takePhoto">
-                <span class="iconfont">&#xe61d;</span>
-              </div>
-              <div class="menu-text">拍摄</div>
-            </div>
-            <div class="menu-item">
-              <div class="menu-icon" @click="openFile">
-                <span class="iconfont">&#xe665;</span>
-              </div>
-              <div class="menu-text">文件</div>
-            </div>
-            <div class="menu-item">
-              <div class="menu-icon">
-                <span class="iconfont">&#xe60f;</span>
-              </div>
-              <div class="menu-text">语音输入</div>
-            </div>
-            <div class="menu-item">
-              <div class="menu-icon">
-                <span class="iconfont">&#xe602;</span>
-              </div>
-              <div class="menu-text">视频通话</div>
-            </div>
-            <div class="menu-item">
-              <div class="menu-icon">
-                <span class="iconfont">&#xe64f;</span>
-              </div>
-              <div class="menu-text">语音通话</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    </scroll-view>
+
+    <!-- 底部输入区域 -->
+    <view class="input-container">
+      <view class="chat-input-bar" :style="{ transform: `translateY(-${areaHeight}px)` }">
+        <view class="input-actions">
+          <text class="iconfont voice-icon" @tap="toggleVoiceInput">&#xe888;</text>
+        </view>
+        
+        <!-- 文本输入框/语音按钮 -->
+        <view v-if="!isVoiceMode" class="text-input">
+          <input type="text" 
+            v-model="content" 
+            class="input-box"
+            placeholder="发送消息..." 
+            confirm-type="send"
+            :adjust-position="false"
+            @confirm="sendTextMessage"
+            @focus="onInputFocus"
+            @blur="onInputBlur"/>
+        </view>
+        <view v-else class="voice-input">
+          <button class="voice-btn" 
+            @touchstart="startRecording"
+            @touchend="stopRecording"
+            @touchcancel="cancelRecording">
+            按住说话
+          </button>
+        </view>
+
+        <view class="input-actions">
+          <text class="iconfont emoji-icon">&#xe600;</text>
+          <text class="iconfont more-icon" @tap="toggleMenu">&#xe7a6;</text>
+        </view>
+      </view>
+
+      <!-- 扩展菜单区域 -->
+      <view class="dynamic-area" :style="{ height: areaHeight + 'px', transform: `translateY(-${areaHeight}px)` }">
+        <view v-show="menuVisible" class="function-menu">
+          <view class="menu-grid">
+            <view class="menu-item" @tap="openAlbum">
+              <view class="menu-icon">
+                <text class="iconfont">&#xe87a;</text>
+              </view>
+              <text class="menu-text">相册</text>
+            </view>
+            <view class="menu-item" @tap="takePhoto">
+              <view class="menu-icon">
+                <text class="iconfont">&#xe61d;</text>
+              </view>
+              <text class="menu-text">拍摄</text>
+            </view>
+            <view class="menu-item" @tap="openFile">
+              <view class="menu-icon">
+                <text class="iconfont">&#xe665;</text>
+              </view>
+              <text class="menu-text">文件</text>
+            </view>
+            <view class="menu-item" @tap="startVoiceInput">
+              <view class="menu-icon">
+                <text class="iconfont">&#xe60f;</text>
+              </view>
+              <text class="menu-text">语音输入</text>
+            </view>
+            <view class="menu-item" @tap="startVideoCall">
+              <view class="menu-icon">
+                <text class="iconfont">&#xe602;</text>
+              </view>
+              <text class="menu-text">视频通话</text>
+            </view>
+            <view class="menu-item" @tap="startVoiceCall">
+              <view class="menu-icon">
+                <text class="iconfont">&#xe64f;</text>
+              </view>
+              <text class="menu-text">语音通话</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
   </div>
 </template>
 
@@ -96,7 +136,7 @@ export default {
       default: '会话',
     },
     roomId: {
-      type: [Number, String],
+      type: [Number, String], 
       required: true,
       default: 0,
     },
@@ -108,25 +148,74 @@ export default {
   setup(props) {
     const chatStore = userChatStore();
     const messageContainer = ref(null);
-    const name = props.name;
     const content = ref('');
-    const messages = ref([]);
     const roomId = Number(props.roomId);
-    console.log("会话roomId:", roomId);
-    const avatar = props.avatar;
     const menuVisible = ref(false);
-    const chatInputBarBottom = ref("0px");
+    const isVoiceMode = ref(false);
+    const isLoading = ref(false);
+    const scrollTop = ref(0);
+    const areaHeight = ref(0);
+    
     chatStore.setRoomId(roomId);
-    chatStore.setAvatar(avatar);
-    const areaHeight = ref(0); // 动态区域高度
+    chatStore.setAvatar(props.avatar);
+
+    // 加载更多消息
+    const loadMoreMessages = async () => {
+      if(isLoading.value) return;
+      isLoading.value = true;
+      await chatStore.loadMoreMessages();
+      isLoading.value = false;
+    }
+
+    // 切换语音输入模式
+    const toggleVoiceInput = () => {
+      isVoiceMode.value = !isVoiceMode.value;
+    }
+
+    // 开始录音
+    const startRecording = () => {
+      uni.showToast({
+        title: '开始录音',
+        icon: 'none'
+      });
+      // 实现录音逻辑
+    }
+
+    // 停止录音并发送
+    const stopRecording = () => {
+      uni.showToast({
+        title: '发送语音',
+        icon: 'none' 
+      });
+      // 实现发送语音逻辑
+    }
+
+    // 取消录音
+    const cancelRecording = () => {
+      uni.showToast({
+        title: '取消录音',
+        icon: 'none'
+      });
+    }
+
+    // 预览图片
+    const previewImage = (url) => {
+      uni.previewImage({
+        urls: [url]
+      });
+    }
+
+    // 播放语音
+    const playVoice = (url) => {
+      // 实现语音播放逻辑
+    }
 
     // 切换功能菜单
-    function toggleMenu() {
+    const toggleMenu = () => {
       menuVisible.value = !menuVisible.value;
       if (menuVisible.value) {
-        // 显示菜单时隐藏键盘
         uni.hideKeyboard();
-        areaHeight.value = 280; // 设置菜单高度
+        areaHeight.value = 280;
       } else {
         areaHeight.value = 0;
       }
@@ -134,56 +223,48 @@ export default {
 
     // 输入框获取焦点
     const onInputFocus = (event) => {
-      menuVisible.value = false; // 隐藏功能菜单
+      menuVisible.value = false;
       const keyboardHeight = event.detail.height;
       if (keyboardHeight) {
         areaHeight.value = keyboardHeight;
       }
-    };
+    }
 
     // 输入框失去焦点
     const onInputBlur = () => {
       if (!menuVisible.value) {
         areaHeight.value = 0;
       }
-    };
+    }
 
-    // 监听store中的messages状态变化
+    // 监听消息变化,自动滚动
     watch(
-        () => chatStore.messages,
-        (newMessages) => {
-          messages.value = newMessages;
-          nextTick(() => {
-            console.log("当前聊天框有新消息：", newMessages);
-            scrollToBottom();
-          });
-        },
-        { deep: true }
+      () => chatStore.messages,
+      () => {
+        nextTick(() => {
+          scrollToBottom();
+        });
+      },
+      { deep: true }
     );
 
-     const scrollToBottom = () => {
-        nextTick(() => {
-          const container = messageContainer.value;
-          if (container) {
-            setTimeout(() => {
-              const scrollHeight = container.scrollHeight;
-              const clientHeight = container.clientHeight;
-              const maxScrollTop = scrollHeight - clientHeight + 100;
-              container.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
-            }, 100);
-          }
-        });
-      };
+    const scrollToBottom = () => {
+      nextTick(() => {
+        const container = messageContainer.value;
+        if (container) {
+          setTimeout(() => {
+            scrollTop.value = container.scrollHeight;
+          }, 100);
+        }
+      });
+    }
 
     onMounted(async () => {
       const loginToken = getLoginToken()
       wsApi.connect(UNI_APP.WS_URL, loginToken);
       await chatStore.getMessageList();
-      await setNavigationBarTitle(name);
-
-      nextTick(() => {
-        scrollToBottom();
-      });
+      await setNavigationBarTitle(props.name);
+      scrollToBottom();
       
       uni.onKeyboardHeightChange(res => {
         if (res.height > 0) {
@@ -203,70 +284,30 @@ export default {
 
     return {
       roomId,
-      name,
       chatStore,
       content,
-      scrollToBottom,
       messageContainer,
       menuVisible,
-      chatInputBarBottom,
+      isVoiceMode,
+      isLoading,
+      scrollTop,
+      areaHeight,
       toggleMenu,
+      toggleVoiceInput,
       onInputFocus,
       onInputBlur,
-      areaHeight
+      startRecording,
+      stopRecording,
+      cancelRecording,
+      previewImage,
+      playVoice,
+      loadMoreMessages,
+      scrollToBottom
     };
   },
   methods: {
-    openAlbum() {
-      uni.chooseImage({
-        count: 1,
-        sizeType: ['original', 'compressed'],
-        sourceType: ['album'],
-        success: (res) => {
-          const tempFilePaths = res.tempFilePaths;
-          console.log(tempFilePaths);
-        },
-        fail: (err) => {
-          console.log('Error while opening album:', err);
-        }
-      });
-    },
-    takePhoto() {
-      uni.chooseImage({
-        count: 1,
-        sizeType: ['original', 'compressed'],
-        sourceType: ['camera'],
-        success: (res) => {
-          const tempFilePaths = res.tempFilePaths;
-          console.log(tempFilePaths);
-        },
-        fail: (err) => {
-          console.log('Error while choosing image:', err);
-        }
-      });
-    },
-    openFile() {
-      if (uni.getSystemInfoSync().platform === 'android' || uni.getSystemInfoSync().platform === 'ios') {
-        plus.io.resolveLocalFileSystemURL(filePath, function (entry) {
-          if (entry) {
-            entry.open('r', function (file) {
-              plus.runtime.openFile(file);
-            }, function (e) {
-              console.log("打开文件失败: " + e.message);
-            });
-          } else {
-            console.log("文件不存在");
-          }
-        }, function (e) {
-          console.log("获取文件失败: " + e.message);
-        });
-      } else {
-        console.log("此功能仅支持移动设备");
-      }
-    },
-    getAvatar,
-    async sendMessage() {
-      console.log("Enter key pressed, content: ", this.content);
+    // 发送文本消息
+    async sendTextMessage() {
       if (this.content.trim() === "") {
         uni.showToast({
           title: "请输入内容",
@@ -294,24 +335,83 @@ export default {
         });
         if (res.code === ResponseCodeEnum.SUCCESS) {
           this.content = '';
-          const chatStore = userChatStore();
-          chatStore.addOwnMessage(res.data);
+          this.chatStore.addOwnMessage(res.data);
           await nextTick();
           this.scrollToBottom();
         } else {
           uni.showToast({
-            title: res.message || "发送消息失败",
+            title: res.message || "发送失败",
             icon: "none",
           });
         }
       } catch (error) {
-        console.error("发送消息失败:", error);
+        console.error("发送失败:", error);
         uni.showToast({
-          title: "发送消息失败，请重试",
+          title: "发送失败,请重试",
           icon: "none",
         });
       }
     },
+
+    // 打开相册
+    openAlbum() {
+      uni.chooseImage({
+        count: 9,
+        sizeType: ['original', 'compressed'],
+        sourceType: ['album'],
+        success: (res) => {
+          // 实现发送图片逻辑
+          console.log(res.tempFilePaths);
+        }
+      });
+    },
+
+    // 拍照
+    takePhoto() {
+      uni.chooseImage({
+        count: 1,
+        sizeType: ['original', 'compressed'],
+        sourceType: ['camera'],
+        success: (res) => {
+          // 实现发送图片逻辑
+          console.log(res.tempFilePaths);
+        }
+      });
+    },
+
+    // 打开文件
+    openFile() {
+      // #ifdef APP-PLUS
+      plus.io.resolveLocalFileSystemURL('_doc/', (entry) => {
+        entry.createReader().readEntries((entries) => {
+          // 实现文件选择逻辑
+        });
+      });
+      // #endif
+    },
+
+    // 开始语音输入
+    startVoiceInput() {
+      // 实现语音输入逻辑
+    },
+
+    // 发起视频通话
+    startVideoCall() {
+      uni.showToast({
+        title: '视频通话功能开发中',
+        icon: 'none'
+      });
+    },
+
+    // 发起语音通话  
+    startVoiceCall() {
+      uni.showToast({
+        title: '语音通话功能开发中',
+        icon: 'none'
+      });
+    },
+
+    getAvatar,
   },
 };
 </script>
@@ -327,18 +427,11 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  position: relative;
   background-color: #ededed;
 }
 
 .iconfont {
   font-size: 28px;
-}
-
-.back-btn img,
-.menu-btn img {
-  width: 20px;
-  height: 20px;
 }
 
 .chat-content {
@@ -348,6 +441,12 @@ export default {
   -webkit-overflow-scrolling: touch;
   padding-bottom: calc(100px + env(safe-area-inset-bottom));
   height: calc(100vh - env(safe-area-inset-top));
+}
+
+.loading {
+  text-align: center;
+  padding: 10px;
+  color: #999;
 }
 
 .message-item {
@@ -365,7 +464,7 @@ export default {
   justify-content: flex-end;
 }
 
-.avatar img {
+.avatar image {
   width: 44px;
   height: 44px;
   border-radius: 10%;
@@ -378,10 +477,17 @@ export default {
   font-size: 18px;
   line-height: 1.5;
   word-wrap: break-word;
-  overflow: hidden;
-  text-overflow: ellipsis;
+}
+
+.message-bubble image {
+  max-width: 200px;
+  border-radius: 5px;
+}
+
+.voice-message {
   display: flex;
   align-items: center;
+  padding: 5px 10px;
 }
 
 .message-item.left .message-bubble {
@@ -393,6 +499,10 @@ export default {
   background-color: #bde4ff;
   margin-left: 10px;
   margin-right: 10px;
+}
+
+.input-container {
+  position: relative;
 }
 
 .chat-input-bar {
@@ -412,23 +522,41 @@ export default {
   transition: transform 0.3s ease;
 }
 
-.input-box {
+.text-input {
   flex: 1;
+}
+
+.input-box {
+  width: 100%;
   height: 36px;
   line-height: 36px;
   padding: 0 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 16px;
-  margin: 0 10px;
   background-color: #fff;
-  -webkit-appearance: none;
 }
 
-.input-actions img {
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
+.voice-input {
+  flex: 1;
+  padding: 0 10px;
+}
+
+.voice-btn {
+  width: 100%;
+  height: 36px;
+  line-height: 36px;
+  text-align: center;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.input-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .dynamic-area {
