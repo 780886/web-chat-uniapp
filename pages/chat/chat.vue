@@ -37,7 +37,7 @@
 
     <!-- 底部输入区域 -->
     <view class="input-container">
-      <view class="chat-input-bar" :style="{ transform: `translateY(-${areaHeight}px)` }">
+      <view class="chat-input-bar">
         <view class="input-actions">
           <text class="iconfont voice-icon" @tap="toggleVoiceInput">&#xe888;</text>
         </view>
@@ -70,7 +70,7 @@
       </view>
 
       <!-- 扩展菜单区域 -->
-      <view class="dynamic-area" :style="{ height: areaHeight + 'px', transform: `translateY(-${areaHeight}px)` }">
+      <view class="dynamic-area" :style="{ height: areaHeight + 'px' }">
         <view v-show="menuVisible" class="function-menu">
           <view class="menu-grid">
             <view class="menu-item" @tap="openAlbum">
@@ -519,7 +519,6 @@ export default {
   box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
   z-index: 100;
   padding-bottom: calc(8px + env(safe-area-inset-bottom));
-  transition: transform 0.3s ease;
 }
 
 .text-input {
@@ -563,7 +562,7 @@ export default {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: 58px;
   width: 100%;
   transition: all 0.3s ease;
   z-index: 98;
