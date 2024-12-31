@@ -71,7 +71,7 @@
     </view>
 
     <!-- 扩展菜单区域 -->
-    <view class="dynamic-area" :style="{ height: areaHeight + 'px', transform: `translateY(-${areaHeight}px)` }">
+    <view class="dynamic-area" :style="{ height: areaHeight + 'px', transform: `translateY(${areaHeight}px)` }">
       <view v-show="menuVisible" class="function-menu">
         <view class="menu-grid">
           <view class="menu-item" @tap="openAlbum">
@@ -563,7 +563,7 @@ export default {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 58px; /* 修改为固定在输入框下方 */
+  bottom: 0; /* 修改为固定在输入框下方 */
   width: 100%;
   transition: all 0.3s ease;
   z-index: 98;
