@@ -14,33 +14,34 @@
           <image :src="message.avatar" mode="aspectFill" lazy-load/>
         </div>
         <div class="message-bubble">
-          <!-- 文本消息 -->
-          <div v-if="message.messageType === 1">
-            <rich-text :nodes="parseMessage(message.content)"></rich-text>
-          </div>
-          <!-- 图片消息 -->
-          <image v-else-if="message.messageType === 2"
-                 :src="message.content"
-                 mode="widthFix"
-                 @tap="previewImage(message.content)"
-                 lazy-load/>
-          <!-- 语音消息 -->
-          <view v-else-if="message.messageType === 3" 
-                class="voice-message"
-                @tap="playVoice(message.content)">
-            <text>{{message.duration}}''</text>
-            <text class="iconfont">&#xe60f;</text>
-          </view>
-          <!-- 文件消息 -->
-          <view v-else-if="message.messageType === 4" 
-                class="file-message"
-                @tap="openFileUrl(message.body)">
-            <view class="file-info">
-              <text class="file-name">{{message.body.fileName}}</text>
-              <text class="file-size">{{formatFileSize(message.body.fileSize)}}</text>
-            </view>
-            <text class="iconfont">&#xe665;</text>
-          </view>
+          <div class="message-bubble">{{ message.content }}</div>
+<!--          &lt;!&ndash; 文本消息 &ndash;&gt;-->
+<!--          <div v-if="message.messageType === 1">-->
+<!--            <rich-text :nodes="parseMessage(message.content)"></rich-text>-->
+<!--          </div>-->
+<!--          &lt;!&ndash; 图片消息 &ndash;&gt;-->
+<!--          <image v-else-if="message.messageType === 2"-->
+<!--                 :src="message.content"-->
+<!--                 mode="widthFix"-->
+<!--                 @tap="previewImage(message.content)"-->
+<!--                 lazy-load/>-->
+<!--          &lt;!&ndash; 语音消息 &ndash;&gt;-->
+<!--          <view v-else-if="message.messageType === 3" -->
+<!--                class="voice-message"-->
+<!--                @tap="playVoice(message.content)">-->
+<!--            <text>{{message.duration}}''</text>-->
+<!--            <text class="iconfont">&#xe60f;</text>-->
+<!--          </view>-->
+<!--          &lt;!&ndash; 文件消息 &ndash;&gt;-->
+<!--          <view v-else-if="message.messageType === 4" -->
+<!--                class="file-message"-->
+<!--                @tap="openFileUrl(message.body)">-->
+<!--            <view class="file-info">-->
+<!--              <text class="file-name">{{message.body.fileName}}</text>-->
+<!--              <text class="file-size">{{formatFileSize(message.body.fileSize)}}</text>-->
+<!--            </view>-->
+<!--            <text class="iconfont">&#xe665;</text>-->
+<!--          </view>-->
         </div>
         <div class="avatar" v-if="message.type === 'right'">
           <image :src="getAvatar(message.avatar)" mode="aspectFill" lazy-load/>
@@ -426,87 +427,7 @@ export default {
 
     // 打开文件
     openFile() {
-      uni.chooseFile({
-        count: 1,
-        type: 'all',
-        success: async (res) => {
-          const file = res.tempFiles[0];
-          
-          // 检查文件大小（限制为10MB）
-          if (file.size > 10 * 1024 * 1024) {
-            uni.showToast({
-              title: '文件大小不能超过10MB',
-              icon: 'none'
-            });
-            return;
-          }
 
-          try {
-            // 显示上传中提示
-            uni.showLoading({
-              title: '发送中...'
-            });
-
-            // 上传文件
-            const uploadRes = await new Promise((resolve, reject) => {
-              uni.uploadFile({
-                url: UNI_APP.BASE_URL + '/upload/file',
-                filePath: file.path,
-                name: 'file',
-                header: {
-                  'token': getLoginToken()
-                },
-                success: (uploadRes) => {
-                  const data = JSON.parse(uploadRes.data);
-                  if (data.code === ResponseCodeEnum.SUCCESS) {
-                    resolve(data.data);
-                  } else {
-                    reject(new Error(data.message));
-                  }
-                },
-                fail: (error) => {
-                  reject(error);
-                }
-              });
-            });
-
-            // 发送文件消息
-            const body = {
-              messageType: 4, // 文件类型消息
-              roomId: this.roomId,
-              body: {
-                content: uploadRes.url,
-                fileName: file.name,
-                fileSize: file.size,
-                fileType: file.type || file.name.split('.').pop()
-              }
-            };
-
-            const res = await request({
-              url: "/chat/sendMessage",
-              method: "POST",
-              data: body,
-              header: {
-                "ajax": true,
-              }
-            });
-
-            if (res.code === ResponseCodeEnum.SUCCESS) {
-              this.chatStore.addOwnMessage(res.data);
-              uni.hideLoading();
-            } else {
-              throw new Error(res.message || "发送失败");
-            }
-          } catch (error) {
-            console.error("发送文件失败:", error);
-            uni.hideLoading();
-            uni.showToast({
-              title: error.message || "发送失败,请重试",
-              icon: 'none'
-            });
-          }
-        }
-      });
     },
 
     // 开始语音输入
