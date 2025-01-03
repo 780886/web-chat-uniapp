@@ -24,6 +24,12 @@ export default defineStore('chatStore', {
         setAvatar(avatar) {
             this.avatar = avatar;
         },
+        setPageNo(pageNo){
+            this.pageNo = pageNo;
+        },
+        getPageNo(){
+            return this.pageNo;
+        },
         async getMessageList() {
             try {
                 // 调用封装的请求
@@ -46,24 +52,31 @@ export default defineStore('chatStore', {
                     const currentLoginUserId = loginUser.userId;
                     // 处理数据
                     // 赋值处理后的数据
-                    this.messages = res.data.list.map((message) => {
+                    const messageList = res.data.list.map((message) => {
                         const senderUserId = message.senderUserId;
                         const roomId = message.roomId;
                         const type = senderUserId === currentLoginUserId ? "right" : "left";
                         const messageId = message.id;
+                        const messageType = message.messageType;
                         const content = message.body.content;
                         // const avatar = this.avatar;
                         const avatar = "https://wgq-im.oss-cn-nanjing.aliyuncs.com/DF957A521978414F505D705F8952C6B8.jpg";
                         // 例如，你可以在这里处理每条消息的数据
                         return {
-                            ...message, // 保留原有的数据
                             roomId: roomId, // 房间ID
                             type: type, // 消息类型（"left" 或 "right"）
+                            messageType:messageType,
                             content: content, // 消息内容
                             avatar: avatar, // 头像
                             messageId: messageId
                         };
                     });
+                    console.log("当前页号",this.getPageNo());
+                    if (this.getPageNo() === 1){
+                        this.messages = messageList;
+                    }else {
+                        this.messages = [...messageList];
+                    }
                 } else {
                     uni.showToast({
                         title: res.message || "获取消息列表失败",
@@ -85,11 +98,13 @@ export default defineStore('chatStore', {
             const type = senderUserId === currentLoginUserId ? "right" : "left";
             const roomId = data.roomId;
             const messageId = data.messageId;
+            const messageType = data.messageType;
             const content = data.body.content;
             const avatar = data.avatar;
             const message = {
                 messageId: messageId,
                 roomId: roomId,
+                messageType:messageType,
                 type: type,
                 content: content,
                 avatar: avatar,
@@ -112,12 +127,14 @@ export default defineStore('chatStore', {
                 return;
             }
             const type = senderUserId === currentLoginUserId ? "right" : "left";
+            const messageType = data.type;
             const content = data.content;
             const messageId = data.id;
             // const avatar = "https://wgq-im.oss-cn-nanjing.aliyuncs.com/DF957A521978414F505D705F8952C6B8.jpg";
             const avatar = this.avatar;
             const message = {
                 type: type, // 消息类型（"left" 或 "right"）
+                messageType:messageType,
                 content: content, // 消息内容
                 avatar: avatar, // 头像
                 roomId: roomId, // 房间ID

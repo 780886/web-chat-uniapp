@@ -4,9 +4,9 @@
     <scroll-view class="chat-content" scroll-y ref="messageContainer"
                  :scroll-top="scrollTop" @scrolltoupper="loadMoreMessages">
       <!-- 加载更多 -->
-      <view class="loading" v-if="isLoading">
-        <text>加载中...</text>
-      </view>
+<!--      <view class="loading" v-if="isLoading">-->
+<!--        <text>加载中...</text>-->
+<!--      </view>-->
       <!-- 消息列表 -->
       <div v-for="(message, index) in chatStore.messages" :key="index"
            :class="['message-item', message.type === 'right' ? 'right' : 'left']">
@@ -14,34 +14,7 @@
           <image :src="message.avatar" mode="aspectFill" lazy-load/>
         </div>
         <div class="message-bubble">
-          <div class="message-bubble">{{ message.content }}</div>
-<!--          &lt;!&ndash; 文本消息 &ndash;&gt;-->
-<!--          <div v-if="message.messageType === 1">-->
-<!--            <rich-text :nodes="parseMessage(message.content)"></rich-text>-->
-<!--          </div>-->
-<!--          &lt;!&ndash; 图片消息 &ndash;&gt;-->
-<!--          <image v-else-if="message.messageType === 2"-->
-<!--                 :src="message.content"-->
-<!--                 mode="widthFix"-->
-<!--                 @tap="previewImage(message.content)"-->
-<!--                 lazy-load/>-->
-<!--          &lt;!&ndash; 语音消息 &ndash;&gt;-->
-<!--          <view v-else-if="message.messageType === 3" -->
-<!--                class="voice-message"-->
-<!--                @tap="playVoice(message.content)">-->
-<!--            <text>{{message.duration}}''</text>-->
-<!--            <text class="iconfont">&#xe60f;</text>-->
-<!--          </view>-->
-<!--          &lt;!&ndash; 文件消息 &ndash;&gt;-->
-<!--          <view v-else-if="message.messageType === 4" -->
-<!--                class="file-message"-->
-<!--                @tap="openFileUrl(message.body)">-->
-<!--            <view class="file-info">-->
-<!--              <text class="file-name">{{message.body.fileName}}</text>-->
-<!--              <text class="file-size">{{formatFileSize(message.body.fileSize)}}</text>-->
-<!--            </view>-->
-<!--            <text class="iconfont">&#xe665;</text>-->
-<!--          </view>-->
+          <div class="message-content">{{ message.content }}</div>
         </div>
         <div class="avatar" v-if="message.type === 'right'">
           <image :src="getAvatar(message.avatar)" mode="aspectFill" lazy-load/>
@@ -126,13 +99,13 @@
           </view>
         </view>
         <!-- 表情包区域 -->
-        <view v-show="emojiVisible" class="emoji-menu">
+        <scroll-view v-show="emojiVisible" class="emoji-menu" scroll-y>
           <view class="emoji-grid">
-            <view v-for="(emoji, index) in emojiList" :key="index" class="emoji-item" @tap="selectEmoji(emoji.code)">
+            <view v-for="(emoji, index) in emojiList" :key="index" class="emoji-item" @tap="selectEmoji(emoji.url)">
               <image :src="emoji.url" mode="aspectFill" class="emoji-image"/>
             </view>
           </view>
-        </view>
+        </scroll-view>
       </view>
     </view>
   </div>
@@ -179,15 +152,21 @@ export default {
     const isLoading = ref(false);
     const scrollTop = ref(0);
     const areaHeight = ref(0);
-
+    const recorderManager = ref(null);
+    const recordStartTime = ref(0);
+    const recordEndTime = ref(0);
+    console.log("roomId", roomId)
     chatStore.setRoomId(roomId);
     chatStore.setAvatar(props.avatar);
 
     // 加载更多消息
     const loadMoreMessages = async () => {
-      if(isLoading.value) return;
+      if (isLoading.value) return;
       isLoading.value = true;
-      await chatStore.loadMoreMessages();
+      const pageNo = chatStore.getPageNo();
+      console.log("pageNo", pageNo)
+      await chatStore.setPageNo(pageNo + 1);
+      await chatStore.getMessageList();
       isLoading.value = false;
     }
 
@@ -196,30 +175,152 @@ export default {
       isVoiceMode.value = !isVoiceMode.value;
     }
 
-    // 开始录音
+    // 录音相关方法
     const startRecording = () => {
+      // 初始化录音管理器
+      if (!recorderManager.value) {
+        // #ifdef APP-PLUS || MP-WEIXIN
+        recorderManager.value = uni.getRecorderManager();
+
+        // 监听录音开始事件
+        recorderManager.value.onStart(() => {
+          recordStartTime.value = Date.now();
+          uni.showToast({
+            title: '开始录音',
+            icon: 'none'
+          });
+        });
+
+        // 监听录音结束事件
+        recorderManager.value.onStop((res) => {
+          recordEndTime.value = Date.now();
+          const duration = Math.floor((recordEndTime.value - recordStartTime.value) / 1000);
+
+          // 如果录音时间太短
+          if (duration < 1) {
+            uni.showToast({
+              title: '说话时间太短',
+              icon: 'none'
+            });
+            return;
+          }
+
+          // 上传录音文件
+          uploadVoiceFile(res.tempFilePath, duration);
+        });
+
+        // 监听录音错误事件
+        recorderManager.value.onError((error) => {
+          console.error('录音失败:', error);
+          uni.showToast({
+            title: '录音失败',
+            icon: 'none'
+          });
+        });
+        // #endif
+      }
+
+      // 开始录音
+      // #ifdef APP-PLUS || MP-WEIXIN
+      recorderManager.value.start({
+        duration: 60000, // 最长录音时间，单位ms
+        sampleRate: 16000, // 采样率
+        numberOfChannels: 1, // 录音通道数
+        encodeBitRate: 96000, // 编码码率
+        format: 'mp3', // 音频格式
+        frameSize: 50 // 指定帧大小
+      });
+      // #endif
+
+      // #ifdef H5
       uni.showToast({
-        title: '开始录音',
+        title: 'H5暂不支持录音',
         icon: 'none'
       });
-      // 实现录音逻辑
+      // #endif
     }
 
     // 停止录音并发送
     const stopRecording = () => {
-      uni.showToast({
-        title: '发送语音',
-        icon: 'none'
-      });
-      // 实现发送语音逻辑
+      // #ifdef APP-PLUS || MP-WEIXIN
+      if (recorderManager.value) {
+        recorderManager.value.stop();
+      }
+      // #endif
     }
 
     // 取消录音
     const cancelRecording = () => {
-      uni.showToast({
-        title: '取消录音',
-        icon: 'none'
-      });
+      // #ifdef APP-PLUS || MP-WEIXIN
+      if (recorderManager.value) {
+        recordStartTime.value = 0;
+        recordEndTime.value = 0;
+        recorderManager.value.stop();
+        uni.showToast({
+          title: '已取消',
+          icon: 'none'
+        });
+      }
+      // #endif
+    }
+
+    // 上传语音文件
+    const uploadVoiceFile = async (tempFilePath, duration) => {
+      try {
+        // 上传文件
+        const uploadRes = await new Promise((resolve, reject) => {
+          uni.uploadFile({
+            url: UNI_APP.BASE_URL + '/upload/file',
+            filePath: tempFilePath,
+            name: 'file',
+            header: {
+              'token': getLoginToken()
+            },
+            success: (uploadRes) => {
+              const data = JSON.parse(uploadRes.data);
+              if (data.code === ResponseCodeEnum.SUCCESS) {
+                resolve(data.data);
+              } else {
+                reject(new Error(data.message));
+              }
+            },
+            fail: (error) => {
+              reject(error);
+            }
+          });
+        });
+
+        // 发送语音消息
+        const body = {
+          messageType: 3, // 语音消息类型
+          roomId: roomId,
+          body: {
+            content: uploadRes.url,
+            duration: duration
+          }
+        };
+
+        const res = await request({
+          url: "/chat/sendMessage",
+          method: "POST",
+          data: body,
+          header: {
+            "ajax": true,
+          }
+        });
+
+        if (res.code === ResponseCodeEnum.SUCCESS) {
+          chatStore.addOwnMessage(res.data);
+        } else {
+          throw new Error(res.message || "发送失败");
+        }
+      } catch (error) {
+        console.error("发送语音失败:", error);
+        uni.showToast({
+          title: error.message || "发送失败,请重试",
+          icon: 'none'
+        });
+      }
     }
 
     // 预览图片
@@ -236,6 +337,9 @@ export default {
 
     // 切换功能菜单
     const toggleMenu = () => {
+      if (emojiVisible.value) {
+        emojiVisible.value = !emojiVisible.value;
+      }
       menuVisible.value = !menuVisible.value;
       if (menuVisible.value) {
         uni.hideKeyboard();
@@ -247,6 +351,9 @@ export default {
 
     // 切换表情包
     const toggleEmoji = () => {
+      if (menuVisible.value) {
+        menuVisible.value = !menuVisible.value;
+      }
       emojiVisible.value = !emojiVisible.value;
       if (emojiVisible.value) {
         uni.hideKeyboard();
@@ -286,21 +393,35 @@ export default {
             scrollToBottom();
           });
         },
-        { deep: true }
+        {deep: true}
     );
-
+    /**
+     * 监听菜单变化,自动滚动
+     */
     const scrollToBottom = () => {
+      // nextTick(() => {
+      //   const container = messageContainer.value;
+      //   if (container) {
+      //     setTimeout(() => {
+      //       scrollTop.value = container.scrollHeight;
+      //     }, 100);
+      //   }
+      // });
       nextTick(() => {
         const container = messageContainer.value;
+        console.log("container",container)
         if (container) {
+          // 使用 setTimeout 确保在 DOM 更新后执行滚动
+          console.log("container.scrollHeight;",container.scrollHeight)
           setTimeout(() => {
-            scrollTop.value = container.scrollHeight;
+            container.scrollTop = container.scrollHeight ||0;
           }, 100);
         }
       });
     }
 
     onMounted(async () => {
+      await chatStore.setPageNo(1);
       const loginToken = getLoginToken()
       wsApi.connect(UNI_APP.WS_URL, loginToken);
       await chatStore.getMessageList();
@@ -348,7 +469,10 @@ export default {
       scrollToBottom,
       emojiList,
       selectEmoji,
-      toggleVoiceInput
+      toggleVoiceInput,
+      recorderManager,
+      recordStartTime,
+      recordEndTime,
     };
   },
   methods: {
@@ -470,7 +594,7 @@ export default {
       // #ifdef H5
       window.open(fileInfo.content);
       // #endif
-      
+
       // #ifdef APP-PLUS || MP-WEIXIN
       uni.downloadFile({
         url: fileInfo.content,
@@ -481,7 +605,7 @@ export default {
               success: function () {
                 console.log('打开文件成功');
               },
-              fail: function() {
+              fail: function () {
                 uni.showToast({
                   title: '无法打开此类型文件',
                   icon: 'none'
@@ -559,33 +683,32 @@ export default {
 
 .message-bubble {
   max-width: 70%;
-  padding: 6px;
+  padding: 0;
   border-radius: 10px;
-  font-size: 16px;
-  line-height: 1;
   word-wrap: break-word;
+  position: relative;
 }
 
-.message-bubble image {
-  max-width: 200px;
-  border-radius: 5px;
-}
-
-.voice-message {
+.message-content {
+  padding: 10px 12px;
+  font-size: 15px;
+  line-height: 1.4;
+  min-height: 44px;
   display: flex;
   align-items: center;
-  padding: 5px 10px;
+  justify-content: center;
 }
 
 .message-item.left .message-bubble {
   background-color: #ffffff;
   margin-left: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .message-item.right .message-bubble {
   background-color: #bde4ff;
-  margin-left: 10px;
   margin-right: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .input-container {
@@ -717,8 +840,8 @@ export default {
 }
 
 .emoji-image {
-  width: 24px;
-  height: 24px;
+  width: 40px;
+  height: 40px;
 }
 
 .file-message {
@@ -751,5 +874,14 @@ export default {
 .file-message .iconfont {
   font-size: 24px;
   color: #666;
+}
+
+/* 表情样式优化 */
+:deep(.chat-emoji) {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  vertical-align: middle;
+  margin: 0 1px;
 }
 </style>

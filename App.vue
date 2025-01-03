@@ -119,6 +119,11 @@ export default {
         this.chatStore.addMessage(message);
         return;
       }
+      if (MessageType.EMOJI === message.type) {
+        // this.chatStore.setLoadingRoomMessage();
+        this.chatStore.addMessage(message);
+        return;
+      }
       console.log("其他类型消息赞不处理", message.type)
     }
   },

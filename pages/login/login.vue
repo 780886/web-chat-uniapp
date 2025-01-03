@@ -8,35 +8,35 @@
     <div class="input-group">
       <div class="icon">
         <i class="iconfont">&#xe656;</i> <!-- 这里使用iconfont图标 -->
-<!--        <svg class="icon" aria-hidden="true">-->
-<!--          <use xlink:href="#icon-person"></use>-->
-<!--        </svg>-->
+        <!--        <svg class="icon" aria-hidden="true">-->
+        <!--          <use xlink:href="#icon-person"></use>-->
+        <!--        </svg>-->
       </div>
-      <input class="input" type="email" placeholder="用户名/邮箱" v-model="userName"  @blur="validateEmail"/>
+      <input class="input" type="email" placeholder="用户名/邮箱" v-model="userName" @blur="validateEmail"/>
       <div v-if="emailError" class="error">邮箱地址格式不正确</div>
     </div>
     <div class="input-group">
       <div class="icon">
         <i class="iconfont">&#xe6de;</i> <!-- 这里使用iconfont图标 -->
-<!--        <svg class="icon" aria-hidden="true">-->
-<!--          <use xlink:href="#icon-locked"></use>-->
-<!--        </svg>-->
+        <!--        <svg class="icon" aria-hidden="true">-->
+        <!--          <use xlink:href="#icon-locked"></use>-->
+        <!--        </svg>-->
       </div>
-      <input class="input" type="password" placeholder="密码" v-model="password"  @blur="validatePassword"/>
+      <input class="input" type="password" placeholder="密码" v-model="password" @blur="validatePassword"/>
       <div v-if="passwordError" class="error">密码格式不正确</div>
     </div>
     <!-- 输入验证码 -->
-<!--    <div class="input-group">-->
-<!--      <div class="code-container">-->
-<!--        <input class="input code-input" type="text" placeholder="请输入验证码" v-model="captcha"/>-->
-        <!-- <button class="get-code" @click="sendVerificationCode" :disabled="codeSent">
-          {{ codeSent ? `${countdown}s后重新获取` : '获取验证码' }}
-        </button> -->
-<!--        <button class="get-code" @click="sendVerificationCode">-->
-<!--          {{ '获取验证码' }}-->
-<!--        </button>-->
-<!--      </div>-->
-<!--    </div>-->
+    <!--    <div class="input-group">-->
+    <!--      <div class="code-container">-->
+    <!--        <input class="input code-input" type="text" placeholder="请输入验证码" v-model="captcha"/>-->
+    <!-- <button class="get-code" @click="sendVerificationCode" :disabled="codeSent">
+      {{ codeSent ? `${countdown}s后重新获取` : '获取验证码' }}
+    </button> -->
+    <!--        <button class="get-code" @click="sendVerificationCode">-->
+    <!--          {{ '获取验证码' }}-->
+    <!--        </button>-->
+    <!--      </div>-->
+    <!--    </div>-->
 
     <!-- 登录按钮 -->
     <button class="login-btn" @click="login">登录</button>
@@ -137,7 +137,7 @@ export default {
           });
           return;
         }
-      }else {
+      } else {
         if (!validateUserName(this.userName)) {
           uni.showToast({
             title: "用户名不正确",
