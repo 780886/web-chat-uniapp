@@ -10,7 +10,7 @@ export default defineStore('chatStore', {
     state: () => {
         return {
             roomId: 0,
-            pageSize: 10,
+            pageSize: 20,
             pageNo: 1,
             messages: [],
             avatar: ''

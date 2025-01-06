@@ -1,21 +1,22 @@
 <template>
   <div class="chat-page">
     <!-- 聊天内容区域 -->
-    <scroll-view class="chat-content" ref="messageContainer" @click="closeAllMenus" scroll-y :scroll-into-view="scrollIntoView">
+    <div class="chat-content" ref="messageContainer" @click="closeAllMenus">
       <!-- 消息列表 -->
-      <view v-for="(message, index) in chatStore.messages" :key="index" :id="'message-' + index"
-            :class="['message-item', message.type === 'right' ? 'right' : 'left']">
-        <view class="avatar" v-if="message.type === 'left'">
+      <div v-for="(message, index) in chatStore.messages" :key="index"
+           :class="['message-item', message.type === 'right' ? 'right' : 'left']">
+        <div class="avatar" v-if="message.type === 'left'">
           <image :src="message.avatar" mode="aspectFill" lazy-load/>
-        </view>
-        <view class="message-bubble">
-          <view class="message-content">{{ message.content }}</view>
-        </view>
-        <view class="avatar" v-if="message.type === 'right'">
+        </div>
+        <div class="message-bubble">
+          <div class="message-content">{{ message.content }}</div>
+        </div>
+        <div class="avatar" v-if="message.type === 'right'">
           <image :src="getAvatar(message.avatar)" mode="aspectFill" lazy-load/>
-        </view>
-      </view>
-    </scroll-view>
+        </div>
+      </div>
+    </div>
+
     <!-- 底部输入区域 -->
     <view class="input-container">
       <view class="chat-input-bar" :style="{ transform: `translateY(-${areaHeight}px)` }">
@@ -149,7 +150,6 @@ export default {
     const recorderManager = ref(null);
     const recordStartTime = ref(0);
     const recordEndTime = ref(0);
-    const scrollIntoView = ref('');
     console.log("roomId", roomId)
     chatStore.setRoomId(roomId);
     chatStore.setAvatar(props.avatar);
@@ -403,11 +403,41 @@ export default {
         },
         {deep: true}
     );
+    // /**
+    //  * 监听菜单变化,自动滚动
+    //  */
+    // const scrollToBottom = () => {
+    //   nextTick(() => {
+    //     const container = messageContainer.value;
+    //     console.log("container",container)
+    //     if (container) {
+    //       // 使用 setTimeout 确保在 DOM 更新后执行滚动
+    //       console.log("container.scrollHeight;",container.scrollHeight)
+    //       setTimeout(() => {
+    //         container.scrollTop = container.scrollHeight ||0;
+    //       }, 100);
+    //     }
+    //   });
+    // }
 
     const scrollToBottom = () => {
       nextTick(() => {
-        const lastMessageIndex = chatStore.messages.length - 1;
-        scrollIntoView.value = 'message-' + lastMessageIndex;
+        const container = messageContainer.value;
+        if (container) {
+          setTimeout(() => {
+            // 计算实际需要滚动的位置
+            const scrollHeight = container.scrollHeight;
+            const clientHeight = container.clientHeight;
+            const maxScrollTop = scrollHeight - clientHeight + 100; // 添加额外偏移量
+            console.log("scrollHeight",scrollHeight);
+            console.log("clientHeight",clientHeight);
+            console.log("maxScrollTop",maxScrollTop);
+            console.log("maxScrollTop > 0 ? maxScrollTop : 0;",maxScrollTop > 0 ? maxScrollTop : 0);
+
+            // 确保滚动到最底部
+            container.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
+          }, 100);
+        }
       });
     };
 
@@ -464,8 +494,7 @@ export default {
       recorderManager,
       recordStartTime,
       recordEndTime,
-      closeAllMenus,
-      scrollIntoView
+      closeAllMenus
     };
   },
   methods: {
@@ -640,12 +669,13 @@ export default {
 }
 
 .chat-content {
-  flex: 1; /* 让聊天内容区域占据剩余空间 */
+  flex: 1;/* 让聊天内容区域占据剩余空间 */
   padding: 10px;
-  overflow-y: auto; /* 只在聊天内容区域启用滚动 */
+  overflow-y: auto;/* 只在聊天内容区域启用滚动 */
   -webkit-overflow-scrolling: touch;
-  padding-bottom: calc(110px + env(safe-area-inset-bottom)); /* 增加底部间距 */
+  padding-bottom: calc(100px + env(safe-area-inset-bottom));
   height: calc(100vh - env(safe-area-inset-top));
+  padding-bottom: 100px; /* 确保内容不会被输入区域遮挡 */
 }
 
 .loading {
