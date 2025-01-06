@@ -65,7 +65,7 @@ export default {
       passwordError: false,
       password: "", // 密码
       captcha: "1", // 验证码
-      remember: false, // 记住我
+      remember: true, // 记住我
       redirectUrl: "http://jvks.si/ucut" // 重定向地址
     };
   },
@@ -154,6 +154,7 @@ export default {
         captcha: this.captcha,
         redirectUrl: this.redirectUrl,
       };
+      console.log("登录请求body：", body);
       try {
         // 调用封装的请求
         const res = await request({

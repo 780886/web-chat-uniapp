@@ -214,8 +214,8 @@ export default {
   flex: 1;
   border-bottom: 1px solid #ddd;
   position: relative;
-  padding-bottom: 6px; /* 增加下方的内边距，移动边框 */
-  /*padding-top: 2px; !* 整体下移 *!*/
+  padding-bottom: 14px; /* 增加下方的内边距，移动边框 */
+  //padding-top: 1px; /* !* 整体下移 *!*/
 }
 
 .chat-name {

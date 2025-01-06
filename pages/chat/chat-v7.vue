@@ -1,7 +1,13 @@
 <template>
   <div class="chat-page">
     <!-- 聊天内容区域 -->
-    <div class="chat-content" ref="messageContainer" @click="closeAllMenus">
+<!--    <scroll-view class="chat-content" scroll-y ref="messageContainer"-->
+<!--                 :scroll-top="scrollTop" @scrolltoupper="loadMoreMessages">-->
+      <scroll-view class="chat-content" scroll-y ref="messageContainer" :scroll-top="scrollTop">
+      <!-- 加载更多 -->
+<!--      <view class="loading" v-if="isLoading">-->
+<!--        <text>加载中...</text>-->
+<!--      </view>-->
       <!-- 消息列表 -->
       <div v-for="(message, index) in chatStore.messages" :key="index"
            :class="['message-item', message.type === 'right' ? 'right' : 'left']">
@@ -15,7 +21,7 @@
           <image :src="getAvatar(message.avatar)" mode="aspectFill" lazy-load/>
         </div>
       </div>
-    </div>
+    </scroll-view>
 
     <!-- 底部输入区域 -->
     <view class="input-container">
@@ -330,19 +336,6 @@ export default {
       // 实现语音播放逻辑
     }
 
-    const closeAllMenus = () => {
-      // 关闭表情和功能菜单
-      if (menuVisible.value) {
-        menuVisible.value = !menuVisible.value;
-      }
-      if (emojiVisible.value) {
-        emojiVisible.value = !emojiVisible.value;
-      }
-      areaHeight.value = 0;
-      // 关闭键盘
-      uni.hideKeyboard();
-    }
-
     // 切换功能菜单
     const toggleMenu = () => {
       if (emojiVisible.value) {
@@ -403,43 +396,30 @@ export default {
         },
         {deep: true}
     );
-    // /**
-    //  * 监听菜单变化,自动滚动
-    //  */
-    // const scrollToBottom = () => {
-    //   nextTick(() => {
-    //     const container = messageContainer.value;
-    //     console.log("container",container)
-    //     if (container) {
-    //       // 使用 setTimeout 确保在 DOM 更新后执行滚动
-    //       console.log("container.scrollHeight;",container.scrollHeight)
-    //       setTimeout(() => {
-    //         container.scrollTop = container.scrollHeight ||0;
-    //       }, 100);
-    //     }
-    //   });
-    // }
-
+    /**
+     * 监听菜单变化,自动滚动
+     */
     const scrollToBottom = () => {
+      // nextTick(() => {
+      //   const container = messageContainer.value;
+      //   if (container) {
+      //     setTimeout(() => {
+      //       scrollTop.value = container.scrollHeight;
+      //     }, 100);
+      //   }
+      // });
       nextTick(() => {
         const container = messageContainer.value;
+        console.log("container",container)
         if (container) {
+          // 使用 setTimeout 确保在 DOM 更新后执行滚动
+          console.log("container.scrollHeight;",container.scrollHeight)
           setTimeout(() => {
-            // 计算实际需要滚动的位置
-            const scrollHeight = container.scrollHeight;
-            const clientHeight = container.clientHeight;
-            const maxScrollTop = scrollHeight - clientHeight + 100; // 添加额外偏移量
-            console.log("scrollHeight",scrollHeight);
-            console.log("clientHeight",clientHeight);
-            console.log("maxScrollTop",maxScrollTop);
-            console.log("maxScrollTop > 0 ? maxScrollTop : 0;",maxScrollTop > 0 ? maxScrollTop : 0);
-
-            // 确保滚动到最底部
-            container.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
+            container.scrollTop = container.scrollHeight ||0;
           }, 100);
         }
       });
-    };
+    }
 
     onMounted(async () => {
       await chatStore.setPageNo(1);
@@ -494,7 +474,6 @@ export default {
       recorderManager,
       recordStartTime,
       recordEndTime,
-      closeAllMenus
     };
   },
   methods: {
@@ -661,7 +640,6 @@ export default {
   flex-direction: column;
   height: 100vh;
   background-color: #ededed;
-  overflow-y: hidden; /* 禁止垂直滚动 */
 }
 
 .iconfont {
@@ -669,13 +647,12 @@ export default {
 }
 
 .chat-content {
-  flex: 1;/* 让聊天内容区域占据剩余空间 */
+  flex: 1;
   padding: 10px;
-  overflow-y: auto;/* 只在聊天内容区域启用滚动 */
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding-bottom: calc(100px + env(safe-area-inset-bottom));
   height: calc(100vh - env(safe-area-inset-top));
-  padding-bottom: 100px; /* 确保内容不会被输入区域遮挡 */
 }
 
 .loading {
@@ -688,8 +665,6 @@ export default {
   display: flex;
   margin: 8px 0;
   word-break: break-word;
-  align-items: center;
-  min-width: 50px;
 }
 
 .message-item.left {
@@ -700,14 +675,6 @@ export default {
   flex-direction: row;
   justify-content: flex-end;
 }
-
-.avatar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* margin: 0 10px; 调整头像与消息气泡之间的间距 */
-}
-
 
 .avatar image {
   width: 44px;
@@ -721,14 +688,11 @@ export default {
   border-radius: 10px;
   word-wrap: break-word;
   position: relative;
-  display: flex;
-  align-items: center; /* 确保消息内容垂直居中 */
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .message-content {
   padding: 10px 12px;
-  font-size: 18px;
+  font-size: 15px;
   line-height: 1.4;
   min-height: 44px;
   display: flex;
