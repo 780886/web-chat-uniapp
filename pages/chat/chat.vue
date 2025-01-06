@@ -644,7 +644,7 @@ export default {
   padding: 10px;
   overflow-y: auto; /* 只在聊天内容区域启用滚动 */
   -webkit-overflow-scrolling: touch;
-  padding-bottom: calc(110px + env(safe-area-inset-bottom)); /* 增加底部间距 */
+  padding-bottom: calc(68px + env(safe-area-inset-bottom)); /* 增加底部间距 */
   height: calc(100vh - env(safe-area-inset-top));
 }
 
