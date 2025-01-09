@@ -29,7 +29,7 @@
 
         <!-- 文本输入框/语音按钮 -->
         <view v-if="!isVoiceMode" class="text-input">
-          <input type="text"
+          <textarea
                  v-model="content"
                  class="input-box"
                  placeholder="发送消息..."
@@ -163,7 +163,7 @@ export default {
     //加载更多消息
     const loadMoreMessages = async (messageId) => {
       console.log("messageId:", messageId)
-      const firstMessageId = chatStore.getFirstMessageId();
+      const firstMessageId = chatStore.getMinMessageId();
       //未到达顶部不需要加载历史消息
       console.log("messageId",messageId)
       console.log("firstMessageId",firstMessageId)
@@ -172,8 +172,8 @@ export default {
         return;
       }
       console.log("设置第一节点id")
-      await chatStore.setFirstMessageId(messageId);
-      const newFirstMessageId = chatStore.getFirstMessageId();
+      await chatStore.setMinMessageId(messageId);
+      const newFirstMessageId = chatStore.getMinMessageId();
       console.log("newFirstMessageId", newFirstMessageId)
       await chatStore.getMessageList();
       console.log("更多消息加载完成！");
@@ -456,10 +456,11 @@ export default {
     onMounted(async () => {
       const loginToken = getLoginToken()
       wsApi.connect(UNI_APP.WS_URL, loginToken);
-      await chatStore.setFirstMessageId(null);
+      await chatStore.setMinMessageId(null);
       await chatStore.getMessageList();
       await setNavigationBarTitle(props.name);
       scrollToBottom();
+
 
       // const firstMessageItem = messageItems.value[0];
       // console.log("messageItems", messageItems)

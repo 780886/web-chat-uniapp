@@ -10,8 +10,7 @@ export default defineStore('chatStore', {
     state: () => {
         return {
             roomId: 0,
-            firstMessageId: null,
-            messageId: 0,
+            minMessageId: null,
             pageSize: 20,
             pageNo: 1,
             messages: [],
@@ -23,9 +22,6 @@ export default defineStore('chatStore', {
             this.roomId = roomId;
             // 可以在这里添加其他逻辑，比如根据roomId获取消息等
         },
-        setMessageId(messageId) {
-            this.messageId = messageId;
-        },
         setAvatar(avatar) {
             this.avatar = avatar;
         },
@@ -35,11 +31,11 @@ export default defineStore('chatStore', {
         getPageNo() {
             return this.pageNo;
         },
-        setFirstMessageId(firstMessageId){
-            this.firstMessageId = firstMessageId;
+        setMinMessageId(minMessageId){
+            this.minMessageId = minMessageId;
         },
-        getFirstMessageId() {
-            return this.firstMessageId;
+        getMinMessageId() {
+            return this.minMessageId;
         },
         async getMessageList() {
             try {
@@ -51,7 +47,7 @@ export default defineStore('chatStore', {
                         pageNo: this.pageNo,
                         pageSize: this.pageSize,
                         roomId: this.roomId,
-                        minMessageId:Number(this.firstMessageId),
+                        minMessageId:Number(this.minMessageId),
                     },
                     header: {
                         "ajax": true,
@@ -93,13 +89,15 @@ export default defineStore('chatStore', {
                     }
                     console.log("messageList", messageList);
                     const currentRoomMinId = messageList[0].messageId;
-                    if (this.firstMessageId === 0) {
+                    console.log("this.minMessageId", this.minMessageId);
+                    if (this.minMessageId === null) {
+                        console.log("第一次查询")
                         this.messages = messageList;
                     } else {
                         this.messages = [...messageList,this.messages];
                     }
-                    this.firstMessageId = currentRoomMinId;
-                    console.log("当前最小id", this.firstMessageId);
+                    this.minMessageId = currentRoomMinId;
+                    console.log("当前最小id", this.minMessageId);
                     // //每次将消息插入到最前面
                     // this.messages = messageList;
                     // this.messages.push(messageList);
