@@ -198,7 +198,7 @@ export default {
 
 .chat-item {
   display: flex;
-  padding: 2% 2px;
+  padding: 1% 6px;
   /*border-bottom: 1px solid #ddd;*/
   align-items: center;
   height: 10%; /* 每个项占据 10% 的高度 */
@@ -221,7 +221,7 @@ export default {
   border-bottom: 1px solid #ddd;
   position: relative;
   padding-bottom: 14px; /* 增加下方的内边距，移动边框 */
-  //padding-top: 1px; /* !* 整体下移 *!*/
+  padding-top: 8px; /* !* 整体下移 *!*/
 }
 
 .chat-name {

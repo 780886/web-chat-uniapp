@@ -32,7 +32,6 @@
           <textarea
                  v-model="content"
                  class="input-box"
-                 placeholder="发送消息..."
                  confirm-type="send"
                  :adjust-position="false"
                  @confirm="sendTextMessage"
@@ -461,7 +460,6 @@ export default {
       await setNavigationBarTitle(props.name);
       scrollToBottom();
 
-
       // const firstMessageItem = messageItems.value[0];
       // console.log("messageItems", messageItems)
       // const firstMessageId = firstMessageItem ? firstMessageItem.id : null;
@@ -694,7 +692,7 @@ export default {
 }
 
 .iconfont {
-  font-size: 28px;
+  font-size: 32px;
 }
 .voice-icon{
   margin-right: 6px;
@@ -813,7 +811,7 @@ export default {
 
 .input-box {
   width: 100%;
-  height: 40px;
+  height: 42px;
   line-height: 36px;
   padding: 0 12px;
   border: 1px solid #ddd;
