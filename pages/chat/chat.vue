@@ -29,10 +29,9 @@
 
         <!-- 文本输入框/语音按钮 -->
         <view v-if="!isVoiceMode" class="text-input">
-          <input type="text"
+          <textarea
                  v-model="content"
                  class="input-box"
-                 placeholder="发送消息..."
                  confirm-type="send"
                  :adjust-position="false"
                  @confirm="sendTextMessage"
@@ -241,7 +240,7 @@ export default {
             });
             return;
           }
-
+          console.log("res.tempFilePath",res.tempFilePath)
           // 上传录音文件
           uploadVoiceFile(res.tempFilePath, duration);
         });
@@ -460,6 +459,8 @@ export default {
       await chatStore.getMessageList();
       await setNavigationBarTitle(props.name);
       scrollToBottom();
+
+      console.log("messageList",chatStore.messages)
 
       // const firstMessageItem = messageItems.value[0];
       // console.log("messageItems", messageItems)
@@ -693,7 +694,7 @@ export default {
 }
 
 .iconfont {
-  font-size: 28px;
+  font-size: 32px;
 }
 .voice-icon{
   margin-right: 6px;
@@ -812,7 +813,7 @@ export default {
 
 .input-box {
   width: 100%;
-  height: 40px;
+  height: 42px;
   line-height: 36px;
   padding: 0 12px;
   border: 1px solid #ddd;
