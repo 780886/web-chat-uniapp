@@ -17,7 +17,7 @@ export default class ClientInformation {
             console.log("device:",deviceId);
 
             // 返回设备ID
-			// deviceId = "192.168.43.144";//测试
+			// deviceId = "192.168.0.109";//测试
             return deviceId;
         } catch (error) {
             console.error('获取 deviceId 时出错:', error);

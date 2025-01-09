@@ -10,6 +10,8 @@ export default defineStore('chatStore', {
     state: () => {
         return {
             roomId: 0,
+            firstMessageId: null,
+            messageId: 0,
             pageSize: 20,
             pageNo: 1,
             messages: [],
@@ -21,14 +23,23 @@ export default defineStore('chatStore', {
             this.roomId = roomId;
             // 可以在这里添加其他逻辑，比如根据roomId获取消息等
         },
+        setMessageId(messageId) {
+            this.messageId = messageId;
+        },
         setAvatar(avatar) {
             this.avatar = avatar;
         },
-        setPageNo(pageNo){
+        setPageNo(pageNo) {
             this.pageNo = pageNo;
         },
-        getPageNo(){
+        getPageNo() {
             return this.pageNo;
+        },
+        setFirstMessageId(firstMessageId){
+            this.firstMessageId = firstMessageId;
+        },
+        getFirstMessageId() {
+            return this.firstMessageId;
         },
         async getMessageList() {
             try {
@@ -39,7 +50,8 @@ export default defineStore('chatStore', {
                     data: {
                         pageNo: this.pageNo,
                         pageSize: this.pageSize,
-                        roomId: this.roomId
+                        roomId: this.roomId,
+                        minMessageId:Number(this.firstMessageId),
                     },
                     header: {
                         "ajax": true,
@@ -56,27 +68,48 @@ export default defineStore('chatStore', {
                         const senderUserId = message.senderUserId;
                         const roomId = message.roomId;
                         const type = senderUserId === currentLoginUserId ? "right" : "left";
-                        const messageId = message.id;
+                        const messageId = message.messageId;
                         const messageType = message.messageType;
                         const content = message.body.content;
-                        // const avatar = this.avatar;
-                        const avatar = "https://wgq-im.oss-cn-nanjing.aliyuncs.com/DF957A521978414F505D705F8952C6B8.jpg";
+                        const avatar = message.avatar;
+                        // const avatar = "https://wgq-im.oss-cn-nanjing.aliyuncs.com/DF957A521978414F505D705F8952C6B8.jpg";
                         // 例如，你可以在这里处理每条消息的数据
                         return {
                             roomId: roomId, // 房间ID
                             type: type, // 消息类型（"left" 或 "right"）
-                            messageType:messageType,
+                            messageType: messageType,
                             content: content, // 消息内容
                             avatar: avatar, // 头像
                             messageId: messageId
                         };
                     });
-                    console.log("当前页号",this.getPageNo());
-                    if (this.getPageNo() === 1){
-                        this.messages = messageList;
-                    }else {
-                        this.messages = [...messageList];
+                    // console.log("当前页号",this.getPageNo());
+                    // this.messages = messageList;
+                    //计算最小的messageId 每次查询最小的
+                    //校验数组为空
+                    if (messageList.length === 0) {
+                        console.log("已经没有更多了")
+                        return;
                     }
+                    console.log("messageList", messageList);
+                    const currentRoomMinId = messageList[0].messageId;
+                    if (this.firstMessageId === 0) {
+                        this.messages = messageList;
+                    } else {
+                        this.messages = [...messageList,this.messages];
+                    }
+                    this.firstMessageId = currentRoomMinId;
+                    console.log("当前最小id", this.firstMessageId);
+                    // //每次将消息插入到最前面
+                    // this.messages = messageList;
+                    // this.messages.push(messageList);
+                    // if (this.getPageNo() === 1){
+                    //     this.messages = messageList;
+                    //     //计算最小的messageId
+                    //     this.roomMinId = messageList[0].id;
+                    // }else {
+                    //     this.messages = [...messageList];
+                    // }
                 } else {
                     uni.showToast({
                         title: res.message || "获取消息列表失败",
@@ -84,7 +117,7 @@ export default defineStore('chatStore', {
                     });
                 }
             } catch (error) {
-                console.error("获取消息列表失败:", error);
+                console.error("获取消息列表失败:111", error);
                 uni.showToast({
                     title: "获取消息列表失败，请重试",
                     icon: "none",
@@ -104,7 +137,7 @@ export default defineStore('chatStore', {
             const message = {
                 messageId: messageId,
                 roomId: roomId,
-                messageType:messageType,
+                messageType: messageType,
                 type: type,
                 content: content,
                 avatar: avatar,
@@ -134,7 +167,7 @@ export default defineStore('chatStore', {
             const avatar = this.avatar;
             const message = {
                 type: type, // 消息类型（"left" 或 "right"）
-                messageType:messageType,
+                messageType: messageType,
                 content: content, // 消息内容
                 avatar: avatar, // 头像
                 roomId: roomId, // 房间ID

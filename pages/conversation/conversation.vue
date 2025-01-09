@@ -31,8 +31,14 @@ import {toTimeText, isYestday, isYear, formatDateTime, conversationToTimeText} f
 import ClientInformation from "../../common/ClientInformation";
 import {getLoginToken} from "../../utils/auth";
 import {getAvatar} from "../../common/Avatar";
+import {RoomTypeEnum} from "../../common/RoomTypeEnum";
 
 export default {
+  computed: {
+    RoomTypeEnum() {
+      return RoomTypeEnum
+    }
+  },
   data() {
     return {
       pageNo: 1,

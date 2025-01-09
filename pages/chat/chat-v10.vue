@@ -1,16 +1,12 @@
 <template>
   <div class="chat-page">
     <!-- 聊天内容区域 -->
-    <scroll-view class="chat-content" ref="messageContainer" upper-threshold="200" @scrolltoupper="handleScrollToUpper"
-                 @click="closeAllMenus" scroll-y :scroll-into-view="scrollIntoView">
+    <scroll-view class="chat-content" ref="messageContainer" @click="closeAllMenus" scroll-y :scroll-into-view="scrollIntoView">
       <!-- 消息列表 -->
       <view v-for="(message, index) in chatStore.messages" :key="index" :id="'message-' + index"
-            ref="messageItems"
-            ref-in-for
-            :data-message-id="message.messageId"
             :class="['message-item', message.type === 'right' ? 'right' : 'left']">
         <view class="avatar" v-if="message.type === 'left'">
-          <image :src="getAvatar(message.avatar)" mode="aspectFill" lazy-load/>
+          <image :src="message.avatar" mode="aspectFill" lazy-load/>
         </view>
         <view class="message-bubble">
           <view class="message-content">{{ message.content }}</view>
@@ -99,9 +95,8 @@
         <!-- 表情包区域 -->
         <scroll-view v-show="emojiVisible" class="emoji-menu" scroll-y>
           <view class="emoji-grid">
-            <view v-for="(emoji, index) in emojiList" :key="index" class="emoji-item" @tap="selectEmoji(emoji)">
-              <!-- <image :src="emoji" mode="aspectFill" class="emoji-image"/> -->
-              {{ emoji }}
+            <view v-for="(emoji, index) in emojiList" :key="index" class="emoji-item" @tap="selectEmoji(emoji.url)">
+              <image :src="emoji.url" mode="aspectFill" class="emoji-image"/>
             </view>
           </view>
         </scroll-view>
@@ -112,7 +107,7 @@
 
 <script>
 import request from "@/utils/request";
-import {onMounted, ref, onUnmounted, nextTick, watch, computed} from 'vue';
+import {onMounted, ref, onUnmounted, nextTick, watch} from 'vue';
 import userChatStore from "../../store/chatStore";
 import {setNavigationBarTitle} from '../../utils/navigationBar';
 import * as wsApi from "../../common/websocket";
@@ -155,56 +150,19 @@ export default {
     const recordStartTime = ref(0);
     const recordEndTime = ref(0);
     const scrollIntoView = ref('');
-    const messageItems = ref([]);
     console.log("roomId", roomId)
     chatStore.setRoomId(roomId);
     chatStore.setAvatar(props.avatar);
 
-    //加载更多消息
-    const loadMoreMessages = async (messageId) => {
-      console.log("messageId:", messageId)
-      const firstMessageId = chatStore.getFirstMessageId();
-      //未到达顶部不需要加载历史消息
-      console.log("messageId",messageId)
-      console.log("firstMessageId",firstMessageId)
-      if (Number(firstMessageId) !== Number(messageId)) {
-        console.log("未到达顶部不需要加载历史消息")
-        return;
-      }
-      console.log("设置第一节点id")
-      await chatStore.setFirstMessageId(messageId);
-      const newFirstMessageId = chatStore.getFirstMessageId();
-      console.log("newFirstMessageId", newFirstMessageId)
+    // 加载更多消息
+    const loadMoreMessages = async () => {
+      if (isLoading.value) return;
+      isLoading.value = true;
+      const pageNo = chatStore.getPageNo();
+      console.log("pageNo", pageNo)
+      await chatStore.setPageNo(pageNo + 1);
       await chatStore.getMessageList();
-      console.log("更多消息加载完成！");
-    }
-
-    // 滚动到顶部触发逻辑
-    const handleScrollToUpper = async () => {
-      // 避免重复触发加载
-      if (isLoading.value) {
-        return;
-      }
-      try {
-        isLoading.value = true;  // 设置加载中
-
-        await nextTick(); // 确保 DOM 已更新
-
-        // 获取当前页面显示的第一个消息
-        const firstMessageNode = messageItems.value[0]?.$el || messageItems.value[0];
-        const firstMessageId = firstMessageNode?.dataset?.messageId;
-
-        if (firstMessageId) {
-          console.log("当前页面顶部消息 ID:", firstMessageId);
-          await loadMoreMessages(firstMessageId);  // 加载更多消息
-        } else {
-          console.warn("未找到有效的消息 ID");
-        }
-      }finally {
-        isLoading.value = false;
-      }
-
-
+      isLoading.value = false;
     }
 
     // 切换语音输入模式
@@ -454,17 +412,12 @@ export default {
     };
 
     onMounted(async () => {
+      await chatStore.setPageNo(1);
       const loginToken = getLoginToken()
       wsApi.connect(UNI_APP.WS_URL, loginToken);
-      await chatStore.setFirstMessageId(null);
       await chatStore.getMessageList();
       await setNavigationBarTitle(props.name);
       scrollToBottom();
-
-      // const firstMessageItem = messageItems.value[0];
-      // console.log("messageItems", messageItems)
-      // const firstMessageId = firstMessageItem ? firstMessageItem.id : null;
-      // console.log("第一个 message-item 的 ID:", firstMessageId);
 
       uni.onKeyboardHeightChange(res => {
         if (res.height > 0) {
@@ -512,9 +465,7 @@ export default {
       recordStartTime,
       recordEndTime,
       closeAllMenus,
-      scrollIntoView,
-      handleScrollToUpper,
-      messageItems,
+      scrollIntoView
     };
   },
   methods: {
@@ -563,8 +514,7 @@ export default {
           icon: "none",
         });
       }
-    }
-    ,
+    },
 
     // 打开相册
     openAlbum() {
@@ -577,8 +527,7 @@ export default {
           console.log(res.tempFilePaths);
         }
       });
-    }
-    ,
+    },
 
     // 拍照
     takePhoto() {
@@ -591,20 +540,17 @@ export default {
           console.log(res.tempFilePaths);
         }
       });
-    }
-    ,
+    },
 
     // 打开文件
     openFile() {
 
-    }
-    ,
+    },
 
     // 开始语音输入
     startVoiceInput() {
       // 实现语音输入逻辑
-    }
-    ,
+    },
 
     // 发起视频通话
     startVideoCall() {
@@ -612,8 +558,7 @@ export default {
         title: '视频通话功能开发中',
         icon: 'none'
       });
-    }
-    ,
+    },
 
     // 发起语音通话
     startVoiceCall() {
@@ -621,8 +566,7 @@ export default {
         title: '语音通话功能开发中',
         icon: 'none'
       });
-    }
-    ,
+    },
 
     getAvatar,
 
@@ -635,8 +579,7 @@ export default {
       } else {
         return (size / (1024 * 1024)).toFixed(2) + 'MB';
       }
-    }
-    ,
+    },
 
     // 打开文件
     openFileUrl(fileInfo) {
@@ -694,16 +637,6 @@ export default {
 
 .iconfont {
   font-size: 28px;
-}
-.voice-icon{
-  margin-right: 6px;
-}
-.emoji-icon{
-  margin-left: 6px;
-}
-
-.more-icon{
-  //margin-right: 6px;
 }
 
 .chat-content {
@@ -812,7 +745,7 @@ export default {
 
 .input-box {
   width: 100%;
-  height: 40px;
+  height: 36px;
   line-height: 36px;
   padding: 0 12px;
   border: 1px solid #ddd;
@@ -911,7 +844,6 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 28px;
 }
 
 .emoji-image {
