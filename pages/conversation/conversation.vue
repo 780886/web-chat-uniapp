@@ -3,14 +3,14 @@
     <!-- 内容区域 -->
     <div class="content">
       <div v-if="conversations.length === 0" class="empty-state">
-        <img src="/static/empty.png" alt="暂无会话" class="empty-image"/>
-        <div class="empty-text">暂无会话</div>
+<!--        <image src="/static/empty.png" alt="暂无会话" class="empty-image"/>-->
+<!--        <div class="empty-text">暂无会话</div>-->
       </div>
       <div v-else class="chat-list" @scrolltolower="loadMore">
         <div v-for="(conversation, index) in conversations" :key="index" class="chat-item"
              @click="navigateToChat(conversation)">
           <div class="chat-avatar">
-            <image :src="getAvatar(conversation.avatar)" alt="头像" class="avatar-img"/>
+            <image :src="getAvatar(conversation)" alt="头像" class="avatar-img"/>
           </div>
           <div class="chat-info">
             <div class="chat-name">{{ conversation.name }}</div>
@@ -56,7 +56,14 @@ export default {
     this.getConversationList(); // 组件加载时调用接口
   },
   methods: {
-    getAvatar,
+    getAvatar(conversation){
+      // console.log("conversation", conversation);
+      if (RoomTypeEnum.GROUP === conversation.type) {
+        console.log("qun liao")
+        return 'data:image/png;base64,' + conversation.avatar;
+      }
+      return getAvatar(conversation.avatar);
+    },
     // 格式化时间显示
     formatTime(time) {
       return conversationToTimeText(time, true);
@@ -106,7 +113,7 @@ export default {
         });
 
         // 打印完整响应
-        console.log("响应结果：", res);
+        console.log("conversation-list：", res);
         // 处理响应
         if (res.code === '0') {
           // this.conversations = res.data.list;
@@ -227,15 +234,17 @@ export default {
 .chat-name {
   font-size: 18px;
   color: #333;
+  //padding-top: 2px; /* !* 整体下移 *!*/
 }
 
 .chat-last-message {
-  font-size: 18px;
+  font-size: 15px;
   color: #999;
   max-width: 80%;
   white-space: nowrap; /* 防止文本换行 */
   overflow: hidden; /* 隐藏超出部分 */
   text-overflow: ellipsis; /* 超出部分显示省略号 */
+  //padding-top: 2px; /* !* 整体下移 *!*/
 }
 
 .chat-time {

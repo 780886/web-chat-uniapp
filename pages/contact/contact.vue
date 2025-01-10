@@ -370,7 +370,7 @@ export default {
 }
 
 .contact-name {
-  font-size: 22px;
+  font-size: 18px;
   //font-weight: bold;
   color: #333;
   max-width: 50%;

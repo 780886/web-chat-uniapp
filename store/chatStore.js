@@ -11,7 +11,7 @@ export default defineStore('chatStore', {
         return {
             roomId: 0,
             minMessageId: null,
-            pageSize: 20,
+            pageSize: 50,
             pageNo: 1,
             messages: [],
             avatar: ''
@@ -94,7 +94,7 @@ export default defineStore('chatStore', {
                         console.log("第一次查询")
                         this.messages = messageList;
                     } else {
-                        this.messages = [...messageList,this.messages];
+                        this.messages = [...messageList,...this.messages];
                     }
                     this.minMessageId = currentRoomMinId;
                     console.log("当前最小id", this.minMessageId);

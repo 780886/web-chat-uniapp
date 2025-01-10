@@ -1,7 +1,7 @@
 <template>
   <div class="chat-page">
     <!-- 聊天内容区域 -->
-    <scroll-view class="chat-content" ref="messageContainer" upper-threshold="200" @scrolltoupper="handleScrollToUpper"
+    <scroll-view class="chat-content" ref="messageContainer" upper-threshold="400" @scrolltoupper="handleScrollToUpper"
                  @click="closeAllMenus" scroll-y :scroll-into-view="scrollIntoView">
       <!-- 消息列表 -->
       <view v-for="(message, index) in chatStore.messages" :key="index" :id="'message-' + index"
@@ -188,6 +188,11 @@ export default {
         isLoading.value = true;
 
         await nextTick(); // 确保 DOM 已更新
+
+
+        // 获取滚动容器的当前滚动高度和第一个消息节点的位置
+        const scrollContainer = uni.createSelectorQuery().select('.message-container');
+        const oldScrollHeight = scrollContainer.scrollHeight; // 原始高度
 
         const query = uni.createSelectorQuery().in(this);
         query
@@ -463,10 +468,11 @@ export default {
     onMounted(async () => {
       const loginToken = getLoginToken()
       wsApi.connect(UNI_APP.WS_URL, loginToken);
-      await setNavigationBarTitle(props.name);
       await chatStore.setMinMessageId(null);
       await chatStore.getMessageList();
+      await setNavigationBarTitle(props.name);
       scrollToBottom();
+
       // const firstMessageItem = messageItems.value[0];
       // console.log("messageItems", messageItems)
       // const firstMessageId = firstMessageItem ? firstMessageItem.id : null;
