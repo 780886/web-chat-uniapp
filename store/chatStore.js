@@ -65,6 +65,7 @@ export default defineStore('chatStore', {
                         const roomId = message.roomId;
                         const type = senderUserId === currentLoginUserId ? "right" : "left";
                         const messageId = message.messageId;
+                        const sendTime = message.sendTime;
                         const messageType = message.messageType;
                         const content = message.body.content;
                         const avatar = message.avatar;
@@ -76,7 +77,8 @@ export default defineStore('chatStore', {
                             messageType: messageType,
                             content: content, // 消息内容
                             avatar: avatar, // 头像
-                            messageId: messageId
+                            messageId: messageId,
+                            sendTime:sendTime
                         };
                     });
                     // console.log("当前页号",this.getPageNo());
