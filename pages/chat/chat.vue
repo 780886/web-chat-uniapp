@@ -8,15 +8,22 @@
             ref="messageItems"
             ref-in-for
             :data-message-id="message.messageId"
-            :class="['message-item', message.type === 'right' ? 'right' : 'left']">
-        <view class="avatar" v-if="message.type === 'left'">
-          <image :src="getAvatar(message.avatar)" mode="aspectFill" lazy-load/>
+            class="message-item"
+      >
+        <!-- 发送时间 -->
+        <view v-if="checkIsShow(message.sendTime)" class="message-time">
+          {{ formatTime(message.sendTime) }}
         </view>
-        <view class="message-bubble">
-          <view class="message-content">{{ message.content }}</view>
-        </view>
-        <view class="avatar" v-if="message.type === 'right'">
-          <image :src="getAvatar(message.avatar)" mode="aspectFill" lazy-load/>
+        <view :class="['message-bubble-container', message.type === 'right' ? 'right' : 'left']">
+          <view class="avatar" v-if="message.type === 'left'">
+            <image :src="getAvatar(message.avatar)" mode="aspectFill" lazy-load/>
+          </view>
+          <view class="message-bubble">
+            <view class="message-content">{{ message.content }}</view>
+          </view>
+          <view class="avatar" v-if="message.type === 'right'">
+            <image :src="getAvatar(message.avatar)" mode="aspectFill" lazy-load/>
+          </view>
         </view>
       </view>
     </scroll-view>
@@ -108,7 +115,6 @@
     </view>
   </div>
 </template>
-
 <script>
 import request from "@/utils/request";
 import {onMounted, ref, onUnmounted, nextTick, watch, computed} from 'vue';
@@ -121,6 +127,7 @@ import {ResponseCodeEnum} from "../../common/ResponseCodeEnum";
 import {getLoginToken} from "../../utils/auth";
 import {getAvatar} from "../../common/Avatar";
 import {emojiList} from "../../utils/emoji";
+import {conversationToTimeText} from "../../utils/date";
 
 export default {
   props: {
@@ -159,6 +166,18 @@ export default {
     console.log("roomId", roomId)
     chatStore.setRoomId(roomId);
     chatStore.setAvatar(props.avatar);
+
+    const checkIsShow = (time) => {
+      const dateTime = new Date(time)
+      const currentTime = Date.parse(new Date()); //当前时间
+      const timeDiff = currentTime - dateTime; //与当前时间误差
+      return timeDiff > 60000;
+    }
+
+    // 格式化时间显示
+    const formatTime = (time) => {
+      return conversationToTimeText(time, true);
+    }
 
     //加载更多消息
     const loadMoreMessages = async (messageId) => {
@@ -451,7 +470,7 @@ export default {
     );
 
     const scrollToBottom = () => {
-      if (!isScrollIntoView.value){
+      if (!isScrollIntoView.value) {
         return;
       }
       nextTick(() => {
@@ -524,6 +543,8 @@ export default {
       scrollIntoView,
       handleScrollToUpper,
       messageItems,
+      formatTime,
+      checkIsShow,
     };
   },
   methods: {
@@ -738,13 +759,23 @@ export default {
   word-break: break-word;
   align-items: center;
   min-width: 50px;
+  flex-direction: column !important;
 }
 
-.message-item.left {
+.message-bubble-container {
+  display: flex;
+  margin: 8px 0;
+  width: 100%;
+  word-break: break-word;
+  align-items: center;
+  min-width: 50px;
+}
+
+.message-bubble-container.left {
   flex-direction: row;
 }
 
-.message-item.right {
+.message-bubble-container.right {
   flex-direction: row;
   justify-content: flex-end;
 }
@@ -775,6 +806,14 @@ export default {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
+/* 样式添加 */
+.message-time {
+  font-size: 12px;
+  color: #999;
+  text-align: center;
+  margin: 5px 0;
+}
+
 .message-content {
   padding: 10px 12px;
   font-size: 18px;
@@ -785,13 +824,13 @@ export default {
   justify-content: center;
 }
 
-.message-item.left .message-bubble {
+.message-bubble-container.left .message-bubble {
   background-color: #ffffff;
   margin-left: 10px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.message-item.right .message-bubble {
+.message-bubble-container.right .message-bubble {
   background-color: #bde4ff;
   margin-right: 10px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
