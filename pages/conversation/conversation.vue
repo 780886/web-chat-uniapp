@@ -224,6 +224,7 @@ export default {
 
 .chat-info {
   margin-left: 8px;
+  width: 80%;
   flex: 1;
   border-bottom: 1px solid #ddd;
   position: relative;

@@ -486,6 +486,9 @@ export default {
     });
 
     onUnmounted(() => {
+      //清空chatStore
+      console.log("清空")
+      chatStore.clear();
       uni.offKeyboardHeightChange();
     });
 
@@ -750,6 +753,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: auto;
   /* margin: 0 10px; 调整头像与消息气泡之间的间距 */
 }
 

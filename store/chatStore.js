@@ -177,6 +177,9 @@ export default defineStore('chatStore', {
             uni.$emit('onMessage');
             console.log("this.chats", this.messages);
         },
+        clear(){
+            this.messages = [];
+        },
     },
     // setLoadingRoomMessage() {
     //     this.refreshChats();
