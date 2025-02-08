@@ -505,9 +505,6 @@ export default {
     });
 
     onUnmounted(() => {
-      //清空chatStore
-      console.log("清空")
-      chatStore.clear();
       uni.offKeyboardHeightChange();
     });
 

@@ -15,7 +15,7 @@
     <div class="action">
       <!-- 操作项 -->
       <div class="action-list">
-        <div class="action-item">
+        <div class="action-item" @click="navigateTo('settings')">
           <div class="action-icon">
             <image src="/static/shezhi.png" alt="Settings" class="icon"/>
             <div class="action-text" @click="navigateTo('settings')">设置</div>
