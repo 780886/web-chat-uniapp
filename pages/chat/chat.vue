@@ -752,7 +752,7 @@ export default {
 
 .message-item {
   display: flex;
-  margin: 8px 0;
+  margin: 10px 0;
   word-break: break-word;
   align-items: center;
   min-width: 50px;
@@ -761,7 +761,7 @@ export default {
 
 .message-bubble-container {
   display: flex;
-  margin: 8px 0;
+  margin: 0 0px;
   width: 100%;
   word-break: break-word;
   align-items: center;
@@ -812,7 +812,7 @@ export default {
 }
 
 .message-content {
-  padding: 10px 12px;
+  padding: 10px 10px;
   font-size: 18px;
   line-height: 1.4;
   min-height: 44px;

@@ -229,7 +229,7 @@ export default {
   border-bottom: 1px solid #ddd;
   position: relative;
   padding-bottom: 14px; /* 增加下方的内边距，移动边框 */
-  padding-top: 8px; /* !* 整体下移 *!*/
+  padding-top: 12px; /* !* 整体下移 *!*/
 }
 
 .chat-name {
