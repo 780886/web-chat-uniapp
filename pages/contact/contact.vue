@@ -243,7 +243,8 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow-y: hidden; /* 禁止垂直滚动 */
+  /*overflow-y: hidden; !* 禁止垂直滚动 *!*/
+  overflow-y: auto;
 }
 
 .header {
@@ -272,7 +273,7 @@ export default {
 
 
 .contact-list {
-  overflow-y: auto;
+  /*overflow-y: auto;*/
   width: 100%;
   margin-bottom: 15px;
 }

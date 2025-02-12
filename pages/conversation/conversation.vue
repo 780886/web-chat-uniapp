@@ -229,7 +229,7 @@ export default {
   border-bottom: 1px solid #ddd;
   position: relative;
   padding-bottom: 14px; /* 增加下方的内边距，移动边框 */
-  padding-top: 12px; /* !* 整体下移 *!*/
+  padding-top: 9px; /* !* 整体下移 *!*/
 }
 
 .chat-name {
@@ -239,13 +239,13 @@ export default {
 }
 
 .chat-last-message {
-  font-size: 15px;
+  font-size: 14px;
   color: #999;
   max-width: 80%;
   white-space: nowrap; /* 防止文本换行 */
   overflow: hidden; /* 隐藏超出部分 */
   text-overflow: ellipsis; /* 超出部分显示省略号 */
-  //padding-top: 2px; /* !* 整体下移 *!*/
+  padding-top: 4px; /* !* 整体下移 *!*/
 }
 
 .chat-time {
