@@ -505,9 +505,6 @@ export default {
     });
 
     onUnmounted(() => {
-      //清空chatStore
-      console.log("清空")
-      chatStore.clear();
       uni.offKeyboardHeightChange();
     });
 
@@ -755,7 +752,7 @@ export default {
 
 .message-item {
   display: flex;
-  margin: 8px 0;
+  margin: 10px 0;
   word-break: break-word;
   align-items: center;
   min-width: 50px;
@@ -764,7 +761,7 @@ export default {
 
 .message-bubble-container {
   display: flex;
-  margin: 8px 0;
+  margin: 0px 0;
   width: 100%;
   word-break: break-word;
   align-items: center;
@@ -815,8 +812,8 @@ export default {
 }
 
 .message-content {
-  padding: 10px 12px;
-  font-size: 18px;
+  padding: 8px 12px;
+  font-size: 17px;
   line-height: 1.4;
   min-height: 44px;
   display: flex;
