@@ -260,7 +260,7 @@ export default {
   font-size: 12px;
   color: #b0b0b0;
   position: absolute; /* 绝对定位 */
-  top: 0; /* 距离顶部 0 */
+  top: 4px; /* 距离顶部 0 */
   right: 0; /* 距离右侧 0 */
 }
 
