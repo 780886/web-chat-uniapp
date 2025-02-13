@@ -207,12 +207,12 @@ export default {
   overflow-y: auto;
   width: 100%;
   //height: 100%; /* 设置为 100% 高度 */
-  height: 80vh;
+  height: 100vh;
 }
 
 .chat-item {
   display: flex;
-  padding: 1% 6px;
+  padding: 0 6px;
   /*border-bottom: 1px solid #ddd;*/
   align-items: center;
   height: 10%; /* 每个项占据 10% 的高度 */
