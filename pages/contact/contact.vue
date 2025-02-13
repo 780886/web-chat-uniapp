@@ -22,7 +22,7 @@
       </div>
     </div>
     <!-- 联系人列表 -->
-    <div class="contact-list">
+    <scroll-view class="contact-list" lower-threshold="100" scroll-y  @scrolltolower="loadMore">
       <div v-for="(group, index) in groupContacts" :key="index">
         <!-- 分组头部 -->
         <div class="group-header">{{ group.letter }}</div>
@@ -39,7 +39,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </scroll-view>
   </div>
 </template>
 
@@ -54,7 +54,9 @@ export default {
   data() {
     return {
       pageNo: 1,
-      pageSize: 10,
+      pageSize: 15,
+      loading: false, // 控制加载状态
+      hasMore : true, // 允许加载更多
       activeTab: 'contact', // 默认选中的 tab
       // 模拟分组联系人数据
         groupContacts: [
@@ -78,10 +80,20 @@ export default {
   onShow() {
     const loginToken = uni.getStorageSync("login-token");
     wsApi.setTokenAndAuthorize(loginToken);
+    this.pageNo = 1; // 重新加载时从第一页开始
+    this.hasMore = true; // 允许加载更多
     this.contactList(); // 组件加载时调用接口
   },
   methods: {
+    loadMore(){
+      console.log("加载更多")
+      this.contactList();
+    },
     async contactList() {
+      console.log("this.loading",this.loading)
+      console.log("!this.hasMore",!this.hasMore)
+      if (this.loading || !this.hasMore) return; // 防止重复请求或数据加载完毕
+      this.loading = true;
       try {
         // 调用封装的请求
         const res = await request({
@@ -136,7 +148,7 @@ export default {
           const groupedContacts = groupContactsByFirstLetter(contacts);
 
           // 转换为页面渲染的格式
-          this.groupContacts = Object.keys(groupedContacts).sort((a, b) => {
+          const newGroupContacts = Object.keys(groupedContacts).sort((a, b) => {
             // 特殊字符 "#" 排到最后
             if (a === "#") return 1;
             if (b === "#") return -1;
@@ -145,12 +157,21 @@ export default {
             letter: letter,
             contacts: groupedContacts[letter]
           }));
-
           // this.groupContacts = [{
           //   letter: "A",
           //   contacts: contacts
           // }]
-          console.log("groupContacts",this.groupContacts)
+          if (this.pageNo === 1) {
+            this.groupContacts = newGroupContacts; // 如果是第一页，重新赋值
+          } else {
+            this.groupContacts.push(...newGroupContacts); // 否则追加数据
+          }
+          // 判断是否还有更多数据
+          if (contacts.length < this.pageSize) {
+            this.hasMore = false; // 没有更多数据
+          } else {
+            this.pageNo++; // 继续加载下一页
+          }
         } else {
           uni.showToast({
             title: res.message || "获取联系人失败",
@@ -163,6 +184,8 @@ export default {
           title: "获取联系人失败，请重试",
           icon: "none",
         });
+      }finally {
+        this.loading = false; // 请求完成，关闭加载状态
       }
     },
     navigateToDetail(contact) {
@@ -243,8 +266,8 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100%;
-  /*overflow-y: hidden; !* 禁止垂直滚动 *!*/
-  overflow-y: auto;
+  overflow-y: hidden; /* 禁止垂直滚动 */
+  /*overflow-y: auto;*/
 }
 
 .header {
@@ -273,9 +296,10 @@ export default {
 
 
 .contact-list {
-  /*overflow-y: auto;*/
+  overflow-y: auto;
   width: 100%;
   margin-bottom: 15px;
+  height: 100vh;
 }
 
 .group-header {

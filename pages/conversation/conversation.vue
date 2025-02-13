@@ -6,7 +6,7 @@
 <!--        <image src="/static/empty.png" alt="暂无会话" class="empty-image"/>-->
 <!--        <div class="empty-text">暂无会话</div>-->
       </view>
-      <scroll-view v-else class="chat-list"  scroll-y  @scrolltolower="loadMore">
+      <scroll-view v-else class="chat-list"  lower-threshold="300" scroll-y  @scrolltolower="loadMore">
         <view v-for="(conversation, index) in conversations" :key="index" class="chat-item"
              @click="navigateToChat(conversation)">
           <view class="chat-avatar">
@@ -47,6 +47,7 @@ export default {
       // 模拟一些聊天记录
       conversations: [],
       loading: false, // 控制加载状态
+      hasMore:false,
     };
   },
   onShow() {
