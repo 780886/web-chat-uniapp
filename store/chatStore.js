@@ -131,6 +131,7 @@ export default defineStore('chatStore', {
             const type = senderUserId === currentLoginUserId ? "right" : "left";
             const roomId = data.roomId;
             const messageId = data.messageId;
+            const sendTime = data.sendTime;
             const messageType = data.messageType;
             const content = data.body.content;
             const avatar = data.avatar;
@@ -141,6 +142,7 @@ export default defineStore('chatStore', {
                 type: type,
                 content: content,
                 avatar: avatar,
+                sendTime: sendTime,
             }
             this.messages.push(message);
         },
@@ -160,6 +162,7 @@ export default defineStore('chatStore', {
                 return;
             }
             const type = senderUserId === currentLoginUserId ? "right" : "left";
+            const sendTime = data.gmtCreate;
             const messageType = data.type;
             const content = data.content;
             const messageId = data.id;
@@ -172,6 +175,7 @@ export default defineStore('chatStore', {
                 avatar: avatar, // 头像
                 roomId: roomId, // 房间ID
                 messageId: messageId,
+                sendTime: sendTime, // 发送时间
             }
             // 赋值处理后的数据
             this.messages.push(message);

@@ -2,23 +2,23 @@
   <div class="chat-page">
     <!-- 内容区域 -->
     <div class="content">
-      <view v-if="conversations.length === 0" class="empty-state">
+      <div v-if="conversations.length === 0" class="empty-state">
 <!--        <image src="/static/empty.png" alt="暂无会话" class="empty-image"/>-->
 <!--        <div class="empty-text">暂无会话</div>-->
-      </view>
-      <scroll-view v-else class="chat-list"  scroll-y  @scrolltolower="loadMore">
-        <view v-for="(conversation, index) in conversations" :key="index" class="chat-item"
+      </div>
+      <div v-else class="chat-list" @scrolltolower="loadMore">
+        <div v-for="(conversation, index) in conversations" :key="index" class="chat-item"
              @click="navigateToChat(conversation)">
-          <view class="chat-avatar">
+          <div class="chat-avatar">
             <image :src="getAvatar(conversation)" alt="头像" class="avatar-img"/>
-          </view>
-          <view class="chat-info">
-            <view class="chat-name">{{ conversation.name }}</view>
-            <view class="chat-last-message">{{ conversation.content }}</view>
-            <view class="chat-time">{{ formatTime(conversation.lastSendTime) }}</view> <!-- 显示时间 -->
-          </view>
-        </view>
-      </scroll-view>
+          </div>
+          <div class="chat-info">
+            <div class="chat-name">{{ conversation.name }}</div>
+            <div class="chat-last-message">{{ conversation.content }}</div>
+            <div class="chat-time">{{ formatTime(conversation.lastSendTime) }}</div> <!-- 显示时间 -->
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -52,8 +52,7 @@ export default {
   onShow() {
     const loginToken = getLoginToken();
     wsApi.setTokenAndAuthorize(loginToken);
-    this.pageNo = 1; // 重新加载时从第一页开始
-    this.hasMore = true; // 允许加载更多
+    this.pageNo = 1;
     this.getConversationList(); // 组件加载时调用接口
   },
   methods: {
@@ -91,12 +90,13 @@ export default {
       }
     },
     loadMore() {
-      console.log("加载更多")
       this.getConversationList(); // 触发获取更多会话
     },
     //获取会话列表
     async getConversationList() {
-      if (this.loading || !this.hasMore) return; // 防止重复请求或数据加载完毕
+      if (this.loading) {
+        return; // 防止重复请求
+      }
       this.loading = true;
       try {
         // 调用封装的请求
@@ -116,19 +116,13 @@ export default {
         console.log("conversation-list：", res);
         // 处理响应
         if (res.code === '0') {
-          const newConversations = res.data.list;
+          // this.conversations = res.data.list;
           if (this.pageNo === 1) {
-            this.conversations = newConversations; // 如果是第一页，重新赋值
+            this.conversations = res.data.list; // 如果是第一页，重新赋值
           } else {
-            this.conversations.push(...newConversations); // 否则追加数据
+            this.conversations.push(...res.data.list); // 否则追加数据
           }
-          // this.pageNo++; // 页数递增
-          // 判断是否还有更多数据
-          if (newConversations.length < this.pageSize) {
-            this.hasMore = false; // 没有更多数据
-          } else {
-            this.pageNo++; // 继续加载下一页
-          }
+          this.pageNo++; // 页数递增
         } else {
           uni.showToast({
             title: res.message || "获取会话失败",
@@ -206,8 +200,7 @@ export default {
   padding: 2px 10px;
   overflow-y: auto;
   width: 100%;
-  //height: 100%; /* 设置为 100% 高度 */
-  height: 80vh;
+  height: 100%; /* 设置为 100% 高度 */
 }
 
 .chat-item {
