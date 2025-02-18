@@ -424,6 +424,7 @@ export default {
         areaHeight.value = 0;
       }
       // scrollIntoView.value = scrollIntoViewValue.value;
+      scrollToBottom();
     }
 
     // 切换表情包
@@ -440,6 +441,7 @@ export default {
       }
       // console.log("scrollIntoViewValue.value",scrollIntoViewValue.value)
       // scrollIntoView.value = scrollIntoViewValue.value;
+      scrollToBottom();
     }
 
     // 选择表情
@@ -459,9 +461,9 @@ export default {
 
     // 输入框失去焦点
     const onInputBlur = () => {
-      if (!menuVisible.value && !emojiVisible.value) {
-        areaHeight.value = 0;
-      }
+      // if (!menuVisible.value && !emojiVisible.value) {
+      //   areaHeight.value = 0;
+      // }
     }
 
     // 监听消息变化,自动滚动
@@ -479,10 +481,11 @@ export default {
       if (!isScrollIntoView.value) {
         return;
       }
-      console.log("触发scrollToBottom==========================>>>")
       nextTick(() => {
+        console.log("触发scrollToBottom==========================>>>")
         const lastMessageIndex = chatStore.messages.length - 1;
         scrollIntoView.value = 'message-' + lastMessageIndex;
+        console.log("scrollIntoView.value",scrollIntoView.value)
         // scrollIntoViewValue.value = scrollIntoView.value;
       });
     };
