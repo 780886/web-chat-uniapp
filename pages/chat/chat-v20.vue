@@ -3,6 +3,7 @@
     <!-- 聊天内容区域 -->
     <scroll-view class="chat-content"
                  ref="messageContainer"
+                 :style="{ paddingBottom: `(-${areaHeight})` + 'px' }"
                  upper-threshold="400"
                  @scrolltoupper="handleScrollToUpper"
                  @click="closeAllMenus" scroll-y :scroll-into-view="scrollIntoView">
@@ -32,7 +33,7 @@
     </scroll-view>
     <!-- 底部输入区域 -->
     <view class="input-container">
-      <view class="chat-input-bar">
+      <view class="chat-input-bar" :style="{ transform: `translateY(-${areaHeight}px)` }">
         <view class="input-actions">
           <text class="iconfont voice-icon" @tap="toggleVoiceInput">&#xe888;</text>
         </view>
@@ -62,58 +63,59 @@
           <text class="iconfont more-icon" @tap="toggleMenu">&#xe7a6;</text>
         </view>
       </view>
-    </view>
-    <!-- 扩展菜单区域 -->
-    <view class="dynamic-area" :style="{ height: areaHeight + 'px'}">
-      <view v-show="menuVisible" class="function-menu">
-        <view class="menu-grid">
-          <view class="menu-item" @tap="openAlbum">
-            <view class="menu-icon">
-              <text class="iconfont">&#xe87a;</text>
+
+      <!-- 扩展菜单区域 -->
+      <view class="dynamic-area" :style="{ height: areaHeight + 'px', transform: `translateY(-${areaHeight}px)` }">
+        <view v-show="menuVisible" class="function-menu">
+          <view class="menu-grid">
+            <view class="menu-item" @tap="openAlbum">
+              <view class="menu-icon">
+                <text class="iconfont">&#xe87a;</text>
+              </view>
+              <text class="menu-text">相册</text>
             </view>
-            <text class="menu-text">相册</text>
-          </view>
-          <view class="menu-item" @tap="takePhoto">
-            <view class="menu-icon">
-              <text class="iconfont">&#xe61d;</text>
+            <view class="menu-item" @tap="takePhoto">
+              <view class="menu-icon">
+                <text class="iconfont">&#xe61d;</text>
+              </view>
+              <text class="menu-text">拍摄</text>
             </view>
-            <text class="menu-text">拍摄</text>
-          </view>
-          <view class="menu-item" @tap="openFile">
-            <view class="menu-icon">
-              <text class="iconfont">&#xe665;</text>
+            <view class="menu-item" @tap="openFile">
+              <view class="menu-icon">
+                <text class="iconfont">&#xe665;</text>
+              </view>
+              <text class="menu-text">文件</text>
             </view>
-            <text class="menu-text">文件</text>
-          </view>
-          <view class="menu-item" @tap="startVoiceInput">
-            <view class="menu-icon">
-              <text class="iconfont">&#xe60f;</text>
+            <view class="menu-item" @tap="startVoiceInput">
+              <view class="menu-icon">
+                <text class="iconfont">&#xe60f;</text>
+              </view>
+              <text class="menu-text">语音输入</text>
             </view>
-            <text class="menu-text">语音输入</text>
-          </view>
-          <view class="menu-item" @tap="startVideoCall">
-            <view class="menu-icon">
-              <text class="iconfont">&#xe602;</text>
+            <view class="menu-item" @tap="startVideoCall">
+              <view class="menu-icon">
+                <text class="iconfont">&#xe602;</text>
+              </view>
+              <text class="menu-text">视频通话</text>
             </view>
-            <text class="menu-text">视频通话</text>
-          </view>
-          <view class="menu-item" @tap="startVoiceCall">
-            <view class="menu-icon">
-              <text class="iconfont">&#xe64f;</text>
+            <view class="menu-item" @tap="startVoiceCall">
+              <view class="menu-icon">
+                <text class="iconfont">&#xe64f;</text>
+              </view>
+              <text class="menu-text">语音通话</text>
             </view>
-            <text class="menu-text">语音通话</text>
           </view>
         </view>
+        <!-- 表情包区域 -->
+        <scroll-view v-show="emojiVisible" class="emoji-menu" scroll-y>
+          <view class="emoji-grid">
+            <view v-for="(emoji, index) in emojiList" :key="index" class="emoji-item" @tap="selectEmoji(emoji)">
+              <!-- <image :src="emoji" mode="aspectFill" class="emoji-image"/> -->
+              {{ emoji }}
+            </view>
+          </view>
+        </scroll-view>
       </view>
-      <!-- 表情包区域 -->
-      <scroll-view v-show="emojiVisible" class="emoji-menu" scroll-y>
-        <view class="emoji-grid">
-          <view v-for="(emoji, index) in emojiList" :key="index" class="emoji-item" @tap="selectEmoji(emoji)">
-            <!-- <image :src="emoji" mode="aspectFill" class="emoji-image"/> -->
-            {{ emoji }}
-          </view>
-        </view>
-      </scroll-view>
     </view>
   </div>
 </template>
@@ -422,7 +424,6 @@ export default {
       } else {
         areaHeight.value = 0;
       }
-      scrollToBottom();
     }
 
     // 切换表情包
@@ -437,7 +438,6 @@ export default {
       } else {
         areaHeight.value = 0;
       }
-      scrollToBottom();
     }
 
     // 选择表情
@@ -477,7 +477,6 @@ export default {
       if (!isScrollIntoView.value) {
         return;
       }
-      console.log("触发scrollToBottom==========================>>>")
       nextTick(() => {
         const lastMessageIndex = chatStore.messages.length - 1;
         scrollIntoView.value = 'message-' + lastMessageIndex;
@@ -745,8 +744,8 @@ export default {
   padding: 10px;
   overflow-y: auto; /* 只在聊天内容区域启用滚动 */
   -webkit-overflow-scrolling: touch;
-  //padding-bottom: calc(68px + env(safe-area-inset-bottom)); /* 增加底部间距 */
-  //height: calc(100vh - env(safe-area-inset-top));
+  padding-bottom: calc(68px + env(safe-area-inset-bottom)); /* 增加底部间距 */
+  height: calc(100vh - env(safe-area-inset-top));
 }
 
 .loading {
@@ -839,11 +838,11 @@ export default {
 }
 
 .input-container {
-  //position: relative;
+  position: relative;
 }
 
 .chat-input-bar {
-  //position: relative;
+  position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
@@ -897,7 +896,7 @@ export default {
 }
 
 .dynamic-area {
-  //position: fixed;
+  position: fixed;
   left: 0;
   right: 0;
   bottom: -280px;
