@@ -165,6 +165,7 @@ export default {
     const recordEndTime = ref(0);
     const scrollIntoView = ref('');
     const messageItems = ref([]);
+    const scrollIntoViewValue = ref('');
     console.log("roomId", roomId)
     chatStore.setRoomId(roomId);
     chatStore.setAvatar(props.avatar);
@@ -422,7 +423,7 @@ export default {
       } else {
         areaHeight.value = 0;
       }
-      scrollToBottom();
+      // scrollIntoView.value = scrollIntoViewValue.value;
     }
 
     // 切换表情包
@@ -437,7 +438,8 @@ export default {
       } else {
         areaHeight.value = 0;
       }
-      scrollToBottom();
+      // console.log("scrollIntoViewValue.value",scrollIntoViewValue.value)
+      // scrollIntoView.value = scrollIntoViewValue.value;
     }
 
     // 选择表情
@@ -481,6 +483,7 @@ export default {
       nextTick(() => {
         const lastMessageIndex = chatStore.messages.length - 1;
         scrollIntoView.value = 'message-' + lastMessageIndex;
+        // scrollIntoViewValue.value = scrollIntoView.value;
       });
     };
 
@@ -547,6 +550,7 @@ export default {
       messageItems,
       formatTime,
       checkIsShow,
+      scrollIntoViewValue,
     };
   },
   methods: {
