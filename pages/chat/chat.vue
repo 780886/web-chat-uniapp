@@ -1,7 +1,11 @@
 <template>
   <div class="chat-page">
     <!-- 聊天内容区域 -->
-    <scroll-view class="chat-content" ref="messageContainer" upper-threshold="200" @scrolltoupper="handleScrollToUpper"
+    <scroll-view class="chat-content"
+                 ref="messageContainer"
+                 :style="{ paddingBottom: `(-${areaHeight})` + 'px' }"
+                 upper-threshold="400"
+                 @scrolltoupper="handleScrollToUpper"
                  @click="closeAllMenus" scroll-y :scroll-into-view="scrollIntoView">
       <!-- 消息列表 -->
       <view v-for="(message, index) in chatStore.messages" :key="index" :id="'message-' + index"

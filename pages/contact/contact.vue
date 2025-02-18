@@ -22,7 +22,7 @@
       </div>
     </div>
     <!-- 联系人列表 -->
-    <scroll-view class="contact-list" lower-threshold="100" scroll-y  @scrolltolower="loadMore">
+    <scroll-view class="contact-list" lower-threshold="150" scroll-y  @scrolltolower="loadMore">
       <div v-for="(group, index) in groupContacts" :key="index">
         <!-- 分组头部 -->
         <div class="group-header">{{ group.letter }}</div>
@@ -90,8 +90,6 @@ export default {
       this.contactList();
     },
     async contactList() {
-      console.log("this.loading",this.loading)
-      console.log("!this.hasMore",!this.hasMore)
       if (this.loading || !this.hasMore) return; // 防止重复请求或数据加载完毕
       this.loading = true;
       try {
@@ -144,6 +142,9 @@ export default {
             }, {});
           };
 
+          // 获取已有分组的字母
+          const existingLetters = this.groupContacts.map(group => group.letter);
+
           // 分组联系人
           const groupedContacts = groupContactsByFirstLetter(contacts);
 
@@ -161,13 +162,45 @@ export default {
           //   letter: "A",
           //   contacts: contacts
           // }]
-          if (this.pageNo === 1) {
-            this.groupContacts = newGroupContacts; // 如果是第一页，重新赋值
-          } else {
-            this.groupContacts.push(...newGroupContacts); // 否则追加数据
-          }
+          // if (this.pageNo === 1) {
+          //   this.groupContacts = newGroupContacts; // 如果是第一页，重新赋值
+          // } else {
+          //   this.groupContacts.push(...newGroupContacts); // 否则追加数据
+          // }
+          // // 合并已有分组和新分组
+          // newGroupContacts.forEach(group => {
+          //   if (existingLetters.includes(group.letter)) {
+          //     // 如果该字母分组已存在，合并联系人
+          //     const existingGroup = this.groupContacts.find(g => g.letter === group.letter);
+          //     existingGroup.contacts.push(...group.contacts); // 追加联系人
+          //   } else {
+          //     // 如果该字母分组不存在，直接添加新分组
+          //     this.groupContacts.push(group);
+          //   }
+          // });
+          // 合并已有分组和新分组
+          newGroupContacts.forEach(group => {
+            // 如果该字母分组已存在，合并联系人
+            const existingGroup = this.groupContacts.find(g => g.letter === group.letter);
+
+            if (existingGroup) {
+              // 遍历新分组的联系人
+              group.contacts.forEach(newContact => {
+                // 判断该联系人是否已存在于该字母分组中 (根据 userId 判断)
+                const exists = existingGroup.contacts.some(existingContact => existingContact.userId === newContact.userId);
+
+                if (!exists) {
+                  // 如果没有重复的联系人，添加到分组中
+                  existingGroup.contacts.push(newContact);
+                }
+              });
+            } else {
+              // 如果该字母分组不存在，直接添加新分组
+              this.groupContacts.push(group);
+            }
+          });
           // 判断是否还有更多数据
-          if (contacts.length < this.pageSize) {
+          if (res.data.pageNo >= res.data.lastPageIndex) {
             this.hasMore = false; // 没有更多数据
           } else {
             this.pageNo++; // 继续加载下一页

@@ -6,7 +6,7 @@
 <!--        <image src="/static/empty.png" alt="暂无会话" class="empty-image"/>-->
 <!--        <div class="empty-text">暂无会话</div>-->
       </view>
-      <scroll-view v-else class="chat-list"  lower-threshold="300" scroll-y  @scrolltolower="loadMore">
+      <scroll-view v-else class="chat-list"  lower-threshold="400" scroll-y  @scrolltolower="loadMore">
         <view v-for="(conversation, index) in conversations" :key="index" class="chat-item"
              @click="navigateToChat(conversation)">
           <view class="chat-avatar">
@@ -125,7 +125,7 @@ export default {
           }
           // this.pageNo++; // 页数递增
           // 判断是否还有更多数据
-          if (newConversations.length < this.pageSize) {
+          if (res.data.pageNo >= res.data.lastPageIndex) {
             this.hasMore = false; // 没有更多数据
           } else {
             this.pageNo++; // 继续加载下一页
