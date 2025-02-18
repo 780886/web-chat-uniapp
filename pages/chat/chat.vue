@@ -41,10 +41,14 @@
         <view v-if="!isVoiceMode" class="text-input">
           <textarea
               v-model="content"
+              auto-height
               class="input-box"
               confirm-type="send"
+              confirm-hold
               :adjust-position="false"
-              @confirm="sendTextMessage"
+              :hold-keyboard="true"
+              :show-confirm-bar="false"
+              @confirm="sendTextMessage()"
               @focus="onInputFocus"
               @blur="onInputBlur"/>
         </view>
@@ -399,6 +403,7 @@ export default {
     }
 
     const closeAllMenus = () => {
+      console.log("关闭所有菜单")
       // 关闭表情和功能菜单
       if (menuVisible.value) {
         menuVisible.value = !menuVisible.value;
@@ -408,6 +413,7 @@ export default {
       }
       areaHeight.value = 0;
       // 关闭键盘
+      console.log("关闭键盘")
       uni.hideKeyboard();
     }
 
@@ -418,13 +424,14 @@ export default {
       }
       menuVisible.value = !menuVisible.value;
       if (menuVisible.value) {
+        console.log("关闭键盘")
         uni.hideKeyboard();
         areaHeight.value = 280;
       } else {
         areaHeight.value = 0;
       }
       // scrollIntoView.value = scrollIntoViewValue.value;
-      scrollToBottom();
+      // scrollToBottom();
     }
 
     // 切换表情包
@@ -434,6 +441,7 @@ export default {
       }
       emojiVisible.value = !emojiVisible.value;
       if (emojiVisible.value) {
+        console.log("关闭键盘")
         uni.hideKeyboard();
         areaHeight.value = 280;
       } else {
@@ -441,7 +449,7 @@ export default {
       }
       // console.log("scrollIntoViewValue.value",scrollIntoViewValue.value)
       // scrollIntoView.value = scrollIntoViewValue.value;
-      scrollToBottom();
+      // scrollToBottom();
     }
 
     // 选择表情
@@ -461,9 +469,9 @@ export default {
 
     // 输入框失去焦点
     const onInputBlur = () => {
-      // if (!menuVisible.value && !emojiVisible.value) {
-      //   areaHeight.value = 0;
-      // }
+      if (!menuVisible.value && !emojiVisible.value) {
+        areaHeight.value = 0;
+      }
     }
 
     // 监听消息变化,自动滚动
@@ -485,7 +493,7 @@ export default {
         console.log("触发scrollToBottom==========================>>>")
         const lastMessageIndex = chatStore.messages.length - 1;
         scrollIntoView.value = 'message-' + lastMessageIndex;
-        console.log("scrollIntoView.value",scrollIntoView.value)
+        console.log("scrollIntoView.value", scrollIntoView.value)
         // scrollIntoViewValue.value = scrollIntoView.value;
       });
     };
@@ -503,6 +511,7 @@ export default {
       // console.log("第一个 message-item 的 ID:", firstMessageId);
 
       uni.onKeyboardHeightChange(res => {
+        console.log("res.height", res.height)
         if (res.height > 0) {
           menuVisible.value = false;
           emojiVisible.value = false;
@@ -587,8 +596,8 @@ export default {
         if (res.code === ResponseCodeEnum.SUCCESS) {
           this.content = '';
           this.chatStore.addOwnMessage(res.data);
-          await nextTick();
-          this.scrollToBottom();
+          // await nextTick();
+          // this.scrollToBottom();
         } else {
           uni.showToast({
             title: res.message || "发送失败",
@@ -601,9 +610,15 @@ export default {
           title: "发送失败,请重试",
           icon: "none",
         });
+      } finally {
+        // 重新聚焦输入框，确保键盘保持弹出
+        this.$nextTick(() => {
+          // 使用 uni.createSelectorQuery 获取输入框并聚焦
+          console.log("获取输入框并聚焦")
+          uni.createSelectorQuery().select('#sendBar').focus();
+        });
       }
-    }
-    ,
+    },
 
     // 打开相册
     openAlbum() {
